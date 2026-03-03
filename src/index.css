@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&family=Public+Sans:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #56BCA4;
+  --color-primary-dark: #3da892;
+  --color-pastel-purple: #E9DFF5;
+  --color-pastel-green: #E0F5EE;
+  --color-pastel-yellow: #FFF5D1;
+  --color-pastel-pink: #FCECEC;
+  --color-accent-purple: #9B72CF;
+  --color-accent-green: #48A999;
+  --color-accent-yellow: #F4C430;
+  --color-accent-blue: #64B5F6;
+  --color-background-light: #FAFCFB;
+  --color-background-dark: #151d1b;
+  --color-surface-light: #ffffff;
+  --color-surface-dark: #1f2b28;
+  --color-mint-light: #D4F3E9;
+  --color-input-bg: #F3F6F5;
+  --color-text-main: #111816;
+  --color-text-muted: #5f867d;
+
+  --font-display: "Almarai", "IBM Plex Sans Arabic", sans-serif;
+  --font-body: "Almarai", "IBM Plex Sans Arabic", sans-serif;
+
+  --shadow-soft: 0 10px 30px -5px rgba(86, 188, 164, 0.1);
+  --shadow-card: 0 4px 15px rgba(0, 0, 0, 0.03);
+  --shadow-input: 0 2px 6px rgba(0, 0, 0, 0.02);
+
+  --animate-soft-pulse: soft-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-ring-glow: ring-glow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-blob: morph 8s ease-in-out infinite;
+
+  @keyframes soft-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.9; }
+  }
+  @keyframes ring-glow {
+    0% { transform: scale(0.8); opacity: 0.5; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+  @keyframes morph {
+    0%, 100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+    34% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
+    67% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; }
+  }
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+body {
+  font-family: 'Almarai', sans-serif;
+  min-height: max(884px, 100dvh);
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.icon-hollow {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.dome-shape {
+  border-radius: 50% 50% 0 0 / 80% 80% 0 0;
+  background: linear-gradient(180deg, rgba(86, 188, 164, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(1px);
+}
