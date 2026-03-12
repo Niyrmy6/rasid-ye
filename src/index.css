@@ -22,6 +22,55 @@
   --color-text-main: #111816;
   --color-text-muted: #5f867d;
 
+  /* Semantic surface tokens */
+  --color-background: #FAFCFB;
+  --color-foreground: #111816;
+  --color-muted: #F3F4F6;
+  --color-muted-foreground: #5f867d;
+  --color-card: #ffffff;
+  --color-card-foreground: #111816;
+  --color-border: #e5e7eb;
+  --color-input: #F3F6F5;
+
+  /* Semantic accent tokens */
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #E9DFF5;
+  --color-secondary-foreground: #111816;
+  --color-accent: #E0F5EE;
+  --color-accent-foreground: #111816;
+
+  /* State & status tokens */
+  --color-success: #16a34a;
+  --color-success-foreground: #ffffff;
+  --color-info: #3b82f6;
+  --color-info-foreground: #ffffff;
+  --color-warning: #f97316;
+  --color-warning-foreground: #ffffff;
+  --color-error: #ef4444;
+  --color-error-foreground: #ffffff;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+
+  /* Data visualization tokens (map legend, badges) */
+  --color-risk-very-high: #c62828;
+  --color-risk-high: #ef5350;
+  --color-risk-medium: #ffb74d;
+  --color-risk-low: #fff9c4;
+
+  /* Brand/support tokens */
+  --color-brand-mint: #D4F3E9;
+  --color-brand-mint-strong: #bcecdb;
+  --color-brand-shield-bg: #eefcfc;
+  --color-chat-bot: #2C7A6B;
+
+  /* Shadow tokens */
+  --shadow-bottom-nav: 0 -5px 15px -5px rgba(0, 0, 0, 0.1);
+  --shadow-journey-card-blue: 0 8px 16px -6px rgba(59, 130, 246, 0.3);
+  --shadow-journey-card-amber: 0 8px 16px -6px rgba(245, 158, 11, 0.3);
+  --shadow-journey-card-purple: 0 8px 16px -6px rgba(168, 85, 247, 0.3);
+  --shadow-journey-card-green: 0 8px 16px -6px rgba(16, 185, 129, 0.3);
+  --shadow-journey-cta: 0 10px 20px -10px rgba(86, 188, 164, 0.5);
+
   --font-display: "Almarai", "IBM Plex Sans Arabic", sans-serif;
   --font-body: "Almarai", "IBM Plex Sans Arabic", sans-serif;
 

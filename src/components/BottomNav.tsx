@@ -6,7 +6,7 @@ export default function BottomNav() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-white/10 shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.1)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card dark:bg-surface-dark border-t border-border dark:border-white/10 shadow-[var(--shadow-bottom-nav)]">
       <div className="flex justify-around items-center h-16 pb-safe px-2 max-w-md mx-auto">
         <Link
           to="/news"

@@ -24,13 +24,13 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="bg-background-light text-slate-800 min-h-screen flex flex-col font-display overflow-x-hidden selection:bg-primary selection:text-white pb-12">
+    <div className="bg-background-light text-foreground min-h-screen flex flex-col font-display overflow-x-hidden selection:bg-primary selection:text-white pb-12">
       <nav className="flex items-center justify-between px-6 py-5 sticky top-0 z-50 bg-background-light/95 backdrop-blur-sm transition-colors duration-300">
         <div className="flex items-center gap-2">
           <div className="bg-primary/10 p-2 rounded-xl text-primary">
             <span className="material-symbols-outlined text-2xl">shield</span>
           </div>
-          <h2 className="text-slate-800 text-lg font-bold tracking-tight">راصد</h2>
+          <h2 className="text-foreground text-lg font-bold tracking-tight">راصد</h2>
         </div>
         <div className="relative">
           <div className="absolute -inset-1 bg-primary/30 rounded-xl blur-sm animate-pulse"></div>
@@ -62,7 +62,7 @@ export default function Landing() {
               <span className="material-symbols-outlined text-4xl">cloud</span>
             </div>
             <div
-              className="absolute top-8 left-1/4 bg-pastel-pink p-1.5 rounded-full text-red-400 shadow-sm animate-bounce"
+              className="absolute top-8 left-1/4 bg-pastel-pink p-1.5 rounded-full text-[var(--color-error-soft, #f87171)] shadow-sm animate-bounce"
               style={{ animationDuration: '3s' }}
             >
               <span className="material-symbols-outlined text-xl">coronavirus</span>
@@ -74,7 +74,7 @@ export default function Landing() {
               <span className="material-symbols-outlined text-xl">biotech</span>
             </div>
             <div
-              className="absolute top-24 left-10 bg-pastel-yellow p-1.5 rounded-full text-amber-500 shadow-sm animate-bounce"
+              className="absolute top-24 left-10 bg-pastel-yellow p-1.5 rounded-full text-[var(--color-warning-soft, #f59e0b)] shadow-sm animate-bounce"
               style={{ animationDuration: '3.5s' }}
             >
               <span className="material-symbols-outlined text-xl">science</span>
@@ -83,7 +83,7 @@ export default function Landing() {
             <div className="relative flex flex-col items-center">
               <div className="absolute -top-16 -right-12 bg-white px-3 py-2 rounded-xl rounded-bl-none shadow-md border-2 border-primary transform rotate-6 z-20">
                 <div className="flex items-center gap-1">
-                  <span className="material-symbols-outlined text-red-500 text-base">
+                  <span className="material-symbols-outlined text-error text-base">
                     warning
                   </span>
                   <span className="text-xs font-bold text-slate-700">تنبيه جديد!</span>
@@ -107,7 +107,7 @@ export default function Landing() {
         </div>
 
         <div className="text-center mb-6 mt-2">
-          <h1 className="text-slate-800 text-[38px] leading-[1.2] font-extrabold tracking-tight mb-3">
+          <h1 className="text-foreground text-[38px] leading-[1.2] font-extrabold tracking-tight mb-3">
             مجتمعك،{' '}
             <span className="text-primary inline-block relative">
               صحتك،
@@ -127,7 +127,7 @@ export default function Landing() {
             <br />
             مستقبلك
           </h1>
-          <p className="text-slate-500 text-lg leading-relaxed max-w-xs mx-auto font-medium">
+          <p className="text-muted-foreground text-lg leading-relaxed max-w-xs mx-auto font-medium">
             منصة الإبلاغ الوبائي الأذكى والأكثر سهولة في اليمن.
           </p>
         </div>
@@ -135,7 +135,7 @@ export default function Landing() {
         <div className="flex flex-col gap-3 mb-8 w-full">
           <Link
             to="/news"
-            className="w-full bg-mint-light hover:bg-[#bcecdb] text-slate-800 text-lg font-bold py-4 px-8 rounded-2xl shadow-sm transition-all duration-300 transform active:scale-[0.98] text-center"
+            className="w-full bg-mint-light hover:bg-[var(--color-brand-mint-strong)] text-foreground text-lg font-bold py-4 px-8 rounded-2xl shadow-sm transition-all duration-300 transform active:scale-[0.98] text-center"
           >
             استكشاف
           </Link>
@@ -150,15 +150,15 @@ export default function Landing() {
           </Link>
           <Link
             to="/signup"
-            className="w-full text-center text-sm font-semibold text-slate-500 hover:text-primary transition-colors py-2"
+            className="w-full text-center text-sm font-semibold text-muted-foreground hover:text-primary transition-colors py-2"
           >
             ليس لديك حساب؟ <span className="text-primary hover:underline">إنشاء حساب جديد</span>
           </Link>
         </div>
 
         <div className="flex flex-col items-center gap-3 mb-8">
-          <div className="flex items-center bg-white p-2 pr-4 pl-2 rounded-full shadow-card border border-slate-100">
-            <p className="text-slate-600 font-bold ml-3 text-sm">+10,000 مستخدم نشط</p>
+          <div className="flex items-center bg-card p-2 pr-4 pl-2 rounded-full shadow-card border border-border">
+            <p className="text-muted-foreground font-bold ml-3 text-sm">+10,000 مستخدم نشط</p>
             <div className="flex -space-x-3 space-x-reverse">
               <div className="w-8 h-8 rounded-full border-2 border-white overflow-hidden relative">
                 <img
@@ -181,7 +181,7 @@ export default function Landing() {
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6F8Wda39UNJchUt5nqbs2hPQD0Olg_ui7jU9XyUEBn3vcfoQh8-vJndEnWoIYVbBV86ouYARIkfxYRsn7AFBmbrUcEFCp_DprO8ir9-_mHNAlUTdPQnIbWZWXiZGnNOEu3hRcAyC4DhVgOrCNjszRSwoURIMIlOYXXwgHs3h_scUPavpqIDZpzgDvzd5PZfPnvKCDCducxkC7EfLxaVJxAu6O5VEKz6JmV6zYFYIwyNzmfsxylXlwkeXi2EqpOEINzCZ8KlEDLYIm"
                 />
               </div>
-              <div className="w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-slate-400">
+              <div className="w-8 h-8 rounded-full border-2 border-white bg-muted flex items-center justify-center text-muted-foreground">
                 <span className="material-symbols-outlined text-sm">add</span>
               </div>
             </div>
@@ -256,11 +256,11 @@ export default function Landing() {
         </div>
       </main>
 
-      <footer className="bg-gray-50 border-t border-gray-100 py-10 px-6 mt-4">
+      <footer className="bg-muted border-t border-border py-10 px-6 mt-4">
         <div className="w-full max-w-md mx-auto flex flex-col gap-8">
           <div className="flex flex-col gap-3">
-            <h4 className="text-lg font-bold text-slate-800">روابط سريعة</h4>
-            <ul className="flex flex-col gap-2 text-slate-600 text-base">
+            <h4 className="text-lg font-bold text-foreground">روابط سريعة</h4>
+            <ul className="flex flex-col gap-2 text-muted-foreground text-base">
               <li>
                 <Link to="/news" className="hover:text-primary transition-colors duration-200">
                   الأخبار
@@ -279,23 +279,23 @@ export default function Landing() {
             </ul>
           </div>
           <div className="flex flex-col gap-3">
-            <h4 className="text-lg font-bold text-slate-800">معلومات التواصل</h4>
-            <div className="flex items-center gap-2 text-slate-600">
+            <h4 className="text-lg font-bold text-foreground">معلومات التواصل</h4>
+            <div className="flex items-center gap-2 text-muted-foreground">
               <span className="material-symbols-outlined text-primary text-xl">
                 phone_in_talk
               </span>
               <span dir="ltr">+٩٦٧ ١٢٣ ٤٥٦</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-600">
+            <div className="flex items-center gap-2 text-muted-foreground">
               <span className="material-symbols-outlined text-primary text-xl">mail</span>
               <span>support@rasid.ye</span>
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            <h4 className="text-lg font-bold text-slate-800">تابعنا</h4>
+            <h4 className="text-lg font-bold text-foreground">تابعنا</h4>
             <div className="flex gap-4">
               <a
-                className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-slate-500 hover:text-primary hover:border-primary transition-all duration-200 shadow-sm"
+                className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-200 shadow-sm"
                 href="#"
               >
                 <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -307,7 +307,7 @@ export default function Landing() {
                 </svg>
               </a>
               <a
-                className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-slate-500 hover:text-primary hover:border-primary transition-all duration-200 shadow-sm"
+                className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-200 shadow-sm"
                 href="#"
               >
                 <svg aria-hidden="true" className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -315,7 +315,7 @@ export default function Landing() {
                 </svg>
               </a>
               <a
-                className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-slate-500 hover:text-primary hover:border-primary transition-all duration-200 shadow-sm"
+                className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-200 shadow-sm"
                 href="#"
               >
                 <svg aria-hidden="true" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -329,8 +329,8 @@ export default function Landing() {
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-200 mt-8 pt-6 text-center">
-          <p className="text-slate-500 text-sm">© ٢٠٢٤ راصد. جميع الحقوق محفوظة</p>
+        <div className="border-t border-border mt-8 pt-6 text-center">
+          <p className="text-muted-foreground text-sm">© ٢٠٢٤ راصد. جميع الحقوق محفوظة</p>
         </div>
       </footer>
     </div>

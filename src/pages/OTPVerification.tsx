@@ -8,18 +8,18 @@ export default function OTPVerification() {
   };
 
   return (
-    <div className="bg-background-light text-slate-800 min-h-screen flex flex-col font-display overflow-x-hidden selection:bg-primary selection:text-white">
+    <div className="bg-background-light text-foreground min-h-screen flex flex-col font-display overflow-x-hidden selection:bg-primary selection:text-white">
       <nav className="flex items-center justify-between px-6 py-5 sticky top-0 z-50 bg-background-light/95 backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <div className="bg-primary/10 p-2 rounded-xl text-primary">
             <span className="material-symbols-outlined text-2xl">shield</span>
           </div>
-          <h2 className="text-slate-800 text-lg font-bold tracking-tight">راصد</h2>
+          <h2 className="text-foreground text-lg font-bold tracking-tight">راصد</h2>
         </div>
         <div className="relative">
           <button
             onClick={() => navigate(-1)}
-            className="bg-slate-100 hover:bg-slate-200 text-slate-600 transition-all duration-300 p-2 rounded-xl group"
+            className="bg-muted hover:bg-muted text-muted-foreground transition-all duration-300 p-2 rounded-xl group"
           >
             <span className="material-symbols-outlined text-2xl">arrow_back</span>
           </button>
@@ -45,11 +45,11 @@ export default function OTPVerification() {
         </div>
 
         <div className="text-center mb-8">
-          <h1 className="text-slate-800 text-3xl font-extrabold tracking-tight mb-3">رمز التحقق</h1>
-          <p className="text-slate-500 text-lg leading-relaxed font-medium">
+          <h1 className="text-foreground text-3xl font-extrabold tracking-tight mb-3">رمز التحقق</h1>
+          <p className="text-muted-foreground text-lg leading-relaxed font-medium">
             تم إرسال رمز التحقق إلى رقم هاتفك
             <br />
-            <span className="text-slate-800 font-bold mt-1 block" dir="ltr">
+            <span className="text-foreground font-bold mt-1 block" dir="ltr">
               +967 770 000 000
             </span>
           </p>
@@ -59,7 +59,7 @@ export default function OTPVerification() {
           {[1, 2, 3, 4].map((i) => (
             <input
               key={i}
-              className="w-16 h-16 text-center text-2xl font-bold bg-white border-2 border-slate-200 rounded-2xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all shadow-sm text-slate-700 placeholder-transparent"
+              className="w-16 h-16 text-center text-2xl font-bold bg-card border-2 border-border rounded-2xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all shadow-sm text-foreground placeholder-transparent"
               maxLength={1}
               placeholder="0"
               type="number"
@@ -68,12 +68,12 @@ export default function OTPVerification() {
         </div>
 
         <div className="flex flex-col gap-4 mb-8 w-full mt-auto pb-8">
-          <div className="text-center text-sm font-semibold text-slate-500 mb-2">
+          <div className="text-center text-sm font-semibold text-muted-foreground mb-2">
             لم يصلك الرمز؟{' '}
             <button className="text-primary hover:text-primary-dark transition-colors font-bold">
               إعادة الإرسال
             </button>{' '}
-            <span className="text-slate-400 font-normal">(00:45)</span>
+            <span className="text-muted-foreground font-normal">(00:45)</span>
           </div>
           <div className="relative w-full group">
             <div className="absolute -inset-1 bg-primary/20 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

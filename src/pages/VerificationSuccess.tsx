@@ -8,18 +8,18 @@ export default function VerificationSuccess() {
   };
 
   return (
-    <div className="bg-background-light text-slate-800 min-h-screen flex flex-col font-display overflow-x-hidden selection:bg-primary selection:text-white">
+    <div className="bg-background-light text-foreground min-h-screen flex flex-col font-display overflow-x-hidden selection:bg-primary selection:text-white">
       <nav className="flex items-center justify-between px-6 py-5 sticky top-0 z-50 bg-background-light/95 backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <div className="bg-primary/10 p-2 rounded-xl text-primary">
             <span className="material-symbols-outlined text-2xl">shield</span>
           </div>
-          <h2 className="text-slate-800 text-lg font-bold tracking-tight">راصد</h2>
+          <h2 className="text-foreground text-lg font-bold tracking-tight">راصد</h2>
         </div>
         <div className="relative">
           <button
             onClick={() => navigate(-1)}
-            className="bg-slate-100 hover:bg-slate-200 text-slate-600 transition-all duration-300 p-2 rounded-xl group"
+            className="bg-muted hover:bg-muted text-muted-foreground transition-all duration-300 p-2 rounded-xl group"
           >
             <span className="material-symbols-outlined text-2xl rotate-180">
               arrow_forward
@@ -53,10 +53,10 @@ export default function VerificationSuccess() {
         </div>
 
         <div className="text-center mb-12">
-          <h1 className="text-slate-800 text-3xl font-extrabold tracking-tight mb-4">
+          <h1 className="text-foreground text-3xl font-extrabold tracking-tight mb-4">
             تم التحقق بنجاح!
           </h1>
-          <p className="text-slate-500 text-lg leading-relaxed font-medium px-4">
+          <p className="text-muted-foreground text-lg leading-relaxed font-medium px-4">
             لقد تم تأمين حسابك بنجاح. يمكنك الآن البدء في استخدام كافة مميزات المنصة.
           </p>
         </div>

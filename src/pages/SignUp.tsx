@@ -10,18 +10,18 @@ export default function SignUp() {
   };
 
   return (
-    <div className="bg-background-light text-slate-800 min-h-screen flex flex-col font-display overflow-x-hidden selection:bg-primary selection:text-white">
+    <div className="bg-background-light text-foreground min-h-screen flex flex-col font-display overflow-x-hidden selection:bg-primary selection:text-white">
       <nav className="flex items-center justify-between px-6 py-5 sticky top-0 z-50 bg-background-light/95 backdrop-blur-sm transition-colors duration-300">
         <div className="flex items-center gap-2">
           <div className="bg-primary/10 p-1.5 rounded-lg text-primary">
             <span className="material-symbols-outlined text-xl">shield</span>
           </div>
-          <h2 className="text-slate-800 text-lg font-bold tracking-tight">راصد</h2>
+          <h2 className="text-foreground text-lg font-bold tracking-tight">راصد</h2>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted hover:bg-muted text-muted-foreground transition-colors"
           >
             <span className="material-symbols-outlined text-xl rotate-180">arrow_forward</span>
           </button>
@@ -100,7 +100,7 @@ export default function SignUp() {
             </div>
             <div className="absolute top-16 right-2 animate-pulse">
               <div className="bg-white/80 p-1 rounded-full shadow-sm">
-                <span className="material-symbols-outlined text-accent-pink text-sm text-red-400">
+                <span className="material-symbols-outlined text-accent-pink text-sm text-[var(--color-error-soft, #f87171)]">
                   volunteer_activism
                 </span>
               </div>
@@ -109,63 +109,63 @@ export default function SignUp() {
         </div>
 
         <div className="text-center mb-6">
-          <h1 className="text-slate-800 text-3xl font-extrabold tracking-tight">إنشاء حساب جديد</h1>
-          <p className="text-slate-500 mt-2 text-sm font-medium">انضم إلى مجتمع راصد</p>
+          <h1 className="text-foreground text-3xl font-extrabold tracking-tight">إنشاء حساب جديد</h1>
+          <p className="text-muted-foreground mt-2 text-sm font-medium">انضم إلى مجتمع راصد</p>
         </div>
 
         <form className="flex flex-col gap-4 w-full" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <label className="text-slate-700 font-bold text-sm mr-1 block" htmlFor="fullname">
+            <label className="text-foreground font-bold text-sm mr-1 block" htmlFor="fullname">
               الاسم الكامل
             </label>
             <div className="relative">
               <input
-                className="w-full bg-input-bg border-0 text-slate-800 text-right font-medium py-4 px-5 pr-12 rounded-2xl focus:ring-2 focus:ring-primary/50 shadow-input transition-all placeholder:text-slate-400"
+                className="w-full bg-input-bg border-0 text-foreground text-right font-medium py-4 px-5 pr-12 rounded-2xl focus:ring-2 focus:ring-primary/50 shadow-input transition-all placeholder:text-muted-foreground"
                 dir="rtl"
                 id="fullname"
                 placeholder="الاسم الكامل"
                 type="text"
               />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                 <span className="material-symbols-outlined">person</span>
               </div>
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-slate-700 font-bold text-sm mr-1 block" htmlFor="phone">
+            <label className="text-foreground font-bold text-sm mr-1 block" htmlFor="phone">
               رقم الهاتف
             </label>
             <div className="relative">
               <input
-                className="w-full bg-input-bg border-0 text-slate-800 text-right font-medium py-4 px-5 pr-12 rounded-2xl focus:ring-2 focus:ring-primary/50 shadow-input transition-all placeholder:text-slate-400"
+                className="w-full bg-input-bg border-0 text-foreground text-right font-medium py-4 px-5 pr-12 rounded-2xl focus:ring-2 focus:ring-primary/50 shadow-input transition-all placeholder:text-muted-foreground"
                 dir="rtl"
                 id="phone"
                 placeholder="77xxxxxxx"
                 type="tel"
               />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                 <span className="material-symbols-outlined">smartphone</span>
               </div>
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-slate-700 font-bold text-sm mr-1 block" htmlFor="password">
+            <label className="text-foreground font-bold text-sm mr-1 block" htmlFor="password">
               كلمة المرور
             </label>
             <div className="relative">
               <input
-                className="w-full bg-input-bg border-0 text-slate-800 text-right font-medium py-4 px-5 pr-12 pl-12 rounded-2xl focus:ring-2 focus:ring-primary/50 shadow-input transition-all placeholder:text-slate-400"
+                className="w-full bg-input-bg border-0 text-foreground text-right font-medium py-4 px-5 pr-12 pl-12 rounded-2xl focus:ring-2 focus:ring-primary/50 shadow-input transition-all placeholder:text-muted-foreground"
                 dir="rtl"
                 id="password"
                 placeholder="••••••••"
                 type="password"
               />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                 <span className="material-symbols-outlined">lock</span>
               </div>
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer hover:text-primary transition-colors">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer hover:text-primary transition-colors">
                 <span className="material-symbols-outlined">visibility_off</span>
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function SignUp() {
         </form>
 
         <div className="mt-6 text-center">
-          <button className="text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors">
+          <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             لديك حساب بالفعل؟{' '}
             <Link to="/login" className="text-primary font-bold hover:underline mr-1">
               تسجيل الدخول
@@ -191,7 +191,7 @@ export default function SignUp() {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent pointer-events-none z-0"></div>
+      <div className="fixed bottom-0 left-0 w-full h-24 bg-gradient-to-t from-card to-transparent pointer-events-none z-0"></div>
     </div>
   );
 }
