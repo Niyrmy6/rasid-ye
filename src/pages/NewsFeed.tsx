@@ -1,20 +1,26 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import BottomNav from '../components/BottomNav';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import BottomNav from "../components/BottomNav";
 
 export default function NewsFeed() {
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState("");
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-text-main dark:text-slate-100 antialiased selection:bg-primary selection:text-white pb-32 min-h-screen">
       <header className="sticky top-0 z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between flex-row-reverse max-w-md mx-auto">
-        <h1 className="text-xl font-bold text-text-main dark:text-slate-100">الأخبار</h1>
+        <h1 className="text-xl font-bold text-text-main dark:text-slate-100">
+          الأخبار
+        </h1>
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 bg-[#eefcfc] dark:bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-            <span className="material-symbols-outlined text-[24px] icon-hollow">shield</span>
+            <span className="material-symbols-outlined text-[24px] icon-hollow">
+              shield
+            </span>
           </div>
-          <span className="text-xl font-bold text-text-main dark:text-slate-100">راصد</span>
+          <span className="text-xl font-bold text-text-main dark:text-slate-100">
+            راصد
+          </span>
         </div>
       </header>
 
@@ -22,7 +28,9 @@ export default function NewsFeed() {
         <div className="px-4 pt-2 pb-2">
           <label className="relative flex items-center h-12 w-full rounded-xl bg-white dark:bg-surface-dark shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 focus-within:ring-2 focus-within:ring-primary overflow-hidden transition-shadow">
             <div className="flex items-center justify-center w-12 text-text-muted dark:text-gray-400">
-              <span className="material-symbols-outlined text-[24px] icon-hollow">search</span>
+              <span className="material-symbols-outlined text-[24px] icon-hollow">
+                search
+              </span>
             </div>
             <input
               className="w-full h-full bg-transparent border-none text-base text-text-main dark:text-slate-100 placeholder:text-text-muted dark:placeholder:text-gray-500 focus:ring-0 p-0 pl-4"
@@ -32,9 +40,9 @@ export default function NewsFeed() {
           </label>
         </div>
 
-        <div className="px-4 py-2 grid grid-cols-2 gap-3">
-          <div className="relative">
-            <button 
+        <div className="px-4 py-2 grid grid-cols-1 gap-3">
+          <div className="relative w-full">
+            <button
               onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)}
               className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-surface-dark rounded-xl shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 text-sm font-medium text-text-muted dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-all"
             >
@@ -46,28 +54,28 @@ export default function NewsFeed() {
             {isTypeDropdownOpen && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-surface-dark rounded-xl shadow-lg ring-1 ring-black/5 dark:ring-white/10 overflow-hidden z-20 block">
                 <div className="p-1">
-                  <button 
+                  <button
                     onClick={() => setIsTypeDropdownOpen(false)}
                     className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                   >
                     <span className="w-2 h-2 rounded-full bg-red-500"></span>
                     عاجل
                   </button>
-                  <button 
+                  <button
                     onClick={() => setIsTypeDropdownOpen(false)}
                     className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                   >
                     <span className="w-2 h-2 rounded-full bg-orange-500"></span>
                     تنبيه
                   </button>
-                  <button 
+                  <button
                     onClick={() => setIsTypeDropdownOpen(false)}
                     className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                   >
                     <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                     إرشادات
                   </button>
-                  <button 
+                  <button
                     onClick={() => setIsTypeDropdownOpen(false)}
                     className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2"
                   >
@@ -77,20 +85,6 @@ export default function NewsFeed() {
                 </div>
               </div>
             )}
-          </div>
-          <div className="relative w-full">
-            <input 
-              type="date" 
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-            />
-            <div className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-surface-dark rounded-xl shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 text-sm font-medium text-text-muted dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-all pointer-events-none">
-              <span>{selectedDate ? selectedDate : 'اختر التاريخ'}</span>
-              <span className="material-symbols-outlined text-[20px] text-gray-400 icon-hollow">
-                calendar_today
-              </span>
-            </div>
           </div>
         </div>
 
@@ -102,10 +96,11 @@ export default function NewsFeed() {
               </span>
               أحدث المستجدات
             </h2>
-            <div
-              className="group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-surface-dark shadow-sm ring-1 ring-black/5 dark:ring-white/10 transition-all hover:shadow-md"
-            >
-              <Link to="/news/1" className="relative w-full aspect-video overflow-hidden block">
+            <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-surface-dark shadow-sm ring-1 ring-black/5 dark:ring-white/10 transition-all hover:shadow-md">
+              <Link
+                to="/news/1"
+                className="relative w-full aspect-video overflow-hidden block"
+              >
                 <div
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                   data-alt="Doctor checking patient vitals"
@@ -139,12 +134,17 @@ export default function NewsFeed() {
                   </h3>
                 </Link>
                 <p className="text-sm text-text-muted dark:text-gray-400 line-clamp-2">
-                  وزارة الصحة تعلن عن بدء المرحلة الأولى من حملة التطعيم التي تستهدف الأطفال دون سن
-                  الخامسة في جميع مديريات الأمانة...
+                  وزارة الصحة تعلن عن بدء المرحلة الأولى من حملة التطعيم التي
+                  تستهدف الأطفال دون سن الخامسة في جميع مديريات الأمانة...
                 </p>
-                <Link to="/news/1" className="mt-1 flex items-center gap-1 text-primary text-sm font-bold w-fit">
+                <Link
+                  to="/news/1"
+                  className="mt-1 flex items-center gap-1 text-primary text-sm font-bold w-fit"
+                >
                   <span>اقرأ المزيد</span>
-                  <span className="material-symbols-outlined text-[16px] rtl:rotate-180">arrow_forward</span>
+                  <span className="material-symbols-outlined text-[16px] rtl:rotate-180">
+                    arrow_forward
+                  </span>
                 </Link>
               </div>
             </div>
@@ -263,8 +263,13 @@ export default function NewsFeed() {
 
         <div className="fixed bottom-20 left-0 right-0 z-30 max-w-md mx-auto pointer-events-none px-4">
           <div className="flex justify-end w-full pointer-events-auto">
-            <Link to="/new-report" className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 group">
-              <span className="material-symbols-outlined text-[24px] icon-hollow">add_alert</span>
+            <Link
+              to="/new-report"
+              className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 group"
+            >
+              <span className="material-symbols-outlined text-[24px] icon-hollow">
+                add_alert
+              </span>
               <span className="font-bold text-base">تقديم بلاغ</span>
             </Link>
           </div>

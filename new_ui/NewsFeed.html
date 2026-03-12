@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>News Feed</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&amp;family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#57bca5",
+                        "primary-dark": "#3da891",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#151d1b",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1f2b28",
+                        "text-main": "#111816",
+                        "text-muted": "#5f867d",
+                    },
+                    fontFamily: {
+                        "display": ["Almarai", "sans-serif"],
+                        "body": ["IBM Plex Sans Arabic", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Almarai', sans-serif;
+        }.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }.icon-hollow {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-slate-100 antialiased selection:bg-primary selection:text-white pb-32">
+<header class="sticky top-0 z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between flex-row-reverse">
+<h1 class="text-xl font-bold text-text-main dark:text-slate-100">الأخبار</h1>
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 bg-[#eefcfc] dark:bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[24px] icon-hollow">shield</span>
+</div>
+<span class="text-xl font-bold text-text-main dark:text-slate-100">راصد</span>
+</div>
+</header>
+<div class="px-4 pt-2 pb-2">
+<label class="relative flex items-center h-12 w-full rounded-xl bg-white dark:bg-surface-dark shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 focus-within:ring-2 focus-within:ring-primary overflow-hidden transition-shadow">
+<div class="flex items-center justify-center w-12 text-text-muted dark:text-gray-400">
+<span class="material-symbols-outlined text-[24px] icon-hollow">search</span>
+</div>
+<input class="w-full h-full bg-transparent border-none text-base text-text-main dark:text-slate-100 placeholder:text-text-muted dark:placeholder:text-gray-500 focus:ring-0 p-0 pl-4" placeholder="بحث عن أخبار صحية..." type="text"/>
+</label>
+</div>
+<div class="px-4 py-2 grid gap-3 grid-cols-1">
+<div class="relative group">
+<button class="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-surface-dark rounded-xl shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 text-sm font-medium text-text-muted dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-all">
+<span>نوع الخبر</span>
+<span class="material-symbols-outlined text-[20px] text-gray-400 icon-hollow">expand_more</span>
+</button>
+<div class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-surface-dark rounded-xl shadow-lg ring-1 ring-black/5 dark:ring-white/10 overflow-hidden z-20 hidden group-focus-within:block group-hover:block">
+<div class="p-1">
+<button class="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-red-500"></span>
+                    عاجل
+                </button>
+<button class="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                    تنبيه
+                </button>
+<button class="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    إرشادات
+                </button>
+<button class="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+                    حدث
+                </button>
+</div>
+</div>
+</div>
+</div>
+<main class="px-4 py-2 space-y-6">
+<section>
+<h2 class="text-xl font-bold mb-3 text-text-main dark:text-slate-100 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary icon-hollow">breaking_news</span>
+                أحدث المستجدات
+            </h2>
+<article class="group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-surface-dark shadow-sm ring-1 ring-black/5 dark:ring-white/10 transition-all hover:shadow-md">
+<div class="relative w-full aspect-video overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105" data-alt="Doctor checking patient vitals" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCJcR91WYmJGgoHzi7BYWAvaP1fsPL41RtvNFzN_BHtR5bQyfFkeNUke2fZd744TeM3yGbXypi7m5s_czw8491aaV3tgZz033nNBLeNt9VBAaDXHjLEMwo1oaWKjEamWBiRZxiO-Nl5HDH6MTIDcZHbK4kd1iWM1LWGaClgVxoJ1MXAwPRC2ZrVL--0K5PViD7Oj-SDlkPh4Do_5iR7-cQI1Bc-tQSMzZaIi4G3O-Dpj6INImHMKcUeGoZSSusho8UiQ3Ry1aiH_1Op");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute top-3 right-3 flex gap-2">
+<span class="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">عاجل</span>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-2">
+<div class="flex items-center justify-between text-xs text-text-muted dark:text-gray-400">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] icon-hollow">calendar_today</span>
+                            ١٢ أكتوبر ٢٠٢٣
+                        </span>
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold">صنعاء</span>
+</div>
+<h3 class="text-lg font-bold leading-tight text-text-main dark:text-slate-100">
+                        حملة تطعيم وطنية شاملة ضد الكوليرا تنطلق في العاصمة صنعاء
+                    </h3>
+<p class="text-sm text-text-muted dark:text-gray-400 line-clamp-2">
+                        وزارة الصحة تعلن عن بدء المرحلة الأولى من حملة التطعيم التي تستهدف الأطفال دون سن الخامسة في جميع مديريات الأمانة...
+                    </p>
+</div>
+</article>
+</section>
+<section>
+<h2 class="text-lg font-bold mb-3 text-text-main dark:text-slate-100">أخبار سابقة</h2>
+<div class="flex flex-col gap-4">
+<article class="relative flex bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 h-32">
+<div class="w-32 shrink-0 relative overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Medical supplies on table" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD9VJlpWw-QRxciN35IXaT-s6AC3XN_ClEHqgSSllqMtaeWfYS7T5XjKbQcJxhKLNiNo1Yl4Qv-tZucxS_zkqE45e8JBsETWEGjRTUzrd1pQvL6GIjOfz280KW43LoIudTxyIvT-cVUKIJG_nLFrwPOVtbpmMp3cs8YiTHmu1ukHJxCkMmLg6ktnwobJpKs2PAjBgqIDJzLmg7uZbsrAg69RrAL5FD8JU_xG9MMTCTK_1DsZ2EDWDEBrqoZZf1Gh0kSRBaH8l5SqYaZ");'></div>
+<div class="absolute top-2 right-2">
+<span class="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">تنبيه</span>
+</div>
+</div>
+<div class="flex flex-col justify-between p-3 flex-1">
+<div>
+<h3 class="text-base font-bold text-text-main dark:text-slate-100 line-clamp-2 leading-snug mb-1">وصول شحنة مساعدات طبية جديدة إلى ميناء الحديدة</h3>
+</div>
+<div class="flex items-end justify-between text-xs text-text-muted dark:text-gray-400 mt-auto w-full">
+<span>١٠ أكتوبر ٢٠٢٣</span>
+<button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
+<span class="material-symbols-outlined text-[18px] icon-hollow">share</span>
+</button>
+</div>
+</div>
+</article>
+<article class="relative flex bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 h-32">
+<div class="w-32 shrink-0 relative overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Nurse holding clipboard" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDY02sgDsErpjp3b0gelKNYGzIhh93evRZv279WRVtOOg4XglIC4viYVnPOs0RUGPzN5RvTLjaK7uPAAoSTLG_ZBQlJMVmppNsNDPfuYNIDjJeBUpAe9Pit0FWaSHcvKdZovS0TZocxjjrEUjqPjO25rZq_ZM980_SZ7PttPEDaaCYkYVJP5bW0cGmfYf_tNkHYGT-TefDtG5DOyKh3tmRtKrlHqAuJBZHu6x_mC5uO37qwWygOXMsTJIrv_uOpkU88tYmem1IzBnyu");'></div>
+<div class="absolute top-2 right-2">
+<span class="bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">إرشادات</span>
+</div>
+</div>
+<div class="flex flex-col justify-between p-3 flex-1">
+<div>
+<h3 class="text-base font-bold text-text-main dark:text-slate-100 line-clamp-2 leading-snug mb-1">نصائح وإرشادات للوقاية من الأمراض الموسمية</h3>
+</div>
+<div class="flex items-end justify-between text-xs text-text-muted dark:text-gray-400 mt-auto w-full">
+<span>٠٨ أكتوبر ٢٠٢٣</span>
+<button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
+<span class="material-symbols-outlined text-[18px] icon-hollow">share</span>
+</button>
+</div>
+</div>
+</article>
+<article class="relative flex bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 h-32">
+<div class="w-32 shrink-0 relative overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="People talking in clinic" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAea14MRuY2PxkcJBJnDNCWRmJBhWgfhlEJu_sh5BFb0royzKhSovNahrY3LpyXHXXp-kbQ-cdkB9Y1xwTcfYxt3U1fV0MVSUTcYuyZh44V4ocmkwjkIrRt4H9OJo1dR4Ys7p5S310tCT6FTTFqSutzQ6hwUR_9Uv4KUYaz6z0QnNX0GbdkBsFEac9nW9L2jNbm4DRLeSgOSFc6aois9UJ6RmQO0ywcKxizKwIx5oe7NkK2NXMmtOR-CMkdZN6FhmFIzpIYK00kwVAM");'></div>
+<div class="absolute top-2 right-2">
+<span class="bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">حدث</span>
+</div>
+</div>
+<div class="flex flex-col justify-between p-3 flex-1">
+<div>
+<h3 class="text-base font-bold text-text-main dark:text-slate-100 line-clamp-2 leading-snug mb-1">افتتاح مركز صحي جديد في محافظة تعز</h3>
+</div>
+<div class="flex items-end justify-between text-xs text-text-muted dark:text-gray-400 mt-auto w-full">
+<span>٠٥ أكتوبر ٢٠٢٣</span>
+<button class="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
+<span class="material-symbols-outlined text-[18px] icon-hollow">share</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+</section>
+<div class="flex justify-center py-4">
+<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+</div>
+</main>
+<div class="fixed bottom-28 left-4 z-30">
+<button class="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-[24px] icon-hollow">add_alert</span>
+<span class="font-bold text-base">تقديم بلاغ</span>
+</button>
+</div>
+<nav class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-surface-dark border-t border-gray-200 dark:border-white/10">
+<div class="flex justify-around items-center h-16 pb-safe">
+<a class="flex flex-col items-center justify-center p-2 group w-full text-[#56BCA4]" href="#">
+<span class="material-symbols-outlined text-[28px] icon-hollow">newspaper</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full p-2 text-text-muted dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[28px] icon-hollow">location_on</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full p-2 text-text-muted dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[28px] icon-hollow">smart_toy</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full p-2 text-text-muted dark:text-gray-500 hover:text-primary dark:hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[28px] icon-hollow">person</span>
+</a>
+</div>
+</nav>
+</body></html>
