@@ -111,18 +111,18 @@ export default function NewReport() {
                     "عدوى تنفسية شديدة العدوى تتميز بسعال جاف وعنيف يتبعه صوت شهيق عالٍ.",
                 },
               ].map((disease, idx) => (
-                <label key={disease.name} className="cursor-pointer block">
+                <label key={disease.name} className="cursor-pointer block group">
                   <input
-                    className="peer hidden"
+                    className="hidden"
                     name="disease"
                     type="radio"
                     defaultChecked={idx === 0}
                   />
-                  <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-white/5 transition-all hover:bg-gray-100 dark:hover:bg-white/10 peer-checked:bg-primary peer-checked:border-primary peer-checked:text-white">
-                    <h4 className="font-bold text-primary peer-checked:text-white mb-1 font-almarai text-base">
+                  <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-white/5 transition-all group-hover:bg-gray-100 dark:group-hover:bg-white/10 group-has-[:checked]:!bg-primary group-has-[:checked]:!border-primary">
+                    <h4 className="font-bold text-primary group-has-[:checked]:!text-white mb-1 font-almarai text-base transition-colors">
                       {disease.name}
                     </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed peer-checked:text-white/90">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 group-has-[:checked]:!text-white/90 leading-relaxed transition-colors">
                       {disease.description}
                     </p>
                   </div>
@@ -188,13 +188,13 @@ export default function NewReport() {
                 "قيء",
                 "طفح جلدي واسع",
               ].map((symptom, idx) => (
-                <label key={idx} className="cursor-pointer">
+                <label key={idx} className="cursor-pointer group">
                   <input
-                    className="peer hidden"
+                    className="hidden"
                     type="checkbox"
                     defaultChecked={idx === 0}
                   />
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-300 transition-all hover:bg-gray-100 dark:hover:bg-white/10 select-none peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary">
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-300 transition-all group-hover:bg-gray-100 dark:group-hover:bg-white/10 select-none group-has-[:checked]:!bg-primary group-has-[:checked]:!text-white group-has-[:checked]:!border-primary">
                     <span className="text-sm font-medium font-almarai">
                       {symptom}
                     </span>
