@@ -1,13 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 
 export default function Profile() {
-  // For demonstration, we use a state to toggle between logged in and guest views.
-  // In a real app, this would come from an auth context.
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    const storedUserStr = localStorage.getItem('user');
+    if (storedUserStr) {
+      try {
+        const storedUser = JSON.parse(storedUserStr);
+        if (storedUser) {
+          setIsLoggedIn(true);
+          setUserName(storedUser.full_name || storedUser.name || 'مستخدم راصد');
+        }
+      } catch (e) {
+        console.error('Failed to parse user from localStorage');
+      }
+    }
+  }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem('user');
     setIsLoggedIn(false);
   };
 
@@ -43,7 +58,7 @@ export default function Profile() {
                   <span className="material-symbols-outlined text-[16px]">edit</span>
                 </div>
               </div>
-              <h2 className="text-2xl font-bold font-almarai text-text-main mb-1">أحمد محمد</h2>
+              <h2 className="text-2xl font-bold font-almarai text-text-main mb-1">{userName}</h2>
             </div>
 
             <div className="px-4 mb-6 mt-6">

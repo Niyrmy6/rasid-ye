@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 
@@ -6,6 +6,24 @@ export default function PersonalInfo() {
   const navigate = useNavigate();
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const [fullname, setFullname] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    const storedUserStr = localStorage.getItem('user');
+    if (storedUserStr) {
+      try {
+        const storedUser = JSON.parse(storedUserStr);
+        if (storedUser.full_name || storedUser.name) setFullname(storedUser.full_name || storedUser.name);
+        if (storedUser.phone) setPhone(storedUser.phone);
+        if (storedUser.password) setPassword(storedUser.password);
+      } catch (e) {
+        console.error('Failed to parse user from localStorage');
+      }
+    }
+  }, []);
 
   const handleSaveClick = () => {
     setShowConfirm(true);
@@ -65,7 +83,8 @@ export default function PersonalInfo() {
                 id="fullname" 
                 placeholder="أدخل اسمك الكامل" 
                 type="text" 
-                defaultValue="أحمد محمد"
+                value={fullname}
+                onChange={(e) => setFullname(e.target.value)}
               />
               <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
                 <span className="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">person</span>
@@ -81,7 +100,8 @@ export default function PersonalInfo() {
                 dir="rtl" 
                 id="phone" 
                 type="tel" 
-                defaultValue="0501234567"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
               <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
                 <span className="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">phone</span>
@@ -96,7 +116,8 @@ export default function PersonalInfo() {
                 className="w-full bg-white text-text-main rounded-2xl border border-transparent ring-1 ring-gray-200 py-3.5 pr-12 pl-4 focus:ring-1 focus:ring-[#56BCA4] focus:border-[#56BCA4] outline-none transition-all placeholder:text-gray-400 font-almarai text-right" 
                 id="password" 
                 type="password" 
-                defaultValue="********"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
                 <span className="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">lock</span>

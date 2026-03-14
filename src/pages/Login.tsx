@@ -1,12 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 export default function Login() {
   const navigate = useNavigate();
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/news');
+    if (!phone || !password) {
+      setError('يرجى إدخال رقم الهاتف وكلمة المرور');
+      return;
+    }
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data, error: supaError } = await supabase
+        .from('user')
+        .select('*')
+        .eq('phone', phone)
+        .eq('password', password)
+        .maybeSingle();
+
+      if (supaError) {
+        console.error('Supabase Login Error:', supaError);
+        setError(`خطأ: ${supaError.message || 'حدث خطأ غير متوقع'}`);
+      } else if (!data) {
+        setError('رقم الهاتف أو كلمة المرور غير صحيحة');
+      } else {
+        if (data.role_id === 3) {
+          localStorage.setItem('user', JSON.stringify(data));
+          navigate('/news');
+        } else {
+          setError('عذراً، هذا التطبيق مخصص للمبلغين فقط. واجهة الموظفين غير متوفرة هنا.');
+        }
+      }
+    } catch (err) {
+      setError('حدث خطأ في الاتصال بالخادم');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -78,11 +116,13 @@ export default function Login() {
             </label>
             <div className="relative">
               <input
-                className="w-full bg-input-bg border-0 text-foreground text-right font-medium py-4 pr-12 pl-5 rounded-2xl focus:ring-2 focus:ring-primary/50 shadow-input transition-all placeholder:text-muted-foreground"
+                className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 pr-12 pl-5 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
                 dir="rtl"
                 id="phone"
                 placeholder="77xxxxxxx"
                 type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                 <span className="material-symbols-outlined">smartphone</span>
@@ -96,17 +136,24 @@ export default function Login() {
             </label>
             <div className="relative">
               <input
-                className="w-full bg-input-bg border-0 text-foreground text-right font-medium py-4 pr-12 pl-12 rounded-2xl focus:ring-2 focus:ring-primary/50 shadow-input transition-all placeholder:text-muted-foreground"
+                className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 pr-12 pl-12 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
                 dir="rtl"
                 id="password"
                 placeholder="••••••••"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                 <span className="material-symbols-outlined">lock</span>
               </div>
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer hover:text-primary transition-colors">
-                <span className="material-symbols-outlined">visibility_off</span>
+              <div 
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer hover:text-primary transition-colors z-10"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <span className="material-symbols-outlined">
+                  {showPassword ? 'visibility' : 'visibility_off'}
+                </span>
               </div>
             </div>
             <div className="flex justify-end mt-1">
@@ -120,11 +167,13 @@ export default function Login() {
           </div>
 
           <div className="pt-2">
+            {error && <p className="text-red-500 text-sm font-bold text-center mb-4">{error}</p>}
             <button
-              className="w-full bg-primary hover:bg-primary-dark text-white text-lg font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center"
+              className="w-full bg-primary hover:bg-primary-dark text-white text-lg font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center disabled:opacity-70 disabled:pointer-events-none"
               type="submit"
+              disabled={loading}
             >
-              دخول
+              {loading ? 'جاري التحقق...' : 'دخول'}
             </button>
           </div>
         </form>

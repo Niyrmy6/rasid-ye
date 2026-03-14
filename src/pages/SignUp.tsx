@@ -120,7 +120,7 @@ export default function SignUp() {
             </label>
             <div className="relative">
               <input
-                className="w-full bg-input-bg border-0 text-foreground text-right font-medium py-4 px-5 pr-12 rounded-2xl focus:ring-2 focus:ring-primary/50 shadow-input transition-all placeholder:text-muted-foreground"
+                className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 px-5 pr-12 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
                 dir="rtl"
                 id="fullname"
                 placeholder="الاسم الكامل"
@@ -138,7 +138,7 @@ export default function SignUp() {
             </label>
             <div className="relative">
               <input
-                className="w-full bg-input-bg border-0 text-foreground text-right font-medium py-4 px-5 pr-12 rounded-2xl focus:ring-2 focus:ring-primary/50 shadow-input transition-all placeholder:text-muted-foreground"
+                className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 px-5 pr-12 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
                 dir="rtl"
                 id="phone"
                 placeholder="77xxxxxxx"
@@ -156,7 +156,7 @@ export default function SignUp() {
             </label>
             <div className="relative">
               <input
-                className="w-full bg-input-bg border-0 text-foreground text-right font-medium py-4 px-5 pr-12 pl-12 rounded-2xl focus:ring-2 focus:ring-primary/50 shadow-input transition-all placeholder:text-muted-foreground"
+                className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 px-5 pr-12 pl-12 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
                 dir="rtl"
                 id="password"
                 placeholder="••••••••"
