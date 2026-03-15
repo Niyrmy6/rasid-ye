@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
+import { supabase } from '../lib/supabase';
 
 export default function PersonalInfo() {
   const navigate = useNavigate();
@@ -10,6 +11,9 @@ export default function PersonalInfo() {
   const [fullname, setFullname] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const storedUserStr = localStorage.getItem('user');
@@ -29,13 +33,43 @@ export default function PersonalInfo() {
     setShowConfirm(true);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setShowConfirm(false);
-    setShowSuccess(true);
-    setTimeout(() => {
-      setShowSuccess(false);
-      navigate(-1);
-    }, 2000);
+    setLoading(true);
+    setError(null);
+
+    const storedUserStr = localStorage.getItem('user');
+    if (!storedUserStr) {
+      setError("حدث خطأ: لا يوجد مستخدم مسجل الدخول");
+      setLoading(false);
+      return;
+    }
+    
+    const user = JSON.parse(storedUserStr);
+
+    try {
+      const { data, error: updateError } = await supabase
+        .from('user')
+        .update({ full_name: fullname, phone, password })
+        .eq('user_id', user.user_id)
+        .select()
+        .single();
+
+      if (updateError) throw updateError;
+      
+      // Update local storage
+      localStorage.setItem('user', JSON.stringify(data));
+
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 2000);
+    } catch (err: any) {
+      console.error(err);
+      setError("حدث خطأ أثناء حفظ البيانات: " + (err.message || ''));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -74,6 +108,8 @@ export default function PersonalInfo() {
           </div>
         </div>
 
+        {error && <p className="text-red-500 font-bold text-center mt-2 px-4">{error}</p>}
+
         <div className="px-4 space-y-5">
           <div className="relative group">
             <label className="block text-sm font-medium text-text-muted mb-1.5 mr-1" htmlFor="fullname">الاسم الكامل</label>
@@ -84,6 +120,7 @@ export default function PersonalInfo() {
                 placeholder="أدخل اسمك الكامل" 
                 type="text" 
                 value={fullname}
+                disabled={loading}
                 onChange={(e) => setFullname(e.target.value)}
               />
               <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
@@ -101,6 +138,7 @@ export default function PersonalInfo() {
                 id="phone" 
                 type="tel" 
                 value={phone}
+                disabled={loading}
                 onChange={(e) => setPhone(e.target.value)}
               />
               <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
@@ -117,6 +155,7 @@ export default function PersonalInfo() {
                 id="password" 
                 type="password" 
                 value={password}
+                disabled={loading}
                 onChange={(e) => setPassword(e.target.value)}
               />
               <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
@@ -129,10 +168,11 @@ export default function PersonalInfo() {
         <div className="px-4 mt-8 mb-8">
           <button 
             onClick={handleSaveClick}
-            className="w-full bg-primary hover:bg-primary-dark text-white p-4 rounded-2xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] font-almarai font-bold text-lg"
+            disabled={loading}
+            className="w-full bg-primary hover:bg-primary-dark text-white p-4 rounded-2xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] font-almarai font-bold text-lg disabled:opacity-70 disabled:pointer-events-none"
           >
             <span className="material-symbols-outlined">save</span>
-            حفظ التغييرات
+            {loading ? 'جاري الحفظ...' : 'حفظ التغييرات'}
           </button>
         </div>
       </main>
