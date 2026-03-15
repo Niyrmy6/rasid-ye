@@ -1,10 +1,119 @@
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 export default function OTPVerification() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { phone, fullname, password, expectedOtp } = location.state || {}; // From SignUp page
 
-  const handleConfirm = () => {
-    navigate('/verification-success');
+  const [otp, setOtp] = useState(['', '', '', '', '', '']); // 6 digits
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [expectedOtpState, setExpectedOtpState] = useState(expectedOtp);
+  const [timer, setTimer] = useState(45);
+  const [resending, setResending] = useState(false);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [timer]);
+
+  useEffect(() => {
+    if (!phone) {
+      navigate('/signup');
+    }
+  }, [phone, navigate]);
+
+  const handleChange = (index: number, value: string) => {
+    if (!/^[0-9]*$/.test(value)) return;
+    
+    const newOtp = [...otp];
+    newOtp[index] = value.substring(value.length - 1); // Get last char
+    setOtp(newOtp);
+
+    // Focus next input automatically
+    if (value !== '' && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Move to previous input on backspace
+    if (e.key === 'Backspace' && otp[index] === '' && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleConfirm = async () => {
+    const enteredOtp = otp.join('');
+    if (enteredOtp.length < 6) {
+      setError('يرجى إدخال الرمز المكون من 6 أرقام');
+      return;
+    }
+    
+    // In a real app, do secure verification via backend... but for demo matching locally:
+    if (enteredOtp !== expectedOtpState) {
+      setError('رمز التحقق غير صحيح، حاول مرة أخرى');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // 1. Correct OTP! Insert user into 'user' table
+      const { data, error: insertError } = await supabase
+        .from('user')
+        .insert([{ full_name: fullname, phone, password, role_id: 3 }])
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error('Insert user error:', insertError);
+        setError('حدث خطأ أثناء إنشاء الحساب، قد يكون رقم الهاتف مستخدماً بالفعل.');
+      } else {
+        // 2. Log in by saving user
+        localStorage.setItem('user', JSON.stringify(data));
+        navigate('/verification-success');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('فشل الاتصال بالخادم، يرجى المحاولة لاحقاً');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (timer > 0 || resending) return;
+    
+    setResending(true);
+    setError(null);
+
+    try {
+      const { data, error: funcError } = await supabase.functions.invoke('send-whatsapp-otp', {
+        body: { phone }
+      });
+
+      if (funcError || !data?.success) {
+        setError(data?.error || data?.details || 'حدث خطأ أثناء إعادة الإرسال.');
+      } else {
+        setExpectedOtpState(data.otp);
+        setTimer(45); // Reset timer
+        // Optionally show success message
+      }
+    } catch (err) {
+      setError('فشل الاتصال بالخادم، يرجى المحاولة لاحقاً');
+    } finally {
+      setResending(false);
+    }
   };
 
   return (
@@ -50,19 +159,24 @@ export default function OTPVerification() {
             تم إرسال رمز التحقق إلى رقم هاتفك
             <br />
             <span className="text-foreground font-bold mt-1 block" dir="ltr">
-              +967 770 000 000
+              {phone || ''}
             </span>
           </p>
+          {error && <p className="text-red-500 font-bold mt-4 animate-pulse">{error}</p>}
         </div>
 
-        <div className="flex justify-center gap-3 mb-8" dir="ltr">
-          {[1, 2, 3, 4].map((i) => (
+        <div className="flex justify-center gap-2 mb-8" dir="ltr">
+          {otp.map((digit, i) => (
             <input
               key={i}
-              className="w-16 h-16 text-center text-2xl font-bold bg-card border-2 border-border rounded-2xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all shadow-sm text-foreground placeholder-transparent"
+              ref={(el) => (inputRefs.current[i] = el)}
+              value={digit}
+              onChange={(e) => handleChange(i, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(i, e)}
+              className="w-12 h-14 text-center text-xl font-bold bg-card border-2 border-border rounded-xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all shadow-sm text-foreground placeholder-transparent"
               maxLength={1}
               placeholder="0"
-              type="number"
+              type="text"
             />
           ))}
         </div>
@@ -70,18 +184,23 @@ export default function OTPVerification() {
         <div className="flex flex-col gap-4 mb-8 w-full mt-auto pb-8">
           <div className="text-center text-sm font-semibold text-muted-foreground mb-2">
             لم يصلك الرمز؟{' '}
-            <button className="text-primary hover:text-primary-dark transition-colors font-bold">
-              إعادة الإرسال
+            <button 
+              onClick={handleResend}
+              disabled={timer > 0 || resending}
+              className={`font-bold transition-colors ${timer > 0 || resending ? 'text-muted-foreground cursor-not-allowed' : 'text-primary hover:text-primary-dark'}`}
+            >
+              {resending ? 'جاري الإرسال...' : 'إعادة الإرسال'}
             </button>{' '}
-            <span className="text-muted-foreground font-normal">(00:45)</span>
+            {timer > 0 && <span className="text-muted-foreground font-normal">(00:{timer.toString().padStart(2, '0')})</span>}
           </div>
           <div className="relative w-full group">
             <div className="absolute -inset-1 bg-primary/20 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <button
               onClick={handleConfirm}
-              className="relative w-full bg-primary hover:bg-primary-dark text-white text-xl font-bold py-5 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-3"
+              disabled={loading}
+              className="relative w-full bg-primary hover:bg-primary-dark text-white text-xl font-bold py-5 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-70 disabled:pointer-events-none"
             >
-              تأكيد
+              {loading ? 'جاري التحقق...' : 'تأكيد'}
               <span className="material-symbols-outlined text-2xl">check_circle</span>
             </button>
           </div>

@@ -1,12 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const [fullname, setFullname] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/verify-otp');
+    if (!fullname || !phone || !password) {
+      setError('يرجى تعبئة جميع الحقول');
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data, error: funcError } = await supabase.functions.invoke('send-whatsapp-otp', {
+        body: { phone }
+      });
+
+      if (funcError || !data?.success) {
+        console.error('OTP Error:', funcError || data?.error);
+        setError(data?.error || data?.details || 'حدث خطأ أثناء إرسال رمز التحقق. تأكد من رقم الهاتف');
+      } else {
+        navigate('/verify-otp', { 
+          state: { phone, fullname, password, expectedOtp: data.otp }
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      setError('فشل الاتصال بخادم الرسائل');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -125,6 +158,8 @@ export default function SignUp() {
                 id="fullname"
                 placeholder="الاسم الكامل"
                 type="text"
+                value={fullname}
+                onChange={(e) => setFullname(e.target.value)}
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                 <span className="material-symbols-outlined">person</span>
@@ -143,6 +178,8 @@ export default function SignUp() {
                 id="phone"
                 placeholder="77xxxxxxx"
                 type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                 <span className="material-symbols-outlined">smartphone</span>
@@ -160,23 +197,32 @@ export default function SignUp() {
                 dir="rtl"
                 id="password"
                 placeholder="••••••••"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                 <span className="material-symbols-outlined">lock</span>
               </div>
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer hover:text-primary transition-colors">
-                <span className="material-symbols-outlined">visibility_off</span>
+              <div 
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer hover:text-primary transition-colors z-10"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <span className="material-symbols-outlined">
+                  {showPassword ? 'visibility' : 'visibility_off'}
+                </span>
               </div>
             </div>
           </div>
 
           <div className="pt-4">
+            {error && <p className="text-red-500 text-sm font-bold text-center mb-4">{error}</p>}
             <button
-              className="w-full bg-primary hover:bg-primary-dark text-white text-lg font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center"
+              className="w-full bg-primary hover:bg-primary-dark text-white text-lg font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center disabled:opacity-70 disabled:pointer-events-none"
               type="submit"
+              disabled={loading}
             >
-              إنشاء حساب
+              {loading ? 'جاري الإرسال...' : 'إنشاء حساب'}
             </button>
           </div>
         </form>
