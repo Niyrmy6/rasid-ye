@@ -10,7 +10,6 @@ export default function ForgotPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,11 +30,13 @@ export default function ForgotPassword() {
     setError(null);
 
     try {
+      const fullPhone = phone.startsWith('+967') ? phone : `+967${phone.replace(/^0+/, '')}`;
+
       // Check if user exists first
       const { data: user, error: fetchError } = await supabase
         .from('user')
         .select('user_id')
-        .eq('phone', phone)
+        .eq('phone', fullPhone)
         .maybeSingle();
 
       if (fetchError || !user) {
@@ -44,24 +45,30 @@ export default function ForgotPassword() {
         return;
       }
 
-      // Update password
-      const { error: updateError } = await supabase
-        .from('user')
-        .update({ password: newPassword })
-        .eq('phone', phone);
+      const { data, error: funcError } = await supabase.functions.invoke('send-whatsapp-otp', {
+        body: { phone: fullPhone }
+      });
 
-      if (updateError) {
-        setError('حدث خطأ أثناء تحديث كلمة المرور');
-      } else {
-        setSuccess(true);
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
+      if (funcError || !data?.success) {
+        console.error('Error sending OTP:', funcError || data?.error);
+        setError('حدث خطأ أثناء إرسال رمز التحقق، يرجى المحاولة لاحقاً');
+        setLoading(false);
+        return;
       }
+
+      // Navigate to OTP verification page with expected OTP and new password
+      navigate('/verify-otp', { 
+        state: { 
+          phone: fullPhone, 
+          newPassword, 
+          expectedOtp: data.otp,
+          isPasswordReset: true 
+        } 
+      });
+
     } catch (err) {
       setError('حدث خطأ في الاتصال بالخادم');
-    } finally {
-      if (!success) setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -97,32 +104,28 @@ export default function ForgotPassword() {
           </p>
         </div>
 
-        {success ? (
-          <div className="bg-green-50 border border-green-200 text-green-700 p-6 rounded-2xl text-center shadow-sm animate-fade-in">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-              <span className="material-symbols-outlined text-green-600 text-2xl">check_circle</span>
-            </div>
-            <h3 className="font-bold text-lg mb-1">تم التحديث بنجاح!</h3>
-            <p className="text-sm">سيتم تحويلك لصفحة تسجيل الدخول...</p>
-          </div>
-        ) : (
-          <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit}>
-            <div className="space-y-2">
+        <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit}>
+          <div className="space-y-2">
               <label className="text-foreground font-bold text-sm mr-1 block" htmlFor="phone">
                 رقم الهاتف
               </label>
               <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500 font-sans flex items-center gap-2 pointer-events-none" dir="ltr">
+                  <span>|</span>
+                  <span className="text-foreground">+967</span>
+                </div>
                 <input
-                  className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 pr-12 pl-5 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
-                  dir="rtl"
+                  className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 pr-12 pl-24 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
+                  dir="ltr"
                   id="phone"
                   placeholder="77xxxxxxx"
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   disabled={loading}
+                  style={{ textAlign: 'right' }}
                 />
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                   <span className="material-symbols-outlined">smartphone</span>
                 </div>
               </div>
@@ -175,6 +178,14 @@ export default function ForgotPassword() {
                 <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                   <span className="material-symbols-outlined">key</span>
                 </div>
+                <div 
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer hover:text-primary transition-colors z-10"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  <span className="material-symbols-outlined">
+                    {showPassword ? 'visibility' : 'visibility_off'}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -189,7 +200,6 @@ export default function ForgotPassword() {
               </button>
             </div>
           </form>
-        )}
       </main>
       <div className="fixed bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent pointer-events-none z-0"></div>
     </div>

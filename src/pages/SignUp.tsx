@@ -22,8 +22,10 @@ export default function SignUp() {
     setError(null);
 
     try {
+      const fullPhone = phone.startsWith('+967') ? phone : `+967${phone.replace(/^0+/, '')}`;
+
       const { data, error: funcError } = await supabase.functions.invoke('send-whatsapp-otp', {
-        body: { phone }
+        body: { phone: fullPhone }
       });
 
       if (funcError || !data?.success) {
@@ -31,7 +33,7 @@ export default function SignUp() {
         setError(data?.error || data?.details || 'حدث خطأ أثناء إرسال رمز التحقق. تأكد من رقم الهاتف');
       } else {
         navigate('/verify-otp', { 
-          state: { phone, fullname, password, expectedOtp: data.otp }
+          state: { phone: fullPhone, fullname, password, expectedOtp: data.otp }
         });
       }
     } catch (err) {
@@ -171,20 +173,25 @@ export default function SignUp() {
             <label className="text-foreground font-bold text-sm mr-1 block" htmlFor="phone">
               رقم الهاتف
             </label>
-            <div className="relative">
-              <input
-                className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 px-5 pr-12 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
-                dir="rtl"
-                id="phone"
-                placeholder="77xxxxxxx"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
-                <span className="material-symbols-outlined">smartphone</span>
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500 font-sans flex items-center gap-2 pointer-events-none" dir="ltr">
+                  <span>|</span>
+                  <span className="text-foreground">+967</span>
+                </div>
+                <input
+                  className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 px-5 pr-12 pl-24 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
+                  dir="ltr"
+                  id="phone"
+                  placeholder="77xxxxxxx"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  style={{ textAlign: 'right' }}
+                />
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                  <span className="material-symbols-outlined">smartphone</span>
+                </div>
               </div>
-            </div>
           </div>
 
           <div className="space-y-2">

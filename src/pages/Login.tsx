@@ -20,10 +20,12 @@ export default function Login() {
     setError(null);
 
     try {
+      const fullPhone = phone.startsWith('+967') ? phone : `+967${phone.replace(/^0+/, '')}`;
+
       const { data, error: supaError } = await supabase
         .from('user')
         .select('*')
-        .eq('phone', phone)
+        .eq('phone', fullPhone)
         .eq('password', password)
         .maybeSingle();
 
@@ -114,20 +116,25 @@ export default function Login() {
             <label className="text-foreground font-bold text-sm mr-1 block" htmlFor="phone">
               رقم الهاتف
             </label>
-            <div className="relative">
-              <input
-                className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 pr-12 pl-5 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
-                dir="rtl"
-                id="phone"
-                placeholder="77xxxxxxx"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <span className="material-symbols-outlined">smartphone</span>
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500 font-sans flex items-center gap-2 pointer-events-none" dir="ltr">
+                  <span>|</span>
+                  <span className="text-foreground">+967</span>
+                </div>
+                <input
+                  className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 pr-12 pl-24 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
+                  dir="ltr"
+                  id="phone"
+                  placeholder="77xxxxxxx"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  style={{ textAlign: 'right' }}
+                />
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                  <span className="material-symbols-outlined">smartphone</span>
+                </div>
               </div>
-            </div>
           </div>
 
           <div className="space-y-2">

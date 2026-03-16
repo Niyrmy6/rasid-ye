@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 export default function OTPVerification() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { phone, fullname, password, expectedOtp } = location.state || {}; // From SignUp page
+  const { phone, fullname, password, newPassword, expectedOtp, isPasswordReset } = location.state || {}; // From SignUp or ForgotPassword page
 
   const [otp, setOtp] = useState(['', '', '', '', '', '']); // 6 digits
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -68,20 +68,34 @@ export default function OTPVerification() {
     setError(null);
 
     try {
-      // 1. Correct OTP! Insert user into 'user' table
-      const { data, error: insertError } = await supabase
-        .from('user')
-        .insert([{ full_name: fullname, phone, password, role_id: 3 }])
-        .select()
-        .single();
-
-      if (insertError) {
-        console.error('Insert user error:', insertError);
-        setError('حدث خطأ أثناء إنشاء الحساب، قد يكون رقم الهاتف مستخدماً بالفعل.');
+      if (isPasswordReset) {
+        // Handle Password Reset Logic
+        const { error: updateError } = await supabase
+          .from('user')
+          .update({ password: newPassword })
+          .eq('phone', phone);
+        
+        if (updateError) {
+          setError('حدث خطأ أثناء تحديث كلمة المرور.');
+        } else {
+          // Password reset success -> go back to login with success message ideally, or just redirect
+          navigate('/login'); 
+        }
       } else {
-        // 2. Log in by saving user
-        localStorage.setItem('user', JSON.stringify(data));
-        navigate('/verification-success');
+        // Handle Normal Sign Up Logic
+        const { data, error: insertError } = await supabase
+          .from('user')
+          .insert([{ full_name: fullname, phone, password, role_id: 3 }])
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error('Insert user error:', insertError);
+          setError('حدث خطأ أثناء إنشاء الحساب، قد يكون رقم الهاتف مستخدماً بالفعل.');
+        } else {
+          localStorage.setItem('user', JSON.stringify(data));
+          navigate('/verification-success');
+        }
       }
     } catch (err) {
       console.error(err);
