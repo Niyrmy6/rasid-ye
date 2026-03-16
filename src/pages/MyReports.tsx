@@ -1,10 +1,92 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
+import { supabase } from '../lib/supabase';
+
+type Report = {
+  report_id: number;
+  tracking_number: string;
+  report_date: string;
+  disease: { disease_name: string } | null;
+  report_history: { report_status: string, created_at: string }[];
+};
 
 export default function MyReports() {
   const navigate = useNavigate();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('الكل');
+
+  useEffect(() => {
+    fetchMyReports();
+  }, []);
+
+  const fetchMyReports = async () => {
+    try {
+      setLoading(true);
+      const userStr = localStorage.getItem("user");
+      if (!userStr) return;
+      
+      const user = JSON.parse(userStr);
+      if (!user.user_id) return;
+
+      const { data, error } = await supabase
+        .from('report')
+        .select(`
+          report_id,
+          tracking_number,
+          report_date,
+          disease:disease_id(disease_name),
+          report_history(report_status, created_at)
+        `)
+        .eq('user_id', user.user_id)
+        .order('report_date', { ascending: false });
+
+      if (error) throw error;
+      
+      // Sort history to get the latest status
+      const formattedReports = data?.map((rep: any) => ({
+        ...rep,
+        report_history: rep.report_history?.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) || []
+      })) || [];
+
+      setReports(formattedReports);
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    const s = status?.toLowerCase() || '';
+    if (s === 'verified' || s === 'completed') return { bg: 'bg-green-100', text: 'text-green-700', label: 'تم التحقق' };
+    if (s === 'under review' || s === 'under_review' || s === 'in_progress') return { bg: 'bg-orange-100', text: 'text-orange-700', label: 'قيد المراجعة' };
+    if (s === 'rejected' || s === 'cancelled') return { bg: 'bg-red-100', text: 'text-red-700', label: 'مرفوض' };
+    return { bg: 'bg-blue-100', text: 'text-blue-700', label: 'مستلم' }; // For received / new
+  };
+
+  const getArabicDiseaseName = (engName: string | undefined) => {
+    const diseaseMap: Record<string, string> = {
+      'measles': 'حصبة',
+      'polio': 'شلل أطفال',
+      'cholera': 'كوليرا',
+      'diphtheria': 'دفتيريا',
+      'pertussis': 'سعال ديكي',
+      'hemorrhagic fevers': 'حمى نزفية'
+    };
+    return diseaseMap[engName?.toLowerCase() || ''] || engName || 'اشتباه حالة';
+  };
+
+  const filteredReports = reports.filter(report => {
+    const latestStatusRaw = report.report_history?.[0]?.report_status || 'received';
+    const statusLabel = getStatusColor(latestStatusRaw).label;
+    const matchesSearch = report.tracking_number?.includes(searchQuery) || getArabicDiseaseName(report.disease?.disease_name).includes(searchQuery);
+    const matchesStatus = statusFilter === 'الكل' || statusLabel === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="bg-background-light text-text-main antialiased selection:bg-primary selection:text-white h-screen flex flex-col overflow-hidden">
@@ -36,6 +118,8 @@ export default function MyReports() {
               className="block w-full pr-10 pl-10 py-2.5 bg-white border-none ring-1 ring-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary shadow-sm text-text-main placeholder-gray-400 transition-shadow" 
               placeholder="البحث في البلاغات أو تصفية الحالة..." 
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
             <div className="absolute inset-y-0 left-0 pl-2 flex items-center">
               <button 
@@ -48,22 +132,22 @@ export default function MyReports() {
             {isFilterOpen && (
               <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black/5 overflow-hidden z-40">
                 <div className="p-1">
-                  <button onClick={() => setIsFilterOpen(false)} className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                  <button onClick={() => { setStatusFilter('الكل'); setIsFilterOpen(false); }} className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2">
                     الكل
                   </button>
-                  <button onClick={() => setIsFilterOpen(false)} className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                  <button onClick={() => { setStatusFilter('تم التحقق'); setIsFilterOpen(false); }} className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-green-500"></span>
                     تم التحقق
                   </button>
-                  <button onClick={() => setIsFilterOpen(false)} className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                  <button onClick={() => { setStatusFilter('قيد المراجعة'); setIsFilterOpen(false); }} className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-orange-500"></span>
                     قيد المراجعة
                   </button>
-                  <button onClick={() => setIsFilterOpen(false)} className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                  <button onClick={() => { setStatusFilter('مستلم'); setIsFilterOpen(false); }} className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                     مستلم
                   </button>
-                  <button onClick={() => setIsFilterOpen(false)} className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                  <button onClick={() => { setStatusFilter('مرفوض'); setIsFilterOpen(false); }} className="w-full text-right px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-red-500"></span>
                     مرفوض
                   </button>
@@ -74,115 +158,52 @@ export default function MyReports() {
         </div>
 
         <div className="px-4 space-y-4">
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 transition-transform active:scale-[0.99] cursor-pointer" onClick={() => navigate('/report-details')}>
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="font-bold text-base text-gray-900 font-almarai">اشتباه حالة كوليرا</h3>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                تم التحقق
-              </span>
+          {loading ? (
+            <div className="flex justify-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center text-xs text-text-muted">
-                <span className="material-symbols-outlined text-[16px] ml-1.5">calendar_today</span>
-                <span dir="ltr">١٢ فبراير ٢٠٢٤ - ٠٩:٠٠ م</span>
+          ) : filteredReports.length === 0 ? (
+            <div className="text-center p-8 bg-gray-50 rounded-2xl border border-gray-100">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                <span className="material-symbols-outlined text-[32px]">folder_open</span>
               </div>
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
-                <span className="text-xs text-gray-400 font-mono tracking-wider">#٨٤٣٥</span>
-                <button className="text-primary text-xs font-bold flex items-center gap-1 hover:text-primary-dark">
-                  التفاصيل
-                  <span className="material-symbols-outlined text-[14px] rotate-180">chevron_right</span>
-                </button>
-              </div>
+              <p className="text-gray-500 font-medium">لا توجد بلاغات لعرضها</p>
             </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 transition-transform active:scale-[0.99] cursor-pointer" onClick={() => navigate('/report-details')}>
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="font-bold text-base text-gray-900 font-almarai">تفشي حمى الضنك</h3>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
-                قيد المراجعة
-              </span>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center text-xs text-text-muted">
-                <span className="material-symbols-outlined text-[16px] ml-1.5">calendar_today</span>
-                <span dir="ltr">١٠ فبراير ٢٠٢٤ - ٠٢:١٥ م</span>
-              </div>
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
-                <span className="text-xs text-gray-400 font-mono tracking-wider">#٨٤٢٠</span>
-                <button className="text-primary text-xs font-bold flex items-center gap-1 hover:text-primary-dark">
-                  التفاصيل
-                  <span className="material-symbols-outlined text-[14px] rotate-180">chevron_right</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 transition-transform active:scale-[0.99] cursor-pointer" onClick={() => navigate('/report-details')}>
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="font-bold text-base text-gray-900 font-almarai">تلوث مياه شرب</h3>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                مستلم
-              </span>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center text-xs text-text-muted">
-                <span className="material-symbols-outlined text-[16px] ml-1.5">calendar_today</span>
-                <span dir="ltr">٠٨ فبراير ٢٠٢٤ - ١١:٣٠ ص</span>
-              </div>
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
-                <span className="text-xs text-gray-400 font-mono tracking-wider">#٨٤٠١</span>
-                <button className="text-primary text-xs font-bold flex items-center gap-1 hover:text-primary-dark">
-                  التفاصيل
-                  <span className="material-symbols-outlined text-[14px] rotate-180">chevron_right</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 transition-transform active:scale-[0.99] opacity-75 cursor-pointer" onClick={() => navigate('/report-details')}>
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="font-bold text-base text-gray-900 font-almarai">بلاغ تجريبي</h3>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                مرفوض
-              </span>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center text-xs text-text-muted">
-                <span className="material-symbols-outlined text-[16px] ml-1.5">calendar_today</span>
-                <span dir="ltr">٠١ فبراير ٢٠٢٤ - ٠٨:٠٠ ص</span>
-              </div>
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
-                <span className="text-xs text-gray-400 font-mono tracking-wider">#٨٣٩٠</span>
-                <button className="text-primary text-xs font-bold flex items-center gap-1 hover:text-primary-dark">
-                  التفاصيل
-                  <span className="material-symbols-outlined text-[14px] rotate-180">chevron_right</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 transition-transform active:scale-[0.99] cursor-pointer" onClick={() => navigate('/report-details')}>
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="font-bold text-base text-gray-900 font-almarai">حالة تسمم غذائي جماعي</h3>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                تم التحقق
-              </span>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center text-xs text-text-muted">
-                <span className="material-symbols-outlined text-[16px] ml-1.5">calendar_today</span>
-                <span dir="ltr">٢٥ يناير ٢٠٢٤ - ٠٦:٤٥ م</span>
-              </div>
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50">
-                <span className="text-xs text-gray-400 font-mono tracking-wider">#٨٢٥٥</span>
-                <button className="text-primary text-xs font-bold flex items-center gap-1 hover:text-primary-dark">
-                  التفاصيل
-                  <span className="material-symbols-outlined text-[14px] rotate-180">chevron_right</span>
-                </button>
-              </div>
-            </div>
-          </div>
+          ) : (
+            filteredReports.map((report) => {
+              const latestStatusRaw = report.report_history?.[0]?.report_status || 'received';
+              const status = getStatusColor(latestStatusRaw);
+              const reportDate = new Date(report.report_date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+              
+              return (
+                <div key={report.report_id} className="bg-white p-5 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-gray-100 transition-transform active:scale-[0.99] cursor-pointer" onClick={() => navigate(`/report-details/${report.report_id}`)}>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-base text-gray-900 font-almarai">اشتباه {getArabicDiseaseName(report.disease?.disease_name)}</h3>
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold ${status.bg} ${status.text}`}>
+                      {status.label}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-end mt-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center text-xs text-gray-500">
+                        <span className="material-symbols-outlined text-[16px] ml-1.5">calendar_today</span>
+                        <span dir="ltr">{reportDate}</span>
+                      </div>
+                      <div className="text-xs text-gray-400 font-mono tracking-wider text-right pr-6">
+                        #{report.tracking_number}
+                      </div>
+                    </div>
+                    
+                    <button className="text-[#56BCA4] text-xs font-bold flex items-center gap-1 hover:text-primary-dark">
+                      <span className="material-symbols-outlined text-[16px] rotate-0">chevron_left</span>
+                      التفاصيل
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </main>
 

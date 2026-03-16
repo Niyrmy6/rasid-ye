@@ -1,6 +1,86 @@
+import React, { useState, useRef, useEffect } from 'react';
 import BottomNav from '../components/BottomNav';
+import { supabase } from '../lib/supabase';
+
+type Message = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+};
 
 export default function Chat() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "welcome",
+      role: 'assistant',
+      content: 'أهلاً بك! أنا مساعدك الصحي الذكي الخاص ببرنامج "راصد". يمكنك سؤالي عن قواعد البيانات، الأعراض، الأمراض، وحالات البلاغات ضمن النظام.'
+    }
+  ]);
+  const [inputVal, setInputVal] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const generateBotResponse = async (userQuestion: string) => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('chat-rag-bot', {
+        body: { userQuestion },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      const botReply = data?.reply || "عذراً، لم أتمكن من العثور على إجابة محددة الآن.";
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: botReply }]);
+    } catch (error) {
+      console.error(error);
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: "عذراً، حدث خطأ أثناء الاتصال بالخادم." }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSend = () => {
+    if (!inputVal.trim()) return;
+    
+    const newMsg: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: inputVal.trim()
+    };
+    
+    setMessages(prev => [...prev, newMsg]);
+    setInputVal('');
+    
+    generateBotResponse(newMsg.content);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSend();
+    }
+  };
+
+  const quickQuestions = [
+    "ما هي أعراض الكوليرا؟",
+    "ما هي الجداول المتاحة في قاعدة البيانات؟",
+    "أحدث البلاغات",
+    "احصائيات الأمراض"
+  ];
+
+  const handleQuickQuestion = (q: string) => {
+    setInputVal(q);
+  };
+
   return (
     <div className="bg-background-light dark:bg-background-dark text-text-main dark:text-slate-100 antialiased selection:bg-primary selection:text-white h-screen flex flex-col overflow-hidden">
       <header className="sticky top-0 z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between shadow-sm max-w-md mx-auto w-full">
@@ -13,46 +93,46 @@ export default function Chat() {
         <h1 className="text-lg font-bold text-text-main dark:text-slate-100">المساعد الذكي</h1>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 py-4 space-y-6 pb-48 max-w-md mx-auto w-full">
-        <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-mint-light flex items-center justify-center text-[#2C7A6B]">
-            <span className="material-symbols-outlined text-2xl">smart_toy</span>
+      <main className="flex-1 overflow-y-auto px-4 py-4 space-y-6 pb-48 max-w-md mx-auto w-full hide-scrollbar">
+        {messages.map((msg) => (
+          <div key={msg.id} className={`flex items-start gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+            <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${msg.role === 'assistant' ? 'bg-mint-light text-[#2C7A6B]' : 'bg-gray-200 dark:bg-gray-700 text-gray-500'}`}>
+              <span className="material-symbols-outlined text-2xl">{msg.role === 'assistant' ? 'smart_toy' : 'person'}</span>
+            </div>
+            <div className={`${msg.role === 'assistant' ? 'bg-mint-light dark:bg-[#2C3E50] rounded-tr-none' : 'bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 rounded-tl-none'} p-4 rounded-2xl max-w-[85%] shadow-sm`}>
+              <p className="text-sm leading-relaxed text-gray-800 dark:text-gray-100 whitespace-pre-wrap">
+                {msg.content}
+              </p>
+            </div>
           </div>
-          <div className="bg-mint-light dark:bg-[#2C3E50] p-4 rounded-2xl rounded-tr-none max-w-[85%] shadow-sm">
-            <p className="text-sm leading-relaxed text-gray-800 dark:text-gray-100">
-              أهلاً بك! أنا مساعدك الصحي الذكي. كيف يمكنني مساعدتك اليوم؟ يمكنك سؤالي عن أعراض
-              الأمراض أو طرق الوقاية.
-            </p>
+        ))}
+        {isLoading && (
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-mint-light flex items-center justify-center text-[#2C7A6B]">
+              <span className="material-symbols-outlined text-2xl">smart_toy</span>
+            </div>
+            <div className="bg-mint-light dark:bg-[#2C3E50] p-4 rounded-2xl rounded-tr-none flex gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#2C7A6B] animate-bounce"></div>
+              <div className="w-2 h-2 rounded-full bg-[#2C7A6B] animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              <div className="w-2 h-2 rounded-full bg-[#2C7A6B] animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+            </div>
           </div>
-        </div>
-
-        <div className="flex items-start gap-3 flex-row-reverse">
-          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500">
-            <span className="material-symbols-outlined text-2xl">person</span>
-          </div>
-          <div className="bg-white dark:bg-surface-dark p-4 rounded-2xl rounded-tl-none max-w-[85%] shadow-sm border border-gray-100 dark:border-gray-800">
-            <p className="text-sm leading-relaxed text-gray-800 dark:text-gray-100">
-              ما هي أعراض الكوليرا؟
-            </p>
-          </div>
-        </div>
+        )}
+        <div ref={messagesEndRef} />
       </main>
 
       <div className="fixed bottom-[65px] left-0 right-0 z-30 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md pt-2 max-w-md mx-auto">
         <div className="px-4 mb-3">
           <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
-            <button className="whitespace-nowrap px-4 py-2 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-full text-sm text-text-muted hover:border-primary hover:text-primary transition-colors shadow-sm">
-              طرق الوقاية
-            </button>
-            <button className="whitespace-nowrap px-4 py-2 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-full text-sm text-text-muted hover:border-primary hover:text-primary transition-colors shadow-sm">
-              أقرب مركز صحي
-            </button>
-            <button className="whitespace-nowrap px-4 py-2 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-full text-sm text-text-muted hover:border-primary hover:text-primary transition-colors shadow-sm">
-              أحدث التنبيهات
-            </button>
-            <button className="whitespace-nowrap px-4 py-2 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-full text-sm text-text-muted hover:border-primary hover:text-primary transition-colors shadow-sm">
-              أعراض حمى الضنك
-            </button>
+            {quickQuestions.map((q, idx) => (
+              <button 
+                key={idx}
+                onClick={() => handleQuickQuestion(q)}
+                className="whitespace-nowrap px-4 py-2 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-full text-sm text-text-muted hover:border-primary hover:text-primary transition-colors shadow-sm"
+              >
+                {q}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -65,10 +145,18 @@ export default function Chat() {
               className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-text-main dark:text-white placeholder-gray-400 min-w-0"
               placeholder="اكتب رسالتك هنا..."
               type="text"
+              value={inputVal}
+              onChange={(e) => setInputVal(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={isLoading}
             />
-            <button className="flex-shrink-0 bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-full text-sm font-bold transition-colors shadow-md flex items-center gap-1">
-              <span>إرسال</span>
-              <span className="material-symbols-outlined text-[18px] rotate-180">send</span>
+            <button 
+              onClick={handleSend}
+              disabled={isLoading}
+              className="flex-shrink-0 bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-full text-sm font-bold transition-colors shadow-md flex items-center gap-1 disabled:opacity-50"
+            >
+              <span>{isLoading ? 'جاري...' : 'إرسال'}</span>
+              {!isLoading && <span className="material-symbols-outlined text-[18px] rotate-180">send</span>}
             </button>
           </div>
         </div>

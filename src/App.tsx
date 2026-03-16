@@ -44,7 +44,7 @@ export default function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/journey" element={<Journey />} />
         <Route path="/notifications" element={<Notifications />} />
-        <Route path="/report-details" element={<ReportDetails />} />
+        <Route path="/report-details/:id" element={<ReportDetails />} />
       </Routes>
     </BrowserRouter>
   );
