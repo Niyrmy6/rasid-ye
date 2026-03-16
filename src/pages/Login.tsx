@@ -157,12 +157,12 @@ export default function Login() {
               </div>
             </div>
             <div className="flex justify-end mt-1">
-              <a
+              <Link
+                to="/forgot-password"
                 className="text-xs font-semibold text-primary hover:text-primary-dark transition-colors"
-                href="#"
               >
                 نسيت كلمة المرور؟
-              </a>
+              </Link>
             </div>
           </div>
 

@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import OTPVerification from './pages/OTPVerification';
 import VerificationSuccess from './pages/VerificationSuccess';
+import ForgotPassword from './pages/ForgotPassword';
 import NewsFeed from './pages/NewsFeed';
 import NewsDetails from './pages/NewsDetails';
 import Map from './pages/Map';
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<OTPVerification />} />
         <Route path="/verification-success" element={<VerificationSuccess />} />
         <Route path="/news" element={<NewsFeed />} />
