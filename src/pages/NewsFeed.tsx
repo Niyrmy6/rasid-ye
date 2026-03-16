@@ -1,10 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import BottomNav from "../components/BottomNav";
+import { supabase } from "../lib/supabase";
+
+type LocalNews = {
+  item_id: number;
+  title: string;
+  content: string;
+  image: string;
+  type: string;
+  publish_date: string;
+};
+
+type GlobalNews = {
+  title: string;
+  link: string;
+  pubDate: string;
+  description: string;
+  thumbnail: string;
+};
 
 export default function NewsFeed() {
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [localNews, setLocalNews] = useState<LocalNews[]>([]);
+  const [globalNews, setGlobalNews] = useState<GlobalNews[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      setLoading(true);
+      try {
+        // Fetch Local News
+        const { data: localData, error } = await supabase
+          .from('news')
+          .select('*')
+          .order('publish_date', { ascending: false })
+          .limit(5);
+        
+        if (error) {
+          console.error("Local news error:", error);
+        } else {
+          setLocalNews(localData || []);
+        }
+
+        // Fetch Global News via RSS to JSON API
+        const rssUrl = encodeURIComponent("https://news.google.com/rss/search?q=الأمراض+الصحة&hl=ar&gl=AE&ceid=AE:ar");
+        const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`);
+        const rssData = await res.json();
+        
+        if (rssData.status === 'ok') {
+          // Parse and filter out articles without thumbnails initially if possible, or just limit to 10
+          setGlobalNews(rssData.items.slice(0, 15));
+        }
+      } catch (err) {
+        console.error("News fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-text-main dark:text-slate-100 antialiased selection:bg-primary selection:text-white pb-32 min-h-screen">
@@ -94,171 +150,106 @@ export default function NewsFeed() {
               <span className="material-symbols-outlined text-primary icon-hollow">
                 breaking_news
               </span>
-              أحدث المستجدات
+              أخبار محلية
             </h2>
-            <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-surface-dark shadow-sm ring-1 ring-black/5 dark:ring-white/10 transition-all hover:shadow-md">
-              <Link
-                to="/news/1"
-                className="relative w-full aspect-video overflow-hidden block"
-              >
-                <div
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                  data-alt="Doctor checking patient vitals"
-                  style={{
-                    backgroundImage:
-                      'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCJcR91WYmJGgoHzi7BYWAvaP1fsPL41RtvNFzN_BHtR5bQyfFkeNUke2fZd744TeM3yGbXypi7m5s_czw8491aaV3tgZz033nNBLeNt9VBAaDXHjLEMwo1oaWKjEamWBiRZxiO-Nl5HDH6MTIDcZHbK4kd1iWM1LWGaClgVxoJ1MXAwPRC2ZrVL--0K5PViD7Oj-SDlkPh4Do_5iR7-cQI1Bc-tQSMzZaIi4G3O-Dpj6INImHMKcUeGoZSSusho8UiQ3Ry1aiH_1Op")',
-                  }}
-                ></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <div className="absolute top-3 right-3 flex gap-2">
-                  <span className="bg-red-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
-                    عاجل
-                  </span>
+            <div className="flex flex-col gap-4">
+              {loading && localNews.length === 0 ? (
+                <div className="flex justify-center py-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 </div>
-              </Link>
-              <div className="p-4 flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs text-text-muted dark:text-gray-400">
-                  <span className="flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[16px] icon-hollow">
-                      calendar_today
-                    </span>
-                    ١٢ أكتوبر ٢٠٢٣
-                  </span>
-                  <span className="bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] font-bold">
-                    صنعاء
-                  </span>
-                </div>
-                <Link to="/news/1">
-                  <h3 className="text-lg font-bold leading-tight text-text-main dark:text-slate-100 transition-colors">
-                    حملة تطعيم وطنية شاملة ضد الكوليرا تنطلق في العاصمة صنعاء
-                  </h3>
-                </Link>
-                <p className="text-sm text-text-muted dark:text-gray-400 line-clamp-2">
-                  وزارة الصحة تعلن عن بدء المرحلة الأولى من حملة التطعيم التي
-                  تستهدف الأطفال دون سن الخامسة في جميع مديريات الأمانة...
-                </p>
-                <Link
-                  to="/news/1"
-                  className="mt-1 flex items-center gap-1 text-primary text-sm font-bold w-fit"
-                >
-                  <span>اقرأ المزيد</span>
-                  <span className="material-symbols-outlined text-[16px] rtl:rotate-180">
-                    arrow_forward
-                  </span>
-                </Link>
-              </div>
+              ) : localNews.length > 0 ? (
+                localNews.map((news) => (
+                  <article key={news.item_id} className="relative flex bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 h-32">
+                    <div className="w-32 shrink-0 relative overflow-hidden">
+                      <div
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{
+                          backgroundImage: `url("${news.image || 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?auto=format&fit=crop&q=80&w=200'}")`,
+                        }}
+                      ></div>
+                      <div className="absolute top-2 right-2">
+                        <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                          {news.type || 'خبر'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-between p-3 flex-1">
+                      <div>
+                        <h3 className="text-base font-bold text-text-main dark:text-slate-100 line-clamp-2 leading-snug mb-1">
+                          {news.title}
+                        </h3>
+                      </div>
+                      <div className="flex items-end justify-between text-xs text-text-muted dark:text-gray-400 mt-auto w-full">
+                        <span>{new Date(news.publish_date).toLocaleDateString("ar-EG", { year: "numeric", month: "short", day: "numeric" })}</span>
+                        <button className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
+                          <span className="material-symbols-outlined text-[18px] icon-hollow">
+                            share
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500 text-center py-4">لا توجد أخبار محلية حالياً.</p>
+              )}
             </div>
           </section>
 
           <section>
-            <h2 className="text-lg font-bold mb-3 text-text-main dark:text-slate-100">
-              أخبار سابقة
+            <h2 className="text-lg font-bold mb-3 mt-6 text-text-main dark:text-slate-100 flex items-center gap-2">
+              <span className="material-symbols-outlined text-[#56BCA4] icon-hollow">
+                public
+              </span>
+              أخبار عالمية
             </h2>
             <div className="flex flex-col gap-4">
-              <article className="relative flex bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 h-32">
-                <div className="w-32 shrink-0 relative overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    data-alt="Medical supplies on table"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuD9VJlpWw-QRxciN35IXaT-s6AC3XN_ClEHqgSSllqMtaeWfYS7T5XjKbQcJxhKLNiNo1Yl4Qv-tZucxS_zkqE45e8JBsETWEGjRTUzrd1pQvL6GIjOfz280KW43LoIudTxyIvT-cVUKIJG_nLFrwPOVtbpmMp3cs8YiTHmu1ukHJxCkMmLg6ktnwobJpKs2PAjBgqIDJzLmg7uZbsrAg69RrAL5FD8JU_xG9MMTCTK_1DsZ2EDWDEBrqoZZf1Gh0kSRBaH8l5SqYaZ")',
-                    }}
-                  ></div>
-                  <div className="absolute top-2 right-2">
-                    <span className="bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
-                      تنبيه
-                    </span>
-                  </div>
+              {loading && globalNews.length === 0 ? (
+                <div className="flex justify-center py-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#56BCA4]"></div>
                 </div>
-                <div className="flex flex-col justify-between p-3 flex-1">
-                  <div>
-                    <h3 className="text-base font-bold text-text-main dark:text-slate-100 line-clamp-2 leading-snug mb-1">
-                      وصول شحنة مساعدات طبية جديدة إلى ميناء الحديدة
-                    </h3>
-                  </div>
-                  <div className="flex items-end justify-between text-xs text-text-muted dark:text-gray-400 mt-auto w-full">
-                    <span>١٠ أكتوبر ٢٠٢٣</span>
-                    <button className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
-                      <span className="material-symbols-outlined text-[18px] icon-hollow">
-                        share
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </article>
-
-              <article className="relative flex bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 h-32">
-                <div className="w-32 shrink-0 relative overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    data-alt="Nurse holding clipboard"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuDY02sgDsErpjp3b0gelKNYGzIhh93evRZv279WRVtOOg4XglIC4viYVnPOs0RUGPzN5RvTLjaK7uPAAoSTLG_ZBQlJMVmppNsNDPfuYNIDjJeBUpAe9Pit0FWaSHcvKdZovS0TZocxjjrEUjqPjO25rZq_ZM980_SZ7PttPEDaaCYkYVJP5bW0cGmfYf_tNkHYGT-TefDtG5DOyKh3tmRtKrlHqAuJBZHu6x_mC5uO37qwWygOXMsTJIrv_uOpkU88tYmem1IzBnyu")',
-                    }}
-                  ></div>
-                  <div className="absolute top-2 right-2">
-                    <span className="bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
-                      إرشادات
-                    </span>
-                  </div>
-                </div>
-                <div className="flex flex-col justify-between p-3 flex-1">
-                  <div>
-                    <h3 className="text-base font-bold text-text-main dark:text-slate-100 line-clamp-2 leading-snug mb-1">
-                      نصائح وإرشادات للوقاية من الأمراض الموسمية
-                    </h3>
-                  </div>
-                  <div className="flex items-end justify-between text-xs text-text-muted dark:text-gray-400 mt-auto w-full">
-                    <span>٠٨ أكتوبر ٢٠٢٣</span>
-                    <button className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
-                      <span className="material-symbols-outlined text-[18px] icon-hollow">
-                        share
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </article>
-
-              <article className="relative flex bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 h-32">
-                <div className="w-32 shrink-0 relative overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    data-alt="People talking in clinic"
-                    style={{
-                      backgroundImage:
-                        'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAea14MRuY2PxkcJBJnDNCWRmJBhWgfhlEJu_sh5BFb0royzKhSovNahrY3LpyXHXXp-kbQ-cdkB9Y1xwTcfYxt3U1fV0MVSUTcYuyZh44V4ocmkwjkIrRt4H9OJo1dR4Ys7p5S310tCT6FTTFqSutzQ6hwUR_9Uv4KUYaz6z0QnNX0GbdkBsFEac9nW9L2jNbm4DRLeSgOSFc6aois9UJ6RmQO0ywcKxizKwIx5oe7NkK2NXMmtOR-CMkdZN6FhmFIzpIYK00kwVAM")',
-                    }}
-                  ></div>
-                  <div className="absolute top-2 right-2">
-                    <span className="bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
-                      حدث
-                    </span>
-                  </div>
-                </div>
-                <div className="flex flex-col justify-between p-3 flex-1">
-                  <div>
-                    <h3 className="text-base font-bold text-text-main dark:text-slate-100 line-clamp-2 leading-snug mb-1">
-                      افتتاح مركز صحي جديد في محافظة تعز
-                    </h3>
-                  </div>
-                  <div className="flex items-end justify-between text-xs text-text-muted dark:text-gray-400 mt-auto w-full">
-                    <span>٠٥ أكتوبر ٢٠٢٣</span>
-                    <button className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors">
-                      <span className="material-symbols-outlined text-[18px] icon-hollow">
-                        share
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </article>
+              ) : globalNews.length > 0 ? (
+                globalNews.map((news, index) => {
+                  const fallbackImages = [
+                    'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?auto=format&fit=crop&q=80&w=200',
+                    'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&q=80&w=200',
+                    'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=200',
+                    'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&q=80&w=200'
+                  ];
+                  const hasValidThumbnail = news.thumbnail && news.thumbnail.length > 20;
+                  const thumbnail = hasValidThumbnail ? news.thumbnail : fallbackImages[index % fallbackImages.length];
+                  return (
+                    <a key={index} href={news.link} target="_blank" rel="noopener noreferrer" className="relative flex bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 h-32 hover:shadow-md transition-shadow">
+                      <div className="w-32 shrink-0 relative overflow-hidden">
+                        <div
+                          className="absolute inset-0 bg-cover bg-center"
+                          style={{ backgroundImage: `url("${thumbnail}")` }}
+                        ></div>
+                        <div className="absolute top-2 right-2">
+                          <span className="bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                            عالمي
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col justify-between p-3 flex-1">
+                        <div>
+                          <h3 className="text-base font-bold text-text-main dark:text-slate-100 line-clamp-2 leading-snug mb-1">
+                            {news.title}
+                          </h3>
+                        </div>
+                        <div className="flex items-end justify-between text-[11px] text-text-muted dark:text-gray-400 mt-auto w-full">
+                          <span>{new Date(news.pubDate).toLocaleDateString("ar-EG", { year: "numeric", month: "short", day: "numeric" })}</span>
+                          <span className="text-[#56BCA4] font-bold flex items-center gap-1">المصدر <span className="material-symbols-outlined text-[14px]">open_in_new</span></span>
+                        </div>
+                      </div>
+                    </a>
+                  );
+                })
+              ) : (
+                <p className="text-sm text-gray-500 text-center py-4">لا يمكن جلب الأخبار العالمية حالياً.</p>
+              )}
             </div>
           </section>
-
-          <div className="flex justify-center py-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
         </main>
 
         <div className="fixed bottom-20 left-0 right-0 z-30 max-w-md mx-auto pointer-events-none px-4">
