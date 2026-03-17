@@ -106,6 +106,14 @@ export default function NewReport() {
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) {
+      setShowAuthModal(true);
+    }
+  }, []);
 
   const toggleSymptom = (symptomName: string, isChecked: boolean) => {
     const sId = SYMPTOM_MAP[symptomName];
@@ -418,16 +426,12 @@ export default function NewReport() {
             </label>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <div className="flex items-center gap-1 mb-1">
-                  <span className="material-symbols-outlined text-[16px] text-gray-400">
-                    cake
-                  </span>
-                  <label className="text-xs text-gray-500 block">العمر</label>
-                </div>
-                <select
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)} 
-                  className="w-full px-3 py-2 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm appearance-none cursor-pointer">
+                <label className="text-xs text-gray-500 mb-1 block">العمر</label>
+                <div className="relative">
+                  <select
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)} 
+                    className="w-full pl-4 pr-10 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm appearance-none cursor-pointer">
                   <option disabled value="">
                     اختر
                   </option>
@@ -436,6 +440,10 @@ export default function NewReport() {
                   <option value="adult">بالغ (20-60)</option>
                   <option value="senior">مسن (60+)</option>
                 </select>
+                  <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[20px] text-gray-400 pointer-events-none">
+                    cake
+                  </span>
+                </div>
               </div>
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">
@@ -472,12 +480,12 @@ export default function NewReport() {
                 </label>
                 <div className="relative">
                   <input
-                    className="w-full pl-4 pr-10 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none text-right text-sm text-gray-700 dark:text-gray-300"
+                    className="w-full pl-4 pr-10 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none text-right text-sm text-gray-700 dark:text-gray-300 relative z-10 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                     type="date"
                     value={onsetDate}
                     onChange={(e) => setOnsetDate(e.target.value)}
                   />
-                  <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                  <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-20">
                     calendar_month
                   </span>
                 </div>
@@ -530,6 +538,39 @@ export default function NewReport() {
       </main>
 
       <BottomNav />
+
+      {/* Modern Auth Modal */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md p-4">
+          <div className="bg-white dark:bg-surface-dark w-full max-w-sm rounded-[2rem] p-8 shadow-2xl border border-gray-100 dark:border-gray-800 text-center transform scale-100 animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-20 h-20 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-white dark:border-surface-dark shadow-soft">
+              <span className="material-symbols-outlined text-4xl text-[var(--color-error-soft, #f87171)]">
+                lock
+              </span>
+            </div>
+            <h2 className="text-2xl font-extrabold text-foreground dark:text-white mb-3 tracking-tight">
+              تسجيل الدخول إلزامي
+            </h2>
+            <p className="text-muted-foreground dark:text-gray-400 mb-8 leading-relaxed font-medium">
+              عذراً، يجب عليك تسجيل الدخول بحسابك أولاً حتى تتمكن من المساهمة وتقديم بلاغ صحي جديد.
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => navigate("/login")}
+                className="w-full bg-primary hover:bg-primary-dark text-white text-lg font-bold py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-primary/30 active:scale-[0.98]"
+              >
+                تسجيل الدخول الآن
+              </button>
+              <button
+                onClick={() => navigate("/")}
+                className="w-full bg-muted hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-muted-foreground dark:text-gray-300 font-bold py-4 rounded-2xl transition-all duration-300 active:scale-[0.98]"
+              >
+                العودة للرئيسية
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
