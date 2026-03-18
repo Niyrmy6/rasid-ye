@@ -428,18 +428,15 @@ export default function NewReport() {
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">العمر</label>
                 <div className="relative">
-                  <select
+                  <input
+                    type="number"
+                    min="0"
+                    max="120"
+                    placeholder="العمر"
                     value={age}
                     onChange={(e) => setAge(e.target.value)} 
-                    className="w-full pl-4 pr-10 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm appearance-none cursor-pointer">
-                  <option disabled value="">
-                    اختر
-                  </option>
-                  <option value="child">طفل (0-12)</option>
-                  <option value="teen">مراهق (13-19)</option>
-                  <option value="adult">بالغ (20-60)</option>
-                  <option value="senior">مسن (60+)</option>
-                </select>
+                    className="w-full pl-4 pr-10 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm text-right"
+                  />
                   <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[20px] text-gray-400 pointer-events-none">
                     cake
                   </span>
