@@ -11,6 +11,8 @@ export default function PersonalInfo() {
   const [fullname, setFullname] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +25,7 @@ export default function PersonalInfo() {
         if (storedUser.full_name || storedUser.name) setFullname(storedUser.full_name || storedUser.name);
         if (storedUser.phone) setPhone(storedUser.phone);
         if (storedUser.password) setPassword(storedUser.password);
+        if (storedUser.email) setEmail(storedUser.email);
       } catch (e) {
         console.error('Failed to parse user from localStorage');
       }
@@ -50,7 +53,7 @@ export default function PersonalInfo() {
     try {
       const { data, error: updateError } = await supabase
         .from('user')
-        .update({ full_name: fullname, phone, password })
+        .update({ full_name: fullname, phone, password, email: email || null })
         .eq('user_id', user.user_id)
         .select()
         .single();
@@ -151,15 +154,42 @@ export default function PersonalInfo() {
             <label className="block text-sm font-medium text-text-muted mb-1.5 mr-1" htmlFor="password">كلمة المرور</label>
             <div className="relative">
               <input 
-                className="w-full bg-white text-text-main rounded-2xl border border-transparent ring-1 ring-gray-200 py-3.5 pr-12 pl-4 focus:ring-1 focus:ring-[#56BCA4] focus:border-[#56BCA4] outline-none transition-all placeholder:text-gray-400 font-almarai text-right" 
+                className="w-full bg-white text-text-main rounded-2xl border border-transparent ring-1 ring-gray-200 py-3.5 pr-12 pl-12 focus:ring-1 focus:ring-[#56BCA4] focus:border-[#56BCA4] outline-none transition-all placeholder:text-gray-400 font-almarai text-right" 
                 id="password" 
-                type="password" 
+                type={showPassword ? 'text' : 'password'} 
                 value={password}
                 disabled={loading}
                 onChange={(e) => setPassword(e.target.value)}
               />
               <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
                 <span className="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">lock</span>
+              </div>
+              <button
+                type="button"
+                className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 hover:text-primary transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <span className="material-symbols-outlined">
+                  {showPassword ? 'visibility' : 'visibility_off'}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div className="relative group">
+            <label className="block text-sm font-medium text-text-muted mb-1.5 mr-1" htmlFor="email">البريد الإلكتروني <span className="text-gray-400 text-xs font-normal">(اختياري للإشعارات)</span></label>
+            <div className="relative">
+              <input 
+                className="w-full bg-white text-text-main rounded-2xl border border-transparent ring-1 ring-gray-200 py-3.5 pr-12 pl-4 focus:ring-1 focus:ring-[#56BCA4] focus:border-[#56BCA4] outline-none transition-all placeholder:text-gray-400 font-almarai text-right" 
+                id="email" 
+                placeholder="example@email.com" 
+                type="email" 
+                value={email}
+                disabled={loading}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
+                <span className="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">mail</span>
               </div>
             </div>
           </div>
