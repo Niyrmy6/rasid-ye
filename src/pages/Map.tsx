@@ -1,13 +1,129 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import BottomNav from "../components/BottomNav";
+import { supabase } from "../lib/supabase";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default marker icon in leaflet
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
+interface ConfirmedReport {
+  report_id: number;
+  disease_name: string;
+  governorate_name: string;
+  report_date: string;
+  lat: number;
+  lng: number;
+}
+
+interface Disease {
+  disease_id: number;
+  disease_name: string;
+}
+
+interface Governorate {
+  governorate_id: number;
+  governorate_name: string;
+}
+
+const DISEASE_AR_MAP: Record<string, string> = {
+  "measles": "الحصبة",
+  "polio": "شلل الأطفال",
+  "cholera": "الكوليرا",
+  "diphtheria": "الدفتيريا",
+  "pertussis": "سعال ديكي",
+  "hemorrhagic fevers": "الحميات النزفية",
+  "dengue fever": "حمى الضنك"
+};
+
+const GOV_AR_MAP: Record<string, string> = {
+  "al hodeidah": "الحديدة",
+  "abyan": "أبين",
+  "ta'iz": "تعز",
+  "al jawf": "الجوف",
+  "hadramawt": "حضرموت",
+  "shabwah": "شبوة",
+  "aden": "عدن",
+  "lahj": "لحج",
+  "ma'rib": "مأرب",
+  "al maharah": "المهرة",
+  "ad dali'": "الضالع",
+  "socotra": "سقطرى",
+  "sana'a": "صنعاء"
+};
+
+function ChangeView({ center, zoom }: { center: [number, number], zoom: number }) {
+  const map = useMap();
+  map.setView(center, zoom);
+  return null;
+}
 
 export default function Map() {
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState("");
+  const [diseases, setDiseases] = useState<Disease[]>([]);
+  const [governorates, setGovernorates] = useState<Governorate[]>([]);
+  const [selectedDisease, setSelectedDisease] = useState<string>("all");
+  const [selectedGovernorate, setSelectedGovernorate] = useState<string>("all");
+  const [reports, setReports] = useState<ConfirmedReport[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([15.5527, 48.5164]); // Center of Yemen
+  const [mapZoom, setMapZoom] = useState(6);
+
+  useEffect(() => {
+    async function fetchMetadata() {
+      const { data: dData } = await supabase.from("disease").select("disease_id, disease_name");
+      const { data: gData } = await supabase.from("governorate").select("governorate_id, governorate_name").neq('governorate_name', 'Unknown');
+      
+      if (dData) setDiseases(dData);
+      if (gData) setGovernorates(gData);
+    }
+    fetchMetadata();
+  }, []);
+
+  useEffect(() => {
+    async function fetchReports() {
+      setLoading(true);
+      const { data, error } = await supabase.rpc('get_confirmed_reports');
+      if (!error && data) {
+        setReports(data);
+      }
+      setLoading(false);
+    }
+    fetchReports();
+  }, []);
+
+  const filteredReports = reports.filter(r => {
+    const diseaseMatch = selectedDisease === "all" || diseases.find(d => d.disease_id.toString() === selectedDisease)?.disease_name === r.disease_name;
+    const govMatch = selectedGovernorate === "all" || governorates.find(g => g.governorate_id.toString() === selectedGovernorate)?.governorate_name === r.governorate_name;
+    return diseaseMatch && govMatch;
+  });
+
+  const handleGovChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    setSelectedGovernorate(val);
+    
+    if (val === "all") {
+      setMapCenter([15.5527, 48.5164]);
+      setMapZoom(6);
+    } else {
+      // Find reports for this gov and center if any
+      const govReports = reports.filter(r => governorates.find(g => g.governorate_id.toString() === val)?.governorate_name === r.governorate_name);
+      if (govReports.length > 0) {
+        setMapCenter([govReports[0].lat, govReports[0].lng]);
+        setMapZoom(10);
+      }
+    }
+  };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark text-text-main dark:text-slate-100 antialiased selection:bg-primary selection:text-white h-screen flex flex-col overflow-hidden">
+    <div className="bg-background-light dark:bg-background-dark text-text-main dark:text-slate-100 antialiased selection:bg-primary selection:text-white h-screen flex flex-col overflow-hidden font-almarai">
       <header className="sticky top-0 z-40 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between shadow-sm max-w-md mx-auto w-full">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 bg-[#eefcfc] dark:bg-primary/10 rounded-xl flex items-center justify-center text-primary">
@@ -20,7 +136,7 @@ export default function Map() {
           </span>
         </div>
         <h1 className="text-lg font-bold text-text-main dark:text-slate-100">
-          الخريطة
+          الخريطة الحية
         </h1>
       </header>
 
@@ -28,173 +144,83 @@ export default function Map() {
         <div className="px-4 py-3 z-30 bg-background-light dark:bg-background-dark border-b border-gray-100 dark:border-white/5">
           <div className="grid grid-cols-2 gap-3 mb-3">
             <div className="relative w-full">
-              <label className="block text-xs font-medium text-text-muted mb-1 px-1">
+              <label className="block text-xs font-bold text-text-muted mb-1 px-1">
                 نوع المرض
               </label>
               <div className="relative">
-                <select className="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark py-2.5 pr-3 pl-8 text-text-main dark:text-slate-100 focus:border-primary focus:ring-primary text-sm shadow-sm appearance-none">
-                  <option selected>الكل</option>
-                  <option>الكوليرا</option>
-                  <option>الحميات النزفية</option>
-                  <option>شلل الأطفال</option>
-                  <option>الحصبة</option>
-                  <option>الدفتيريا</option>
-                  <option>سعال ديكي</option>
+                <select 
+                  value={selectedDisease}
+                  onChange={(e) => setSelectedDisease(e.target.value)}
+                  className="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark py-2.5 pr-3 pl-8 text-text-main dark:text-slate-100 focus:border-primary focus:ring-primary text-sm shadow-sm appearance-none outline-none"
+                >
+                  <option value="all">الكل</option>
+                  {diseases.map(d => (
+                    <option key={d.disease_id} value={d.disease_id}>
+                      {DISEASE_AR_MAP[d.disease_name.toLowerCase()] || d.disease_name}
+                    </option>
+                  ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-text-muted">
-                  <span className="material-symbols-outlined text-[18px]">
-                    expand_more
-                  </span>
+                  <span className="material-symbols-outlined text-[18px]">expand_more</span>
                 </div>
               </div>
             </div>
             <div className="relative w-full">
-              <label className="block text-xs font-medium text-text-muted mb-1 px-1">
+              <label className="block text-xs font-bold text-text-muted mb-1 px-1">
                 المحافظة
               </label>
               <div className="relative">
-                <select className="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark py-2.5 pr-3 pl-8 text-text-main dark:text-slate-100 focus:border-primary focus:ring-primary text-sm shadow-sm appearance-none">
-                  <option selected>الكل</option>
-                  <option>عدن</option>
-                  <option>أبين</option>
-                  <option>لحج</option>
-                  <option>حضرموت</option>
-                  <option>شبوة</option>
-                  <option>المهرة</option>
-                  <option>الضالع</option>
-                  <option>مأرب</option>
-                  <option>سقطرى</option>
-                  <option>تعز</option>
-                  <option>الحديدة</option>
-                  <option>الجوف</option>
+                <select 
+                  value={selectedGovernorate}
+                  onChange={handleGovChange}
+                  className="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark py-2.5 pr-3 pl-8 text-text-main dark:text-slate-100 focus:border-primary focus:ring-primary text-sm shadow-sm appearance-none outline-none"
+                >
+                  <option value="all">الكل</option>
+                  {governorates.map(g => (
+                    <option key={g.governorate_id} value={g.governorate_id}>
+                      {GOV_AR_MAP[g.governorate_name.toLowerCase()] || g.governorate_name}
+                    </option>
+                  ))}
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2 text-text-muted">
-                  <span className="material-symbols-outlined text-[18px]">
-                    expand_more
-                  </span>
+                  <span className="material-symbols-outlined text-[18px]">expand_more</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <main className="flex-1 relative w-full h-full bg-[#eefcfc] dark:bg-black/20 overflow-hidden pb-24">
-          <div className="map-container flex items-center justify-center p-4 relative w-full h-full">
-            <svg
-              className="yemen-map w-full h-auto max-h-[70vh] drop-shadow-xl"
-              viewBox="0 0 800 500"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M450,150 Q600,100 700,180 L750,250 Q650,350 500,300 Z"
-                fill="#fff9c4"
-              ></path>
-              <path
-                d="M700,180 L780,190 L790,280 L750,250 Z"
-                fill="#fffde7"
-              ></path>
-              <path
-                d="M400,250 Q450,200 500,300 L450,380 Q350,350 400,250 Z"
-                fill="#ffcc80"
-              ></path>
-              <path
-                d="M350,180 Q400,150 450,200 L400,250 L320,220 Z"
-                fill="#ffab91"
-              ></path>
-              <path
-                d="M280,200 Q320,180 350,210 L320,260 L280,240 Z"
-                fill="#ef5350"
-              ></path>
-              <g className="relative group">
-                <path
-                  d="M300,215 A15,15 0 1,1 300,235 A15,15 0 1,1 300,215 Z"
-                  fill="#c62828"
-                ></path>
-              </g>
-              <path
-                d="M270,160 Q300,150 320,180 L280,200 L260,180 Z"
-                fill="#ffb74d"
-              ></path>
-              <path
-                d="M220,160 Q250,140 270,160 L260,220 L210,200 Z"
-                fill="#ef5350"
-              ></path>
-              <path
-                d="M200,200 L210,250 L230,320 L190,300 L180,220 Z"
-                fill="#e53935"
-              ></path>
-              <path
-                d="M230,320 L260,350 L240,380 L200,360 Z"
-                fill="#b71c1c"
-              ></path>
-              <path
-                d="M260,280 L280,310 L260,330 L240,300 Z"
-                fill="#d32f2f"
-              ></path>
-              <path
-                d="M280,240 L320,260 L300,300 L260,280 Z"
-                fill="#ff7043"
-              ></path>
-              <path
-                d="M320,260 L400,250 L380,320 L300,300 Z"
-                fill="#ffcc80"
-              ></path>
-              <path
-                d="M280,380 L300,390 L290,410 L270,400 Z"
-                fill="#e53935"
-              ></path>
-              <path
-                d="M260,350 L320,340 L300,390 L280,380 Z"
-                fill="#ffe082"
-              ></path>
-              <path
-                d="M320,340 L380,320 L400,380 L320,390 Z"
-                fill="#fff59d"
-              ></path>
-              <path
-                d="M250,100 Q300,90 330,140 L270,160 L220,130 Z"
-                fill="#ff8a65"
-              ></path>
-              <path
-                d="M330,140 Q450,100 500,160 L450,200 L350,180 Z"
-                fill="#fff176"
-              ></path>
-            </svg>
+        <main className="flex-1 relative w-full h-full bg-gray-100 dark:bg-black/20 overflow-hidden pb-16 z-0">
+          <MapContainer 
+            center={mapCenter} 
+            zoom={mapZoom} 
+            style={{ height: '100%', width: '100%' }}
+            zoomControl={false}
+          >
+            <ChangeView center={mapCenter} zoom={mapZoom} />
+            <TileLayer
+              attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {filteredReports.map(report => (
+              <Marker key={report.report_id} position={[report.lat, report.lng]}>
+                <Popup>
+                  <div className="text-right font-almarai">
+                    <div className="font-bold text-primary">{DISEASE_AR_MAP[report.disease_name.toLowerCase()] || report.disease_name}</div>
+                    <div className="text-xs text-gray-600">{GOV_AR_MAP[report.governorate_name.toLowerCase()] || report.governorate_name}</div>
+                    <div className="text-[10px] text-gray-400 mt-1">
+                      {new Date(report.report_date).toLocaleDateString('ar-EG')}
+                    </div>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
 
-            <div
-              className="absolute bg-[#1f2b28]/95 text-white px-3 py-2 rounded-lg text-sm pointer-events-none shadow-md z-50"
-              style={{
-                top: "38%",
-                left: "38%",
-              }}
-            >
-              <div className="font-bold text-sm">محافظة صنعاء</div>
-              <div className="text-xs text-gray-300">١٥٠ بلاغ</div>
-              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#1f2b28]/95"></div>
-            </div>
-
-            <div className="absolute bottom-6 right-4 bg-white/90 dark:bg-surface-dark/90 backdrop-blur rounded-lg p-3 shadow-lg border border-gray-100 dark:border-white/10 text-xs">
-              <div className="font-bold mb-2 text-text-main dark:text-slate-100">
-                معدل البلاغات
-              </div>
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded bg-[#c62828]"></span>
-                  <span>مرتفع جداً</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded bg-[#ef5350]"></span>
-                  <span>مرتفع</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded bg-[#ffb74d]"></span>
-                  <span>متوسط</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded bg-[#fff9c4]"></span>
-                  <span>منخفض</span>
-                </div>
-              </div>
+          <div className="absolute top-4 left-4 z-[500] bg-white/95 dark:bg-surface-dark/95 backdrop-blur-sm px-4 py-2 rounded-2xl shadow-xl border border-primary/20">
+            <div className="text-[10px] text-text-muted font-bold">بلاغات مؤكدة</div>
+            <div className="text-xl font-black text-primary leading-tight">
+              {loading ? '...' : filteredReports.length}
             </div>
           </div>
         </main>
@@ -205,9 +231,7 @@ export default function Map() {
               onClick={() => navigate("/new-report")}
               className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 group"
             >
-              <span className="material-symbols-outlined text-[24px]">
-                add_alert
-              </span>
+              <span className="material-symbols-outlined text-[24px]">add_alert</span>
               <span className="font-bold text-base">تقديم بلاغ</span>
             </button>
           </div>
