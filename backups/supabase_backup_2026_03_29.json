@@ -1,0 +1,23 @@
+{
+  "project_id": "ehbaenczvnphgiuwujoc",
+  "backup_date": "2026-03-29",
+  "tables": {
+    "user": [
+      {"user_id":2,"full_name":"noor","password":"123","phone":"12345","created_at":"2026-02-12T07:51:15.933649+00:00","role_id":3,"email":null},
+      {"user_id":4,"full_name":"fatima","password":"123","phone":"123456789","created_at":"2026-02-15T05:53:22.515322+00:00","role_id":2,"email":null},
+      {"user_id":3,"full_name":"noor a","password":"123","phone":"+4564768","created_at":"2026-02-12T08:02:15.803393+00:00","role_id":2,"email":null},
+      {"user_id":10,"full_name":"noor alattas","password":"123456","phone":"+967773030262","created_at":"2026-03-14T21:24:54.096701+00:00","role_id":3,"email":"nalattas2026@gmail.com"}
+    ],
+    "news": [
+      {"item_id":1,"title":"حملة تطعيم الكوليرا","type":"event","content":"وصف الحملة: الكوليرا مرض معدٍ خطير...","publish_date":"2026-03-18T11:50:04.71215+00:00","created_by":4,"image":"https://ehbaenczvnphgiuwujoc.supabase.co/storage/v1/object/public/news/Gemini_Generated_Image_vjjzybvjjzybvjjz.png"}
+    ],
+    "notification": [
+      {"notification_id":3,"disease_id":2,"message":"⚠️ تنبيه: تجاوز مرض polio الحد المسموح برصد 1 بلاغاً خلال الساعة الأخيرة.","created_at":"2026-02-12T10:07:31.3443+00:00"},
+      {"notification_id":12,"disease_id":6,"message":"🚨 تنبيه: تم تجاوز الحد المسموح لمرض \"hemorrhagic fevers\" حيث تم تسجيل 1 بلاغاً خلال الساعة الأخيرة.","created_at":"2026-03-15T21:20:32.014254+00:00"}
+    ],
+    "report_history": [
+      {"report_id":27,"report_status":"new","updated_user_id":null,"created_at":"2026-02-15T10:24:27.627869+00:00","disease_id":2},
+      {"report_id":32,"report_status":"new","updated_user_id":null,"created_at":"2026-03-15T21:20:31.292452+00:00","disease_id":6}
+    ]
+  }
+}
