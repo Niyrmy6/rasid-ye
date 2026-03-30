@@ -1,29 +1,103 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 
 export default function Profile() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    const storedUserStr = localStorage.getItem('user');
-    if (storedUserStr) {
-      try {
-        const storedUser = JSON.parse(storedUserStr);
-        if (storedUser) {
-          setIsLoggedIn(true);
-          setUserName(storedUser.full_name || storedUser.name || 'مستخدم راصد');
+    const fetchUser = async () => {
+      const storedUserStr = localStorage.getItem('user');
+      if (storedUserStr) {
+        try {
+          const storedUser = JSON.parse(storedUserStr);
+          if (storedUser) {
+            setIsLoggedIn(true);
+            setUserName(storedUser.full_name || storedUser.name || 'مستخدم راصد');
+            setUserId(storedUser.user_id);
+            setProfilePicture(storedUser.profile_picture || null);
+          }
+        } catch (e) {
+          console.error('Failed to parse user from localStorage');
         }
-      } catch (e) {
-        console.error('Failed to parse user from localStorage');
       }
-    }
+    };
+    fetchUser();
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
     setIsLoggedIn(false);
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (!event.target.files || event.target.files.length === 0 || !userId) {
+        return;
+      }
+      
+      const file = event.target.files[0];
+      
+      // 1. التحقق من نوع الملف (صور فقط)
+      if (!file.type.startsWith('image/')) {
+        alert('حدث خطأ: يُسمح برفع الصور فقط.');
+        return;
+      }
+
+      // 2. التحقق من حجم الملف (الحد الأقصى 5 ميجابايت)
+      const MAX_SIZE_MB = 5;
+      if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+        alert(`حدث خطأ: حجم الصورة يجب ألا يتجاوز ${MAX_SIZE_MB} ميجابايت.`);
+        return;
+      }
+
+      setUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}-${Math.random()}.${fileExt}`;
+      const filePath = `public/${fileName}`;
+
+      const { supabase } = await import('../lib/supabase');
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from('user')
+        .update({ profile_picture: publicUrl })
+        .eq('user_id', userId);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      setProfilePicture(publicUrl);
+      
+      const storedUserStr = localStorage.getItem('user');
+      if (storedUserStr) {
+        const storedUser = JSON.parse(storedUserStr);
+        storedUser.profile_picture = publicUrl;
+        localStorage.setItem('user', JSON.stringify(storedUser));
+      }
+
+    } catch (error) {
+      console.error('Error uploading image: ', error);
+      alert('حدث خطأ أثناء رفع الصورة');
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -50,14 +124,31 @@ export default function Profile() {
           // Registered User Profile
           <div className="w-full">
             <div className="px-4 flex flex-col items-center">
-              <div className="relative mb-4">
+              <label htmlFor="profile-upload" className="relative mb-4 cursor-pointer group">
                 <div className="w-28 h-28 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-4 border-white">
-                  <span className="material-symbols-outlined filled text-[64px] text-gray-300">person</span>
+                  {profilePicture ? (
+                    <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="material-symbols-outlined filled text-[64px] text-gray-300">person</span>
+                  )}
+                  {uploading && (
+                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center rounded-full">
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
                 </div>
-                <div className="absolute bottom-1 right-1 w-8 h-8 bg-primary rounded-full border-4 border-white flex items-center justify-center text-white shadow-sm">
-                  <span className="material-symbols-outlined text-[16px]">edit</span>
+                <div className="absolute bottom-1 right-1 w-8 h-8 bg-primary rounded-full border-4 border-white flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-[16px]">add_a_photo</span>
                 </div>
-              </div>
+                <input 
+                  type="file" 
+                  id="profile-upload" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handleImageUpload} 
+                  disabled={uploading}
+                />
+              </label>
               <h2 className="text-2xl font-bold font-almarai text-text-main mb-1">{userName}</h2>
             </div>
 
