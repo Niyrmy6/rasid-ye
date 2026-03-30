@@ -84,19 +84,18 @@ const SYMPTOM_MAP: Record<string, number> = {
   "طفح جلدي واسع": 50
 };
 
-const DISEASE_MAP: Record<string, number> = {
-  "الكوليرا": 3,
-  "الحصبة": 1,
-  "حمى الضنك": 6,
-  "شلل الأطفال": 2,
-  "الدفتيريا": 4,
-  "السعال الديكي": 5
-};
+interface Disease {
+  disease_id: number;
+  disease_name: string;
+  ar_name: string | null;
+  description: string | null;
+}
 
 export default function NewReport() {
   const navigate = useNavigate();
   const [patientName, setPatientName] = useState("");
-  const [selectedDisease, setSelectedDisease] = useState("الكوليرا");
+  const [selectedDisease, setSelectedDisease] = useState<number | "unknown">("unknown");
+  const [diseases, setDiseases] = useState<Disease[]>([]);
   const [selectedSymptoms, setSelectedSymptoms] = useState<number[]>([]);
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("male");
@@ -113,6 +112,15 @@ export default function NewReport() {
     if (!userStr) {
       setShowAuthModal(true);
     }
+    
+    // Fetch diseases dynamically from database
+    const fetchDiseases = async () => {
+      const { data, error } = await supabase.from('disease').select('disease_id, disease_name, ar_name, description');
+      if (!error && data) {
+        setDiseases(data);
+      }
+    };
+    fetchDiseases();
   }, []);
 
   const toggleSymptom = (symptomName: string, isChecked: boolean) => {
@@ -153,7 +161,7 @@ export default function NewReport() {
     setLoading(true);
     setError(null);
 
-    const disease_id = DISEASE_MAP[selectedDisease] || null;
+    const disease_id = selectedDisease === "unknown" ? null : selectedDisease;
 
     try {
       // 1. Insert report
@@ -294,53 +302,42 @@ export default function NewReport() {
               اختر المرض
             </label>
             <div className="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-1 scrollbar-hide">
-              {[
-                {
-                  name: "الكوليرا",
-                  description:
-                    "عدوى بكتيرية حادة تصيب الأمعاء وتسبب إسهالاً مائياً شديداً وجفافاً.",
-                },
-                {
-                  name: "الحصبة",
-                  description:
-                    "مرض فيروسي شديد العدوى يسبب طفحاً جلدياً وحمى وأعراضاً تشبه الزكام.",
-                },
-                {
-                  name: "حمى الضنك",
-                  description:
-                    "عدوى فيروسية تنتقل عبر البعوض وتسبب حمى شديدة وآلاماً في العضلات والمفاصل.",
-                },
-                {
-                  name: "شلل الأطفال",
-                  description:
-                    "مرض فيروسي قد يهاجم الجهاز العصبي ويؤدي إلى شلل دائم في بعض الحالات.",
-                },
-                {
-                  name: "الدفتيريا",
-                  description:
-                    "عدوى بكتيرية خطيرة تؤثر على الأغشية المخاطية للحلق والأنف.",
-                },
-                {
-                  name: "السعال الديكي",
-                  description:
-                    "عدوى تنفسية شديدة العدوى تتميز بسعال جاف وعنيف يتبعه صوت شهيق عالٍ.",
-                },
-              ].map((disease, idx) => (
-                <label key={disease.name} className="cursor-pointer block group">
+              <label className="cursor-pointer block group">
+                <input
+                  className="hidden"
+                  name="disease"
+                  type="radio"
+                  checked={selectedDisease === "unknown"}
+                  onChange={(e) => e.target.checked && setSelectedDisease("unknown")}
+                />
+                <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-white/5 transition-all group-hover:bg-gray-100 dark:group-hover:bg-white/10 group-has-[:checked]:!bg-primary group-has-[:checked]:!border-primary">
+                  <h4 className="font-bold text-primary group-has-[:checked]:!text-white mb-1 font-almarai text-base transition-colors">
+                    لا أعرف (الاعتماد على الأعراض)
+                  </h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 group-has-[:checked]:!text-white/90 leading-relaxed transition-colors">
+                    سيقوم النظام باقتراح وتصنيف المرض تلقائياً بناءً على الأعراض التي تختارها في الخطوة التالية.
+                  </p>
+                </div>
+              </label>
+
+              {diseases.map((disease) => (
+                <label key={disease.disease_id} className="cursor-pointer block group">
                   <input
                     className="hidden"
                     name="disease"
                     type="radio"
-                    checked={selectedDisease === disease.name}
-                    onChange={(e) => e.target.checked && setSelectedDisease(disease.name)}
+                    checked={selectedDisease === disease.disease_id}
+                    onChange={(e) => e.target.checked && setSelectedDisease(disease.disease_id)}
                   />
                   <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-white/5 transition-all group-hover:bg-gray-100 dark:group-hover:bg-white/10 group-has-[:checked]:!bg-primary group-has-[:checked]:!border-primary">
                     <h4 className="font-bold text-primary group-has-[:checked]:!text-white mb-1 font-almarai text-base transition-colors">
-                      {disease.name}
+                      {disease.ar_name || disease.disease_name}
                     </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 group-has-[:checked]:!text-white/90 leading-relaxed transition-colors">
-                      {disease.description}
-                    </p>
+                    {disease.description && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 group-has-[:checked]:!text-white/90 leading-relaxed transition-colors">
+                        {disease.description}
+                      </p>
+                    )}
                   </div>
                 </label>
               ))}
