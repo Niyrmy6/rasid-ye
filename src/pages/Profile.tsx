@@ -8,6 +8,7 @@ export default function Profile() {
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [reportCount, setReportCount] = useState<number | string>('...');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -20,6 +21,19 @@ export default function Profile() {
             setUserName(storedUser.full_name || storedUser.name || 'مستخدم راصد');
             setUserId(storedUser.user_id);
             setProfilePicture(storedUser.profile_picture || null);
+
+            // Fetch report count
+            const { supabase } = await import('../lib/supabase');
+            const { count, error } = await supabase
+              .from('report')
+              .select('*', { count: 'exact', head: true })
+              .eq('user_id', storedUser.user_id);
+            
+            if (!error && count !== null) {
+              setReportCount(count);
+            } else {
+              setReportCount(0);
+            }
           }
         } catch (e) {
           console.error('Failed to parse user from localStorage');
@@ -160,7 +174,9 @@ export default function Profile() {
                   </div>
                   <span className="font-bold text-text-main">إجمالي البلاغات</span>
                 </div>
-                <span className="text-2xl font-bold font-almarai text-primary">١٢</span>
+                <span className="text-2xl font-bold font-almarai text-primary">
+                  {reportCount.toLocaleString('ar-EG')}
+                </span>
               </div>
             </div>
 
