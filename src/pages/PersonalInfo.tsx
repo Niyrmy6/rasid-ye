@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import { supabase } from '../lib/supabase';
@@ -16,6 +16,9 @@ export default function PersonalInfo() {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     const storedUserStr = localStorage.getItem('user');
@@ -26,11 +29,71 @@ export default function PersonalInfo() {
         if (storedUser.phone) setPhone(storedUser.phone);
         if (storedUser.password) setPassword(storedUser.password);
         if (storedUser.email) setEmail(storedUser.email);
+        if (storedUser.user_id) setUserId(storedUser.user_id);
+        if (storedUser.profile_picture) setProfilePicture(storedUser.profile_picture);
       } catch (e) {
         console.error('Failed to parse user from localStorage');
       }
     }
   }, []);
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (!event.target.files || event.target.files.length === 0 || !userId) {
+        return;
+      }
+      
+      const file = event.target.files[0];
+      
+      if (!file.type.startsWith('image/')) {
+        alert('حدث خطأ: يُسمح برفع الصور فقط.');
+        return;
+      }
+
+      const MAX_SIZE_MB = 5;
+      if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+        alert(`حدث خطأ: حجم الصورة يجب ألا يتجاوز ${MAX_SIZE_MB} ميجابايت.`);
+        return;
+      }
+
+      setUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}-${Math.random()}.${fileExt}`;
+      const filePath = `public/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from('user')
+        .update({ profile_picture: publicUrl })
+        .eq('user_id', userId);
+
+      if (updateError) throw updateError;
+
+      setProfilePicture(publicUrl);
+      
+      const storedUserStr = localStorage.getItem('user');
+      if (storedUserStr) {
+        const storedUser = JSON.parse(storedUserStr);
+        storedUser.profile_picture = publicUrl;
+        localStorage.setItem('user', JSON.stringify(storedUser));
+      }
+
+    } catch (error) {
+      console.error('Error uploading image: ', error);
+      alert('حدث خطأ أثناء رفع الصورة');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSaveClick = () => {
     setShowConfirm(true);
@@ -102,12 +165,28 @@ export default function PersonalInfo() {
       <main className="flex-1 overflow-y-auto pb-32 max-w-md mx-auto w-full">
         <div className="px-4 py-8 flex flex-col items-center">
           <div className="relative mb-4">
-            <div className="w-28 h-28 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-4 border-white">
-              <span className="material-symbols-outlined filled text-[64px] text-gray-300">person</span>
+            <div className={`w-28 h-28 rounded-full bg-white shadow-lg flex items-center justify-center overflow-hidden border-4 border-white ${uploading ? 'opacity-50' : ''}`}>
+              {profilePicture ? (
+                <img src={profilePicture} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <span className="material-symbols-outlined filled text-[64px] text-gray-300">person</span>
+              )}
+              {uploading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
             </div>
-            <div className="absolute bottom-1 right-1 w-8 h-8 bg-primary rounded-full border-4 border-white flex items-center justify-center text-white shadow-sm cursor-pointer hover:bg-primary-dark transition-colors">
+            <label className="absolute bottom-1 right-1 w-8 h-8 bg-primary rounded-full border-4 border-white flex items-center justify-center text-white shadow-sm cursor-pointer hover:bg-primary-dark transition-colors">
               <span className="material-symbols-outlined text-[16px]">photo_camera</span>
-            </div>
+              <input 
+                type="file" 
+                className="hidden" 
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+            </label>
           </div>
         </div>
 
