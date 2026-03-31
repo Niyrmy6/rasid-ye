@@ -99,6 +99,53 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@layer base {
+  .dark {
+    /* Main Backgrounds */
+    --color-background-light: var(--color-background-dark);
+    --color-surface-light: var(--color-surface-dark);
+    --color-background: var(--color-background-dark);
+    --color-card: var(--color-surface-dark);
+    
+    /* Global white and basic overrides */
+    --color-white: var(--color-surface-dark);
+    --color-black: #ffffff;
+    
+    /* Text colors */
+    --color-text-main: #FAFCFB;
+    --color-text-muted: #8baea4;
+    --color-foreground: #FAFCFB;
+    --color-muted-foreground: #8baea4;
+    
+    /* Gray Scale */
+    --color-gray-50: #1a2421;
+    --color-gray-100: #1f2b28;
+    --color-gray-200: #2a3a36;
+    --color-gray-300: #354742;
+    --color-gray-400: #425953;
+    --color-gray-500: #547068;
+    --color-gray-600: #65877d;
+    --color-gray-700: #7b9e93;
+    --color-gray-800: #9ab4ab;
+    --color-gray-900: #bed0c9;
+
+    /* Specific pastel colors adjustments */
+    --color-pastel-purple: #3a2a53;
+    --color-pastel-green: #1a3c30;
+    --color-pastel-yellow: #4d3a0e;
+    --color-pastel-pink: #4d2323;
+
+    /* Inputs and interactive elements */
+    --color-input: #2a3a36;
+    --color-input-bg: #2a3a36;
+    --color-border: #354742;
+    --color-muted: #2a3a36;
+    
+    /* Misc */
+    --color-brand-shield-bg: #1a3c30;
+  }
+}
+
 body {
   font-family: 'Almarai', sans-serif;
   min-height: max(884px, 100dvh);

@@ -40,7 +40,10 @@ export default function ContactUs() {
           <div className="mb-6 relative w-32 h-32">
             <div className="absolute inset-0 bg-blue-50 rounded-full blur-2xl opacity-60"></div>
             <div className="relative w-full h-full bg-white rounded-full shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden">
-              <span className="material-symbols-outlined text-[80px] text-primary/80">
+              <span 
+                className="material-symbols-outlined text-primary/80" 
+                style={{ fontSize: '80px', fontVariationSettings: "'wght' 300" }}
+              >
                 support_agent
               </span>
             </div>

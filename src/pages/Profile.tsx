@@ -8,8 +8,17 @@ export default function Profile() {
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
   const [reportCount, setReportCount] = useState<number | string>('...');
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
+    // Check initial dark mode state
+    if (document.documentElement.classList.contains('dark')) {
+      setIsDarkMode(true);
+    } else if (localStorage.getItem('theme') === 'dark') {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    }
+    
     const fetchUser = async () => {
       const storedUserStr = localStorage.getItem('user');
       if (storedUserStr) {
@@ -47,7 +56,18 @@ export default function Profile() {
     setIsLoggedIn(false);
   };
 
-
+  const toggleDarkMode = () => {
+    const html = document.documentElement;
+    if (html.classList.contains('dark')) {
+      html.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDarkMode(false);
+    } else {
+      html.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDarkMode(true);
+    }
+  };
 
   return (
     <div className="bg-background-light text-text-main antialiased selection:bg-primary selection:text-white h-screen flex flex-col overflow-hidden">
@@ -145,6 +165,24 @@ export default function Profile() {
                 </div>
                 <span className="material-symbols-outlined text-gray-300 text-[20px] rotate-180 group-hover:text-primary transition-colors">chevron_right</span>
               </Link>
+
+              <button 
+                onClick={toggleDarkMode} 
+                className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all"
+                dir="ltr"
+              >
+                <div className={`w-12 h-6 rounded-full relative transition-colors ${isDarkMode ? 'bg-primary' : 'bg-gray-200'}`}>
+                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all ${isDarkMode ? 'right-0.5' : 'right-[26px]'}`}></div>
+                </div>
+                <div className="flex items-center gap-3" dir="rtl">
+                  <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">
+                    {isDarkMode ? 'light_mode' : 'dark_mode'}
+                  </span>
+                  <span className="font-medium text-text-main font-almarai">
+                    {isDarkMode ? 'الوضع الفاتح' : 'الوضع الداكن'}
+                  </span>
+                </div>
+              </button>
             </div>
 
             <div className="px-4 mt-8 mb-8">
@@ -230,6 +268,26 @@ export default function Profile() {
               >
                 تسجيل الدخول
               </Link>
+            </div>
+
+            <div className="mb-6 w-full">
+              <button 
+                onClick={toggleDarkMode} 
+                className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all"
+                dir="ltr"
+              >
+                <div className={`w-12 h-6 rounded-full relative transition-colors ${isDarkMode ? 'bg-primary' : 'bg-gray-200'}`}>
+                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all ${isDarkMode ? 'right-0.5' : 'right-[26px]'}`}></div>
+                </div>
+                <div className="flex items-center gap-3" dir="rtl">
+                  <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">
+                    {isDarkMode ? 'light_mode' : 'dark_mode'}
+                  </span>
+                  <span className="font-medium text-text-main font-almarai">
+                    {isDarkMode ? 'الوضع الفاتح' : 'الوضع الداكن'}
+                  </span>
+                </div>
+              </button>
             </div>
 
             <div className="mb-6">
