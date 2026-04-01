@@ -14,9 +14,9 @@
   --color-accent-yellow: #F4C430;
   --color-accent-blue: #64B5F6;
   --color-background-light: #FAFCFB;
-  --color-background-dark: #151d1b;
+  --color-background-dark: #1f2b28;
   --color-surface-light: #ffffff;
-  --color-surface-dark: #1f2b28;
+  --color-surface-dark: #2a3a36;
   --color-mint-light: #D4F3E9;
   --color-input-bg: #F3F6F5;
   --color-text-main: #111816;
@@ -107,14 +107,14 @@
     --color-background: var(--color-background-dark);
     --color-card: var(--color-surface-dark);
     
-    /* Global white and basic overrides */
-    --color-white: var(--color-surface-dark);
-    --color-black: #ffffff;
+    /* Soften white in dark mode to prevent visual glare */
+    --color-white: #cbd5e1;
+    --color-black: #0f172a;
     
     /* Text colors */
-    --color-text-main: #FAFCFB;
+    --color-text-main: #cbd5e1;
     --color-text-muted: #8baea4;
-    --color-foreground: #FAFCFB;
+    --color-foreground: #cbd5e1;
     --color-muted-foreground: #8baea4;
     
     /* Gray Scale */

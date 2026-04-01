@@ -1,12 +1,20 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function Landing() {
   const { t, i18n } = useTranslation();
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
+    if (document.documentElement.classList.contains('dark')) {
+      setIsDarkMode(true);
+    } else if (localStorage.getItem('theme') === 'dark') {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    }
+
     const carousel = carouselRef.current;
     if (!carousel) return;
 
@@ -25,28 +33,61 @@ export default function Landing() {
     return () => clearInterval(interval);
   }, []);
 
+  const toggleDarkMode = () => {
+    const html = document.documentElement;
+    if (html.classList.contains('dark')) {
+      html.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+      setIsDarkMode(false);
+    } else {
+      html.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+      setIsDarkMode(true);
+    }
+  };
+
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar');
+  };
+
   return (
-    <div className="bg-background-light text-foreground min-h-screen flex flex-col font-display overflow-x-hidden selection:bg-primary selection:text-white pb-12">
-      <nav className="flex items-center justify-between px-6 py-5 sticky top-0 z-50 bg-background-light/95 backdrop-blur-sm transition-colors duration-300">
+    <div className="bg-background-light dark:bg-background-dark text-foreground min-h-screen flex flex-col font-display overflow-x-hidden selection:bg-primary selection:text-white pb-12 transition-colors duration-300">
+      <nav className="flex items-center justify-between px-6 py-5 sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm transition-colors duration-300">
         <div className={`flex items-center gap-2 ${i18n.language === 'ar' ? 'order-1' : 'order-1 flex-row'}`}>
           <div className="bg-primary/10 p-2 rounded-xl text-primary">
             <span className="material-symbols-outlined text-2xl">shield</span>
           </div>
-          <h2 className="text-foreground text-lg font-bold tracking-tight">{t('Rasid')}</h2>
+          <h2 className="text-foreground dark:text-slate-100 text-lg font-bold tracking-tight">{t('Rasid')}</h2>
         </div>
-        <div className={`relative ${i18n.language === 'ar' ? 'order-2' : 'order-2'}`}>
+        <div className={`flex items-center gap-2 ${i18n.language === 'ar' ? 'order-2' : 'order-2'}`}>
+          <button 
+            onClick={toggleDarkMode}
+            className="flex-shrink-0 w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-text-main dark:text-slate-100 transition-colors"
+          >
+            <span className="material-symbols-outlined text-xl">
+              {isDarkMode ? 'light_mode' : 'dark_mode'}
+            </span>
+          </button>
+          <button 
+            onClick={toggleLanguage}
+            className="flex-shrink-0 w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-text-main dark:text-slate-100 font-bold transition-colors font-almarai"
+          >
+            {i18n.language === 'ar' ? 'EN' : 'ع'}
+          </button>
+          <div className="relative ml-1 mr-1">
           <div className="absolute -inset-1 bg-primary/30 rounded-xl blur-sm animate-pulse"></div>
           <div className="absolute inset-0 bg-primary/40 rounded-xl animate-ring-glow -z-10"></div>
           <Link
             to="/login"
-            className={`relative bg-primary hover:bg-primary-dark text-white shadow-lg shadow-primary/20 transition-all duration-300 transform active:scale-95 text-sm font-bold flex items-center gap-2 px-4 py-2.5 rounded-xl group overflow-hidden animate-soft-pulse ${i18n.language === 'ar' ? 'flex-row' : 'flex-row'}`}
+            className={`relative bg-primary hover:bg-primary-dark text-white dark:text-slate-900 shadow-lg shadow-primary/20 transition-all duration-300 transform active:scale-95 text-sm font-bold flex items-center gap-2 px-4 py-2.5 rounded-xl group overflow-hidden animate-soft-pulse ${i18n.language === 'ar' ? 'flex-row' : 'flex-row'}`}
           >
-            <span className="absolute inset-0 bg-white/20 rounded-xl animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]"></span>
+            <span className="absolute inset-0 bg-white/20 dark:bg-black/10 rounded-xl animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]"></span>
             {t('Report Now')}
             <span className="material-symbols-outlined text-lg animate-bounce">
               notifications_active
             </span>
           </Link>
+        </div>
         </div>
       </nav>
 
@@ -83,33 +124,36 @@ export default function Landing() {
             </div>
 
             <div className="relative flex flex-col items-center">
-              <div className={`absolute -top-16 bg-white px-3 py-2 rounded-xl rounded-bl-none shadow-md border-2 border-primary transform ${i18n.language === 'ar' ? '-right-12 rotate-6' : '-left-12 -rotate-6'} z-20`}>
+              <div className={`absolute -top-16 bg-white dark:bg-surface-dark px-3 py-2 rounded-xl rounded-bl-none shadow-[var(--shadow-card)] border-2 border-primary transform ${i18n.language === 'ar' ? '-right-12 rotate-6' : '-left-12 -rotate-6'} z-20`}>
                 <div className={`flex items-center gap-1 ${i18n.language === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
                   <span className="material-symbols-outlined text-error text-base">
                     warning
                   </span>
-                  <span className="text-xs font-bold text-slate-700">{t('New Alert!')}</span>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{t('New Alert!')}</span>
                 </div>
               </div>
 
-              <div className="w-32 h-32 bg-pastel-purple rounded-full flex items-center justify-center relative border-4 border-white shadow-soft">
-                <span className="material-symbols-outlined text-[5rem] text-accent-purple">
+              <div className="w-32 h-32 bg-pastel-purple dark:bg-pastel-purple/80 rounded-full flex items-center justify-center relative border-4 border-white dark:border-surface-dark shadow-[var(--shadow-soft)]">
+                <span 
+                  className="material-symbols-outlined text-accent-purple dark:text-white"
+                  style={{ fontSize: '80px' }}
+                >
                   face_3
                 </span>
-                <div className="absolute -right-4 top-1/2 -translate-y-1/2 bg-accent-yellow p-2 rounded-full text-white shadow-sm transform -rotate-12 border-2 border-white">
+                <div className="absolute -right-4 top-1/2 -translate-y-1/2 bg-accent-yellow p-2 rounded-full text-white shadow-sm transform -rotate-12 border-2 border-white dark:border-surface-dark">
                   <span className="material-symbols-outlined text-2xl">campaign</span>
                 </div>
-                <div className="absolute -left-2 bottom-0 bg-primary p-2 rounded-lg text-white shadow-sm transform rotate-6 border-2 border-white">
+                <div className="absolute -left-2 bottom-0 bg-primary p-2 rounded-lg text-white shadow-sm transform rotate-6 border-2 border-white dark:border-surface-dark">
                   <span className="material-symbols-outlined text-xl">tablet_mac</span>
                 </div>
               </div>
-              <div className="w-48 h-16 bg-gradient-to-t from-pastel-purple to-transparent rounded-t-full mt-[-10px] opacity-50"></div>
+              <div className="w-48 h-16 bg-gradient-to-t from-pastel-purple dark:from-pastel-purple/50 to-transparent rounded-t-full mt-[-10px] opacity-50"></div>
             </div>
           </div>
         </div>
 
         <div className="text-center mb-6 mt-2">
-          <h1 className={`text-foreground text-[38px] leading-[1.2] font-extrabold tracking-tight mb-3 ${i18n.language === 'ar' ? 'text-right md:text-center' : 'text-left md:text-center'}`}>
+          <h1 className={`text-foreground dark:text-white text-[38px] leading-[1.2] font-extrabold tracking-tight mb-3 ${i18n.language === 'ar' ? 'text-right md:text-center' : 'text-left md:text-center'}`}>
             {t('Your community, ')}
             <span className="text-primary inline-block relative">
               {t('your health, ')}
@@ -129,7 +173,7 @@ export default function Landing() {
             <br />
             {t('your future')}
           </h1>
-          <p className="text-muted-foreground text-lg leading-relaxed max-w-xs mx-auto font-medium">
+          <p className="text-muted-foreground dark:text-gray-400 text-lg leading-relaxed max-w-xs mx-auto font-medium">
             {t('The smartest and easiest epidemiological reporting platform in Yemen.')}
           </p>
         </div>
@@ -137,30 +181,30 @@ export default function Landing() {
         <div className="flex flex-col gap-3 mb-8 w-full" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
           <Link
             to="/news"
-            className="w-full bg-mint-light hover:bg-[var(--color-brand-mint-strong)] text-foreground text-lg font-bold py-4 px-8 rounded-2xl shadow-sm transition-all duration-300 transform active:scale-[0.98] text-center"
+            className="w-full bg-mint-light dark:bg-primary/20 hover:bg-[var(--color-brand-mint-strong)] dark:hover:bg-primary/30 text-foreground dark:text-[#56BCA4] text-lg font-bold py-4 px-8 rounded-2xl shadow-sm transition-all duration-300 transform active:scale-[0.98] text-center border border-transparent dark:border-primary/20"
           >
             {t('Explore')}
           </Link>
           <Link
             to="/login"
-            className={`w-full bg-primary hover:bg-primary-dark text-white text-xl font-bold py-5 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-3 ${i18n.language === 'ar' ? 'flex-row' : 'flex-row'}`}
+            className={`w-full bg-primary hover:bg-primary-dark text-white dark:text-slate-900 text-xl font-bold py-5 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-3 ${i18n.language === 'ar' ? 'flex-row' : 'flex-row'}`}
           >
             {t('Login')}
-            <span className={`material-symbols-outlined bg-white/20 rounded-full p-1 ${i18n.language === 'ar' ? 'rotate-180' : ''}`}>
+            <span className={`material-symbols-outlined bg-white/20 dark:bg-black/10 rounded-full p-1 ${i18n.language === 'ar' ? 'rotate-180' : ''}`}>
               arrow_forward
             </span>
           </Link>
           <Link
             to="/signup"
-            className="w-full text-center text-sm font-semibold text-muted-foreground hover:text-primary transition-colors py-2"
+            className="w-full text-center text-sm font-semibold text-muted-foreground dark:text-gray-400 hover:text-primary transition-colors py-2"
           >
             {t("Don't have an account? ")} <span className="text-primary hover:underline">{t('Create new account')}</span>
           </Link>
         </div>
 
         <div className="flex flex-col items-center gap-3 mb-8" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-          <div className="flex items-center bg-card p-2 pr-4 pl-2 rounded-full shadow-card border border-border">
-            <p className={`text-muted-foreground font-bold text-sm ${i18n.language === 'ar' ? 'ml-3' : 'mr-3'}`}>{t('+10,000 Active Users')}</p>
+          <div className="flex items-center bg-card dark:bg-surface-dark p-2 pr-4 pl-2 rounded-full shadow-card border border-border dark:border-white/10">
+            <p className={`text-muted-foreground dark:text-slate-200 font-bold text-sm ${i18n.language === 'ar' ? 'ml-3' : 'mr-3'}`}>{t('+10,000 Active Users')}</p>
             <div className={`flex -space-x-3 ${i18n.language === 'ar' ? 'space-x-reverse' : ''}`}>
               <div className="w-8 h-8 rounded-full border-2 border-white overflow-hidden relative">
                 <img
@@ -196,14 +240,14 @@ export default function Landing() {
           dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
         >
           <div className="min-w-[280px] snap-center transform -rotate-1 translate-y-[-10px]">
-            <div className={`bg-pastel-purple h-full p-6 rounded-[2rem] flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white shadow-soft relative overflow-hidden ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-              <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-white/30 rounded-full blur-xl"></div>
-              <div className="bg-white p-4 rounded-2xl shadow-sm text-accent-purple relative z-10">
+            <div className={`bg-pastel-purple dark:bg-slate-800 h-full p-6 rounded-[2rem] flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white dark:border-white/5 shadow-soft relative overflow-hidden ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+              <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-white/30 dark:bg-white/5 rounded-full blur-xl"></div>
+              <div className="bg-white dark:bg-slate-700 p-4 rounded-2xl shadow-sm text-accent-purple dark:text-[#c4b5fd] relative z-10">
                 <span className="material-symbols-outlined text-4xl">mic</span>
               </div>
               <div className="relative z-10 mt-2">
-                <h3 className="font-extrabold text-slate-800 text-2xl mb-2">{t('Report Easily')}</h3>
-                <p className="text-base text-slate-600 leading-relaxed font-medium">
+                <h3 className="font-extrabold text-slate-800 dark:text-slate-100 text-2xl mb-2">{t('Report Easily')}</h3>
+                <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                   {t('Quick reporting of suspected cases')}
                 </p>
               </div>
@@ -211,14 +255,14 @@ export default function Landing() {
           </div>
 
           <div className="min-w-[280px] snap-center transform rotate-2 translate-y-[20px]">
-            <div className={`bg-pastel-green h-full p-6 rounded-[2rem] flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white shadow-soft relative overflow-hidden ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-              <div className="absolute -top-10 -right-10 w-24 h-24 bg-white/30 rounded-full blur-xl"></div>
-              <div className="bg-white p-4 rounded-2xl shadow-sm text-primary relative z-10">
+            <div className={`bg-pastel-green dark:bg-slate-800 h-full p-6 rounded-[2rem] flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white dark:border-white/5 shadow-soft relative overflow-hidden ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+              <div className="absolute -top-10 -right-10 w-24 h-24 bg-white/30 dark:bg-white/5 rounded-full blur-xl"></div>
+              <div className="bg-white dark:bg-slate-700 p-4 rounded-2xl shadow-sm text-primary dark:text-[#6ee7b7] relative z-10">
                 <span className="material-symbols-outlined text-4xl">explore</span>
               </div>
               <div className="relative z-10 mt-2">
-                <h3 className="font-extrabold text-slate-800 text-2xl mb-2">{t('Track Your Report')}</h3>
-                <p className="text-base text-slate-600 leading-relaxed font-medium">
+                <h3 className="font-extrabold text-slate-800 dark:text-slate-100 text-2xl mb-2">{t('Track Your Report')}</h3>
+                <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                   {t('Track report and investigation status moment by moment')}
                 </p>
               </div>
@@ -226,14 +270,14 @@ export default function Landing() {
           </div>
 
           <div className="min-w-[280px] snap-center transform -rotate-2 translate-y-[-10px]">
-             <div className={`bg-pastel-yellow h-full p-6 rounded-[2rem] flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white shadow-soft relative overflow-hidden ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-              <div className="absolute bottom-10 right-0 w-20 h-20 bg-white/40 rounded-full blur-xl"></div>
-              <div className="bg-white p-4 rounded-2xl shadow-sm text-accent-yellow relative z-10">
+             <div className={`bg-pastel-yellow dark:bg-slate-800 h-full p-6 rounded-[2rem] flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white dark:border-white/5 shadow-soft relative overflow-hidden ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+              <div className="absolute bottom-10 right-0 w-20 h-20 bg-white/40 dark:bg-white/5 rounded-full blur-xl"></div>
+              <div className="bg-white dark:bg-slate-700 p-4 rounded-2xl shadow-sm text-accent-yellow dark:text-[#fde047] relative z-10">
                 <span className="material-symbols-outlined text-4xl">query_stats</span>
               </div>
               <div className="relative z-10 mt-2">
-                <h3 className="font-extrabold text-slate-800 text-2xl mb-2">{t('Transparent Data')}</h3>
-                <p className="text-base text-slate-600 leading-relaxed font-medium">
+                <h3 className="font-extrabold text-slate-800 dark:text-slate-100 text-2xl mb-2">{t('Transparent Data')}</h3>
+                <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                   {t('View epidemiological map, general statistics, and health news')}
                 </p>
               </div>
@@ -241,16 +285,16 @@ export default function Landing() {
           </div>
 
           <div className="min-w-[280px] snap-center transform rotate-1 translate-y-[20px]">
-             <div className={`bg-pastel-purple h-full p-6 rounded-[2rem] flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white shadow-soft relative overflow-hidden ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-              <div className="absolute -top-5 -left-5 w-24 h-24 bg-white/20 rounded-full blur-xl"></div>
-              <div className="bg-white p-4 rounded-2xl shadow-sm text-accent-purple relative z-10">
+             <div className={`bg-pastel-purple dark:bg-slate-800 h-full p-6 rounded-[2rem] flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white dark:border-white/5 shadow-soft relative overflow-hidden ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+              <div className="absolute -top-5 -left-5 w-24 h-24 bg-white/20 dark:bg-white/5 rounded-full blur-xl"></div>
+              <div className="bg-white dark:bg-slate-700 p-4 rounded-2xl shadow-sm text-accent-purple dark:text-[#c4b5fd] relative z-10">
                 <span className="material-symbols-outlined text-4xl">smart_toy</span>
               </div>
               <div className="relative z-10 mt-2">
-                <h3 className="font-extrabold text-slate-800 text-2xl mb-2">
+                <h3 className="font-extrabold text-slate-800 dark:text-slate-100 text-2xl mb-2">
                   {t('Your Smart Health Assistant')}
                 </h3>
-                <p className="text-base text-slate-600 leading-relaxed font-medium">
+                <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                   {t('Get instant answers to your health questions when you register')}
                 </p>
               </div>
@@ -259,11 +303,11 @@ export default function Landing() {
         </div>
       </main>
 
-      <footer className="bg-muted border-t border-border py-10 px-6 mt-4" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+      <footer className="bg-muted dark:bg-slate-800/80 border-t border-border dark:border-white/10 py-10 px-6 mt-4" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="w-full max-w-md mx-auto flex flex-col gap-8">
           <div className="flex flex-col gap-3">
-            <h4 className="text-lg font-bold text-foreground">{t('Quick Links')}</h4>
-            <ul className="flex flex-col gap-2 text-muted-foreground text-base">
+            <h4 className="text-lg font-bold text-foreground dark:text-white">{t('Quick Links')}</h4>
+            <ul className="flex flex-col gap-2 text-muted-foreground dark:text-gray-400 text-base">
               <li>
                 <Link to="/news" className="hover:text-primary transition-colors duration-200">
                   {t('News')}
@@ -282,20 +326,20 @@ export default function Landing() {
             </ul>
           </div>
           <div className="flex flex-col gap-3">
-            <h4 className="text-lg font-bold text-foreground">{t('Contact Info')}</h4>
-            <div className="flex items-center gap-2 text-muted-foreground">
+            <h4 className="text-lg font-bold text-foreground dark:text-white">{t('Contact Info')}</h4>
+            <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-400">
               <span className="material-symbols-outlined text-primary text-xl">
                 phone_in_talk
               </span>
               <span dir="ltr">+967 123 456</span>
             </div>
-            <div className="flex items-center gap-2 text-muted-foreground">
+            <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-400">
               <span className="material-symbols-outlined text-primary text-xl">mail</span>
               <span>support@rasid.ye</span>
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            <h4 className="text-lg font-bold text-foreground">{t('Follow Us')}</h4>
+            <h4 className="text-lg font-bold text-foreground dark:text-white">{t('Follow Us')}</h4>
             <div className="flex gap-4">
               <a
                 className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-200 shadow-sm"
@@ -332,8 +376,8 @@ export default function Landing() {
             </div>
           </div>
         </div>
-        <div className="border-t border-border mt-8 pt-6 text-center">
-          <p className="text-muted-foreground text-sm">{t('© 2024 Rasid. All rights reserved')}</p>
+        <div className="border-t border-border dark:border-white/10 mt-8 pt-6 text-center">
+          <p className="text-muted-foreground dark:text-gray-400 text-sm">{t('© 2024 Rasid. All rights reserved')}</p>
         </div>
       </footer>
     </div>
