@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 
 export default function Login() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +15,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone || !password) {
-      setError('يرجى إدخال رقم الهاتف وكلمة المرور');
+      setError(t('Please enter phone number and password'));
       return;
     }
     setLoading(true);
@@ -31,19 +33,19 @@ export default function Login() {
 
       if (supaError) {
         console.error('Supabase Login Error:', supaError);
-        setError(`خطأ: ${supaError.message || 'حدث خطأ غير متوقع'}`);
+        setError(`${t('Error: ')}${supaError.message || t('An unexpected error occurred')}`);
       } else if (!data) {
-        setError('رقم الهاتف أو كلمة المرور غير صحيحة');
+        setError(t('Incorrect phone number or password'));
       } else {
         if (data.role_id === 3) {
           localStorage.setItem('user', JSON.stringify(data));
           navigate('/news');
         } else {
-          setError('عذراً، هذا التطبيق مخصص للمبلغين فقط. واجهة الموظفين غير متوفرة هنا.');
+          setError(t('Sorry, this app is for reporters only. Staff interface is not available here.'));
         }
       }
     } catch (err) {
-      setError('حدث خطأ في الاتصال بالخادم');
+      setError(t('Error connecting to server'));
     } finally {
       setLoading(false);
     }
@@ -52,18 +54,18 @@ export default function Login() {
   return (
     <div className="bg-background-light text-foreground min-h-screen flex flex-col font-display overflow-x-hidden selection:bg-primary selection:text-white">
       <nav className="flex items-center justify-between px-6 py-5 sticky top-0 z-50 bg-background-light/95 backdrop-blur-sm transition-colors duration-300">
-        <div className="flex items-center gap-2">
+        <div className={`flex items-center gap-2 ${i18n.language === 'ar' ? '' : 'order-1 flex-row'}`}>
           <div className="bg-primary/10 p-1.5 rounded-lg text-primary">
             <span className="material-symbols-outlined text-xl">shield</span>
           </div>
-          <h2 className="text-foreground text-lg font-bold tracking-tight">راصد</h2>
+          <h2 className="text-foreground text-lg font-bold tracking-tight">{t('Rasid')}</h2>
         </div>
-        <div className="flex items-center gap-2">
+        <div className={`flex items-center gap-2 ${i18n.language === 'ar' ? '' : 'order-2 flex-row-reverse'}`}>
           <button
             onClick={() => navigate(-1)}
             className="w-10 h-10 flex items-center justify-center rounded-xl bg-muted hover:bg-muted text-muted-foreground transition-colors"
           >
-            <span className="material-symbols-outlined text-xl">arrow_back</span>
+            <span className={`material-symbols-outlined text-xl ${i18n.language === 'ar' ? '' : 'rotate-180'}`}>arrow_back</span>
           </button>
         </div>
       </nav>
@@ -107,55 +109,55 @@ export default function Login() {
         </div>
 
         <div className="text-center mb-8">
-          <h1 className="text-foreground text-3xl font-extrabold tracking-tight">تسجيل الدخول</h1>
-          <p className="text-muted-foreground mt-2 text-sm font-medium">مرحباً بك مجدداً في مجتمع راصد</p>
+          <h1 className="text-foreground text-3xl font-extrabold tracking-tight">{t('Login')}</h1>
+          <p className="text-muted-foreground mt-2 text-sm font-medium">{t('Welcome back to Rasid community')}</p>
         </div>
 
         <form className="flex flex-col gap-5 w-full" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <label className="text-foreground font-bold text-sm mr-1 block" htmlFor="phone">
-              رقم الهاتف
+            <label className={`text-foreground font-bold text-sm block ${i18n.language === 'ar' ? 'mr-1 text-right' : 'ml-1 text-left'}`} htmlFor="phone">
+              {t('Phone Number')}
             </label>
-              <div className="relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-500 font-sans flex items-center gap-2 pointer-events-none" dir="ltr">
+              <div className="relative" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                <div className={`absolute top-1/2 -translate-y-1/2 font-bold text-gray-500 font-sans flex items-center gap-2 pointer-events-none ${i18n.language === 'ar' ? 'left-4' : 'left-4'}`} dir="ltr">
                   <span>|</span>
                   <span className="text-foreground">+967</span>
                 </div>
                 <input
-                  className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 pr-12 pl-24 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
+                  className={`w-full bg-input-bg border border-transparent text-foreground font-medium py-4 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground ${i18n.language === 'ar' ? 'pr-12 pl-24 text-right' : 'pl-24 pr-12 text-left'}`}
                   dir="ltr"
                   id="phone"
                   placeholder="77xxxxxxx"
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  style={{ textAlign: 'right' }}
+                  style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
                 />
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                <div className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none ${i18n.language === 'ar' ? 'right-4' : 'left-4 pl-42'}`} style={i18n.language !== 'ar' ? { left: 'auto', right: '1rem' } : {}}>
                   <span className="material-symbols-outlined">smartphone</span>
                 </div>
               </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-foreground font-bold text-sm mr-1 block" htmlFor="password">
-              كلمة المرور
+            <label className={`text-foreground font-bold text-sm block ${i18n.language === 'ar' ? 'mr-1 text-right' : 'ml-1 text-left'}`} htmlFor="password">
+              {t('Password')}
             </label>
-            <div className="relative">
+            <div className="relative" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
               <input
-                className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 pr-12 pl-12 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
-                dir="rtl"
+                className={`w-full bg-input-bg border border-transparent text-foreground font-medium py-4 px-12 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}
+                dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
                 id="password"
                 placeholder="••••••••"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+              <div className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none ${i18n.language === 'ar' ? 'right-4' : 'left-4'}`}>
                 <span className="material-symbols-outlined">lock</span>
               </div>
               <div 
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer hover:text-primary transition-colors z-10"
+                className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer hover:text-primary transition-colors z-10 ${i18n.language === 'ar' ? 'left-4' : 'right-4'}`}
                 onClick={() => setShowPassword(!showPassword)}
               >
                 <span className="material-symbols-outlined">
@@ -163,12 +165,12 @@ export default function Login() {
                 </span>
               </div>
             </div>
-            <div className="flex justify-end mt-1">
+            <div className={`flex mt-1 ${i18n.language === 'ar' ? 'justify-end' : 'justify-start'}`}>
               <Link
                 to="/forgot-password"
                 className="text-xs font-semibold text-primary hover:text-primary-dark transition-colors"
               >
-                نسيت كلمة المرور؟
+                {t('Forgot password?')}
               </Link>
             </div>
           </div>
@@ -180,16 +182,16 @@ export default function Login() {
               type="submit"
               disabled={loading}
             >
-              {loading ? 'جاري التحقق...' : 'دخول'}
+              {loading ? t('Verifying...') : t('Login')}
             </button>
           </div>
         </form>
 
-        <div className="mt-8 text-center">
+        <div className="mt-8 text-center" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
           <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            ليس لديك حساب؟{' '}
-            <Link to="/signup" className="text-primary font-bold hover:underline mr-1">
-              إنشاء حساب جديد
+            {t("Don't have an account? ")}
+            <Link to="/signup" className={`text-primary font-bold hover:underline ${i18n.language === 'ar' ? 'mr-1' : 'ml-1'}`}>
+              {t('Create new account')}
             </Link>
           </button>
         </div>

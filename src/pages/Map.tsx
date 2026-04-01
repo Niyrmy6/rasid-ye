@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import BottomNav from "../components/BottomNav";
 import { supabase } from "../lib/supabase";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
@@ -66,6 +67,7 @@ function ChangeView({ center, zoom }: { center: [number, number], zoom: number }
 }
 
 export default function Map() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [diseases, setDiseases] = useState<Disease[]>([]);
   const [governorates, setGovernorates] = useState<Governorate[]>([]);
@@ -75,6 +77,14 @@ export default function Map() {
   const [loading, setLoading] = useState(true);
   const [mapCenter, setMapCenter] = useState<[number, number]>([15.5527, 48.5164]); // Center of Yemen
   const [mapZoom, setMapZoom] = useState(6);
+
+  const getLocalizedDisease = (name: string) => {
+    return i18n.language === 'ar' ? (DISEASE_AR_MAP[name.toLowerCase()] || name) : name;
+  };
+
+  const getLocalizedGov = (name: string) => {
+    return i18n.language === 'ar' ? (GOV_AR_MAP[name.toLowerCase()] || name) : name;
+  };
 
   useEffect(() => {
     async function fetchMetadata() {
@@ -132,11 +142,11 @@ export default function Map() {
             </span>
           </div>
           <span className="text-xl font-bold text-text-main dark:text-slate-100">
-            راصد
+            {t('Rasid')}
           </span>
         </div>
         <h1 className="text-lg font-bold text-text-main dark:text-slate-100">
-          الخريطة الحية
+          {t('Live Map')}
         </h1>
       </header>
 
@@ -145,18 +155,19 @@ export default function Map() {
           <div className="grid grid-cols-2 gap-3 mb-3">
             <div className="relative w-full">
               <label className="block text-xs font-bold text-text-muted mb-1 px-1">
-                نوع المرض
+                {t('Disease Type')}
               </label>
               <div className="relative">
                 <select 
                   value={selectedDisease}
                   onChange={(e) => setSelectedDisease(e.target.value)}
                   className="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark py-2.5 pr-3 pl-8 text-text-main dark:text-slate-100 focus:border-primary focus:ring-primary text-sm shadow-sm appearance-none outline-none"
+                  dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
                 >
-                  <option value="all">الكل</option>
+                  <option value="all">{t('All')}</option>
                   {diseases.map(d => (
                     <option key={d.disease_id} value={d.disease_id}>
-                      {DISEASE_AR_MAP[d.disease_name.toLowerCase()] || d.disease_name}
+                      {getLocalizedDisease(d.disease_name)}
                     </option>
                   ))}
                 </select>
@@ -167,18 +178,19 @@ export default function Map() {
             </div>
             <div className="relative w-full">
               <label className="block text-xs font-bold text-text-muted mb-1 px-1">
-                المحافظة
+                {t('Governorate')}
               </label>
               <div className="relative">
                 <select 
                   value={selectedGovernorate}
                   onChange={handleGovChange}
                   className="block w-full rounded-xl border-gray-200 dark:border-gray-700 bg-white dark:bg-surface-dark py-2.5 pr-3 pl-8 text-text-main dark:text-slate-100 focus:border-primary focus:ring-primary text-sm shadow-sm appearance-none outline-none"
+                  dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
                 >
-                  <option value="all">الكل</option>
+                  <option value="all">{t('All')}</option>
                   {governorates.map(g => (
                     <option key={g.governorate_id} value={g.governorate_id}>
-                      {GOV_AR_MAP[g.governorate_name.toLowerCase()] || g.governorate_name}
+                      {getLocalizedGov(g.governorate_name)}
                     </option>
                   ))}
                 </select>
@@ -205,11 +217,11 @@ export default function Map() {
             {filteredReports.map(report => (
               <Marker key={report.report_id} position={[report.lat, report.lng]}>
                 <Popup>
-                  <div className="text-right font-almarai">
-                    <div className="font-bold text-primary">{DISEASE_AR_MAP[report.disease_name.toLowerCase()] || report.disease_name}</div>
-                    <div className="text-xs text-gray-600">{GOV_AR_MAP[report.governorate_name.toLowerCase()] || report.governorate_name}</div>
+                  <div className={`text-${i18n.language === 'ar' ? 'right' : 'left'} font-almarai`}>
+                    <div className="font-bold text-primary">{getLocalizedDisease(report.disease_name)}</div>
+                    <div className="text-xs text-gray-600">{getLocalizedGov(report.governorate_name)}</div>
                     <div className="text-[10px] text-gray-400 mt-1">
-                      {new Date(report.report_date).toLocaleDateString('ar-EG')}
+                      {new Date(report.report_date).toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en-US')}
                     </div>
                   </div>
                 </Popup>
@@ -218,7 +230,7 @@ export default function Map() {
           </MapContainer>
 
           <div className="absolute top-4 left-4 z-[500] bg-white/95 dark:bg-surface-dark/95 backdrop-blur-sm px-4 py-2 rounded-2xl shadow-xl border border-primary/20">
-            <div className="text-[10px] text-text-muted font-bold">بلاغات مؤكدة</div>
+            <div className="text-[10px] text-text-muted font-bold">{t('Confirmed Reports')}</div>
             <div className="text-xl font-black text-primary leading-tight">
               {loading ? '...' : filteredReports.length}
             </div>
@@ -229,10 +241,10 @@ export default function Map() {
           <div className="flex justify-end w-full pointer-events-auto">
             <button
               onClick={() => navigate("/new-report")}
-              className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 group"
+              className={`flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-3 rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 group flex-row${i18n.language === 'ar' ? '' : '-reverse'}`}
             >
               <span className="material-symbols-outlined text-[24px]">add_alert</span>
-              <span className="font-bold text-base">تقديم بلاغ</span>
+              <span className="font-bold text-base w-max">{t('Submit Report')}</span>
             </button>
           </div>
         </div>

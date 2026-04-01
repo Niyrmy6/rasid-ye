@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import BottomNav from '../components/BottomNav';
 import { supabase } from '../lib/supabase';
 
@@ -16,6 +17,7 @@ type NotificationItem = {
 };
 
 export default function Notifications() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,20 +61,20 @@ export default function Notifications() {
               const status = history.report_status?.toLowerCase();
 
               if (status === 'received' || status === 'new') {
-                title = `تم تحديث حالة بلاغك #${report.tracking_number}`;
-                message = 'تم استلام البلاغ بنجاح في النظام.';
+                title = `${t('Update on your report status #')}${report.tracking_number}`;
+                message = t('Report received successfully in the system.');
               } else if (status === 'under review' || status === 'under_review' || status === 'in_progress') {
-                title = `تم تحديث حالة بلاغك #${report.tracking_number}`;
-                message = 'جاري مراجعة البيانات المرفقة من قبل المختصين.';
+                title = `${t('Update on your report status #')}${report.tracking_number}`;
+                message = t('Attached data is being reviewed by specialists.');
               } else if (status === 'verified' || status === 'completed') {
-                title = `تم إغلاق البلاغ #${report.tracking_number}`;
-                message = 'تم التحقق من البلاغ واتخاذ الإجراء اللازم.';
+                title = `${t('Report closed #')}${report.tracking_number}`;
+                message = t('Report has been verified and necessary action taken.');
               } else if (status === 'rejected' || status === 'cancelled') {
-                title = `تم رفض البلاغ #${report.tracking_number}`;
-                message = 'تم رفض البلاغ لعدم استيفاء الشروط.';
+                title = `${t('Report rejected #')}${report.tracking_number}`;
+                message = t('Report rejected due to unmet conditions.');
               } else {
-                title = `تحديث في بلاغ #${report.tracking_number}`;
-                message = 'تم تغيير حالة البلاغ.';
+                title = `${t('Update on report #')}${report.tracking_number}`;
+                message = t('Report status has changed.');
               }
 
               notifs.push({
@@ -106,30 +108,39 @@ export default function Notifications() {
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
     
     let interval = seconds / 31536000;
-    if (interval > 1) return 'منذ ' + Math.floor(interval) + ' سنة';
+    if (interval > 1) {
+      const val = Math.floor(interval);
+      return i18n.language === 'ar' ? `منذ ${val} سنة` : `${val} year${val > 1 ? 's' : ''} ago`;
+    }
     
     interval = seconds / 2592000;
-    if (interval > 1) return 'منذ ' + Math.floor(interval) + ' شهر';
+    if (interval > 1) {
+      const val = Math.floor(interval);
+      return i18n.language === 'ar' ? `منذ ${val} شهر` : `${val} month${val > 1 ? 's' : ''} ago`;
+    }
     
     interval = seconds / 86400;
     if (interval > 1) {
       const days = Math.floor(interval);
-      return days === 1 ? 'أمس' : 'منذ ' + days + ' أيام';
+      if (days === 1) return t('Yesterday');
+      return i18n.language === 'ar' ? `منذ ${days} أيام` : `${days} days ago`;
     }
     
     interval = seconds / 3600;
     if (interval > 1) {
       const hours = Math.floor(interval);
-      return hours === 1 ? 'منذ ساعة' : hours === 2 ? 'منذ ساعتين' : 'منذ ' + hours + ' ساعات';
+      if (hours === 1) return i18n.language === 'ar' ? 'منذ ساعة' : 'an hour ago';
+      if (hours === 2) return i18n.language === 'ar' ? 'منذ ساعتين' : '2 hours ago';
+      return i18n.language === 'ar' ? `منذ ${hours} ساعات` : `${hours} hours ago`;
     }
     
     interval = seconds / 60;
     if (interval > 1) {
       const minutes = Math.floor(interval);
-      return 'منذ ' + minutes + ' دقائق';
+      return i18n.language === 'ar' ? `منذ ${minutes} دقائق` : `${minutes} minutes ago`;
     }
     
-    return 'الآن';
+    return t('Just now');
   };
 
   const getStatusIconInfo = (status?: string) => {
@@ -145,20 +156,20 @@ export default function Notifications() {
   return (
     <div className="bg-background-light text-text-main antialiased selection:bg-primary selection:text-white h-screen flex flex-col overflow-hidden">
       <header className="sticky top-0 z-40 bg-background-light/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between shadow-sm border-b border-gray-100 max-w-md mx-auto w-full">
-        <div className="flex items-center gap-2">
+        <div className={`flex items-center gap-2 ${i18n.language === 'ar' ? '' : 'order-1 flex-row'}`}>
           <div className="w-10 h-10 bg-[#eefcfc] rounded-xl flex items-center justify-center text-primary">
             <span className="material-symbols-outlined text-[24px]">shield</span>
           </div>
-          <span className="text-xl font-bold text-text-main">راصد</span>
+          <span className="text-xl font-bold text-text-main">{t('Rasid')}</span>
         </div>
-        <div className="flex items-center gap-3">
-          <h1 className="text-lg font-bold text-text-main">التنبيهات</h1>
+        <div className={`flex items-center gap-3 ${i18n.language === 'ar' ? '' : 'order-2 flex-row-reverse'}`}>
           <button 
             onClick={() => navigate(-1)}
             className="w-8 h-8 rounded-full hover:bg-black/5 flex items-center justify-center transition-colors"
           >
-            <span className="material-symbols-outlined text-text-main">arrow_back</span>
+            <span className={`material-symbols-outlined text-text-main ${i18n.language === 'ar' ? '' : 'rotate-180'}`}>arrow_forward</span>
           </button>
+          <h1 className="text-lg font-bold text-text-main">{t('Notifications')}</h1>
         </div>
       </header>
 
@@ -172,14 +183,14 @@ export default function Notifications() {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
               <span className="material-symbols-outlined text-[32px]">notifications_off</span>
             </div>
-            <p className="text-gray-500 font-medium">لا توجد تنبيهات جديدة</p>
+            <p className="text-gray-500 font-medium">{t('No new notifications')}</p>
           </div>
         ) : (
-          <>
+          <div dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
             {todayNotifs.length > 0 && (
               <div className="px-4 pt-6">
-                <h2 className="text-sm font-bold text-text-muted mb-3 px-1">اليوم</h2>
-                <div className="space-y-3">
+                <h2 className="text-sm font-bold text-text-muted mb-3 px-1">{t('Today')}</h2>
+                 <div className="space-y-3">
                   {todayNotifs.map(notif => {
                     const iconInfo = getStatusIconInfo(notif.status);
                     return (
@@ -192,10 +203,10 @@ export default function Notifications() {
                           <div className={`w-12 h-12 rounded-full ${iconInfo.bg} flex items-center justify-center flex-shrink-0 mt-1`}>
                             <span className={`material-symbols-outlined ${iconInfo.text}`}>{iconInfo.icon}</span>
                           </div>
-                          <div className="flex-1">
+                          <div className={`flex-1 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
                             <h3 className="font-bold font-almarai text-text-main text-base leading-snug mb-1">{notif.title}</h3>
                             <p className="text-sm text-gray-600 mb-2">{notif.message}</p>
-                            <p className="text-xs text-text-muted">{getTimeAgo(notif.date)}</p>
+                            <p className="text-xs text-text-muted" dir="ltr" style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}>{getTimeAgo(notif.date)}</p>
                           </div>
                         </div>
                       </div>
@@ -207,7 +218,7 @@ export default function Notifications() {
 
             {earlierNotifs.length > 0 && (
               <div className="px-4 pt-6">
-                <h2 className="text-sm font-bold text-text-muted mb-3 px-1">سابقاً</h2>
+                <h2 className="text-sm font-bold text-text-muted mb-3 px-1">{t('Earlier')}</h2>
                 <div className="space-y-3">
                   {earlierNotifs.map(notif => {
                     const iconInfo = getStatusIconInfo(notif.status);
@@ -221,10 +232,10 @@ export default function Notifications() {
                           <div className={`w-12 h-12 rounded-full ${iconInfo.bg} flex items-center justify-center flex-shrink-0 mt-1`}>
                             <span className={`material-symbols-outlined ${iconInfo.text}`}>{iconInfo.icon}</span>
                           </div>
-                          <div className="flex-1">
+                          <div className={`flex-1 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
                             <h3 className="font-bold font-almarai text-text-main text-base leading-snug mb-1">{notif.title}</h3>
                             <p className="text-sm text-gray-600 mb-2">{notif.message}</p>
-                            <p className="text-xs text-text-muted">{getTimeAgo(notif.date)}</p>
+                            <p className="text-xs text-text-muted" dir="ltr" style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}>{getTimeAgo(notif.date)}</p>
                           </div>
                         </div>
                       </div>
@@ -233,7 +244,7 @@ export default function Notifications() {
                 </div>
               </div>
             )}
-          </>
+          </div>
         )}
       </main>
 

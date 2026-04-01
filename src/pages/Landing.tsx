@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function Landing() {
+  const { t, i18n } = useTranslation();
   const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,21 +28,21 @@ export default function Landing() {
   return (
     <div className="bg-background-light text-foreground min-h-screen flex flex-col font-display overflow-x-hidden selection:bg-primary selection:text-white pb-12">
       <nav className="flex items-center justify-between px-6 py-5 sticky top-0 z-50 bg-background-light/95 backdrop-blur-sm transition-colors duration-300">
-        <div className="flex items-center gap-2">
+        <div className={`flex items-center gap-2 ${i18n.language === 'ar' ? 'order-1' : 'order-1 flex-row'}`}>
           <div className="bg-primary/10 p-2 rounded-xl text-primary">
             <span className="material-symbols-outlined text-2xl">shield</span>
           </div>
-          <h2 className="text-foreground text-lg font-bold tracking-tight">راصد</h2>
+          <h2 className="text-foreground text-lg font-bold tracking-tight">{t('Rasid')}</h2>
         </div>
-        <div className="relative">
+        <div className={`relative ${i18n.language === 'ar' ? 'order-2' : 'order-2'}`}>
           <div className="absolute -inset-1 bg-primary/30 rounded-xl blur-sm animate-pulse"></div>
           <div className="absolute inset-0 bg-primary/40 rounded-xl animate-ring-glow -z-10"></div>
           <Link
             to="/login"
-            className="relative bg-primary hover:bg-primary-dark text-white shadow-lg shadow-primary/20 transition-all duration-300 transform active:scale-95 text-sm font-bold flex items-center gap-2 px-4 py-2.5 rounded-xl group overflow-hidden animate-soft-pulse"
+            className={`relative bg-primary hover:bg-primary-dark text-white shadow-lg shadow-primary/20 transition-all duration-300 transform active:scale-95 text-sm font-bold flex items-center gap-2 px-4 py-2.5 rounded-xl group overflow-hidden animate-soft-pulse ${i18n.language === 'ar' ? 'flex-row' : 'flex-row'}`}
           >
             <span className="absolute inset-0 bg-white/20 rounded-xl animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]"></span>
-            الإبلاغ الآن
+            {t('Report Now')}
             <span className="material-symbols-outlined text-lg animate-bounce">
               notifications_active
             </span>
@@ -81,12 +83,12 @@ export default function Landing() {
             </div>
 
             <div className="relative flex flex-col items-center">
-              <div className="absolute -top-16 -right-12 bg-white px-3 py-2 rounded-xl rounded-bl-none shadow-md border-2 border-primary transform rotate-6 z-20">
-                <div className="flex items-center gap-1">
+              <div className={`absolute -top-16 bg-white px-3 py-2 rounded-xl rounded-bl-none shadow-md border-2 border-primary transform ${i18n.language === 'ar' ? '-right-12 rotate-6' : '-left-12 -rotate-6'} z-20`}>
+                <div className={`flex items-center gap-1 ${i18n.language === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
                   <span className="material-symbols-outlined text-error text-base">
                     warning
                   </span>
-                  <span className="text-xs font-bold text-slate-700">تنبيه جديد!</span>
+                  <span className="text-xs font-bold text-slate-700">{t('New Alert!')}</span>
                 </div>
               </div>
 
@@ -107,10 +109,10 @@ export default function Landing() {
         </div>
 
         <div className="text-center mb-6 mt-2">
-          <h1 className="text-foreground text-[38px] leading-[1.2] font-extrabold tracking-tight mb-3">
-            مجتمعك،{' '}
+          <h1 className={`text-foreground text-[38px] leading-[1.2] font-extrabold tracking-tight mb-3 ${i18n.language === 'ar' ? 'text-right md:text-center' : 'text-left md:text-center'}`}>
+            {t('Your community, ')}
             <span className="text-primary inline-block relative">
-              صحتك،
+              {t('your health, ')}
               <svg
                 className="absolute w-full h-3 -bottom-1 left-0 text-primary/20"
                 preserveAspectRatio="none"
@@ -125,26 +127,26 @@ export default function Landing() {
               </svg>
             </span>
             <br />
-            مستقبلك
+            {t('your future')}
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed max-w-xs mx-auto font-medium">
-            منصة الإبلاغ الوبائي الأذكى والأكثر سهولة في اليمن.
+            {t('The smartest and easiest epidemiological reporting platform in Yemen.')}
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 mb-8 w-full">
+        <div className="flex flex-col gap-3 mb-8 w-full" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
           <Link
             to="/news"
             className="w-full bg-mint-light hover:bg-[var(--color-brand-mint-strong)] text-foreground text-lg font-bold py-4 px-8 rounded-2xl shadow-sm transition-all duration-300 transform active:scale-[0.98] text-center"
           >
-            استكشاف
+            {t('Explore')}
           </Link>
           <Link
             to="/login"
-            className="w-full bg-primary hover:bg-primary-dark text-white text-xl font-bold py-5 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-3"
+            className={`w-full bg-primary hover:bg-primary-dark text-white text-xl font-bold py-5 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-3 ${i18n.language === 'ar' ? 'flex-row' : 'flex-row'}`}
           >
-            تسجيل الدخول
-            <span className="material-symbols-outlined rtl:rotate-180 bg-white/20 rounded-full p-1">
+            {t('Login')}
+            <span className={`material-symbols-outlined bg-white/20 rounded-full p-1 ${i18n.language === 'ar' ? 'rotate-180' : ''}`}>
               arrow_forward
             </span>
           </Link>
@@ -152,14 +154,14 @@ export default function Landing() {
             to="/signup"
             className="w-full text-center text-sm font-semibold text-muted-foreground hover:text-primary transition-colors py-2"
           >
-            ليس لديك حساب؟ <span className="text-primary hover:underline">إنشاء حساب جديد</span>
+            {t("Don't have an account? ")} <span className="text-primary hover:underline">{t('Create new account')}</span>
           </Link>
         </div>
 
-        <div className="flex flex-col items-center gap-3 mb-8">
+        <div className="flex flex-col items-center gap-3 mb-8" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
           <div className="flex items-center bg-card p-2 pr-4 pl-2 rounded-full shadow-card border border-border">
-            <p className="text-muted-foreground font-bold ml-3 text-sm">+10,000 مستخدم نشط</p>
-            <div className="flex -space-x-3 space-x-reverse">
+            <p className={`text-muted-foreground font-bold text-sm ${i18n.language === 'ar' ? 'ml-3' : 'mr-3'}`}>{t('+10,000 Active Users')}</p>
+            <div className={`flex -space-x-3 ${i18n.language === 'ar' ? 'space-x-reverse' : ''}`}>
               <div className="w-8 h-8 rounded-full border-2 border-white overflow-hidden relative">
                 <img
                   alt="User"
@@ -191,64 +193,65 @@ export default function Landing() {
         <div 
           ref={carouselRef}
           className="flex overflow-x-auto hide-scrollbar gap-5 pb-12 pt-8 px-4 -mx-6 mb-4 snap-x snap-mandatory scroll-smooth"
+          dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
         >
           <div className="min-w-[280px] snap-center transform -rotate-1 translate-y-[-10px]">
-            <div className="bg-pastel-purple h-full p-6 rounded-[2rem] flex flex-col items-start text-right gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white shadow-soft relative overflow-hidden">
+            <div className={`bg-pastel-purple h-full p-6 rounded-[2rem] flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white shadow-soft relative overflow-hidden ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
               <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-white/30 rounded-full blur-xl"></div>
               <div className="bg-white p-4 rounded-2xl shadow-sm text-accent-purple relative z-10">
                 <span className="material-symbols-outlined text-4xl">mic</span>
               </div>
               <div className="relative z-10 mt-2">
-                <h3 className="font-extrabold text-slate-800 text-2xl mb-2">أبلغ بسهولة</h3>
+                <h3 className="font-extrabold text-slate-800 text-2xl mb-2">{t('Report Easily')}</h3>
                 <p className="text-base text-slate-600 leading-relaxed font-medium">
-                  ميزة الإبلاغ السريع عن حالة اشتباه
+                  {t('Quick reporting of suspected cases')}
                 </p>
               </div>
             </div>
           </div>
 
           <div className="min-w-[280px] snap-center transform rotate-2 translate-y-[20px]">
-            <div className="bg-pastel-green h-full p-6 rounded-[2rem] flex flex-col items-start text-right gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white shadow-soft relative overflow-hidden">
+            <div className={`bg-pastel-green h-full p-6 rounded-[2rem] flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white shadow-soft relative overflow-hidden ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
               <div className="absolute -top-10 -right-10 w-24 h-24 bg-white/30 rounded-full blur-xl"></div>
               <div className="bg-white p-4 rounded-2xl shadow-sm text-primary relative z-10">
                 <span className="material-symbols-outlined text-4xl">explore</span>
               </div>
               <div className="relative z-10 mt-2">
-                <h3 className="font-extrabold text-slate-800 text-2xl mb-2">تابع بلاغك</h3>
+                <h3 className="font-extrabold text-slate-800 text-2xl mb-2">{t('Track Your Report')}</h3>
                 <p className="text-base text-slate-600 leading-relaxed font-medium">
-                  متابعة حالة التقرير والتقصي لحظة بلحظة
+                  {t('Track report and investigation status moment by moment')}
                 </p>
               </div>
             </div>
           </div>
 
           <div className="min-w-[280px] snap-center transform -rotate-2 translate-y-[-10px]">
-            <div className="bg-pastel-yellow h-full p-6 rounded-[2rem] flex flex-col items-start text-right gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white shadow-soft relative overflow-hidden">
+             <div className={`bg-pastel-yellow h-full p-6 rounded-[2rem] flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white shadow-soft relative overflow-hidden ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
               <div className="absolute bottom-10 right-0 w-20 h-20 bg-white/40 rounded-full blur-xl"></div>
               <div className="bg-white p-4 rounded-2xl shadow-sm text-accent-yellow relative z-10">
                 <span className="material-symbols-outlined text-4xl">query_stats</span>
               </div>
               <div className="relative z-10 mt-2">
-                <h3 className="font-extrabold text-slate-800 text-2xl mb-2">بيانات شفافة</h3>
+                <h3 className="font-extrabold text-slate-800 text-2xl mb-2">{t('Transparent Data')}</h3>
                 <p className="text-base text-slate-600 leading-relaxed font-medium">
-                  الاطلاع على الخريطة الوبائية، الإحصائيات العامة، وأخبار الصحة
+                  {t('View epidemiological map, general statistics, and health news')}
                 </p>
               </div>
             </div>
           </div>
 
           <div className="min-w-[280px] snap-center transform rotate-1 translate-y-[20px]">
-            <div className="bg-pastel-purple h-full p-6 rounded-[2rem] flex flex-col items-start text-right gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white shadow-soft relative overflow-hidden">
+             <div className={`bg-pastel-purple h-full p-6 rounded-[2rem] flex flex-col items-start gap-4 transition-transform hover:-translate-y-2 hover:shadow-xl cursor-pointer border-4 border-white shadow-soft relative overflow-hidden ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
               <div className="absolute -top-5 -left-5 w-24 h-24 bg-white/20 rounded-full blur-xl"></div>
               <div className="bg-white p-4 rounded-2xl shadow-sm text-accent-purple relative z-10">
                 <span className="material-symbols-outlined text-4xl">smart_toy</span>
               </div>
               <div className="relative z-10 mt-2">
                 <h3 className="font-extrabold text-slate-800 text-2xl mb-2">
-                  مساعدك الصحي الذكي
+                  {t('Your Smart Health Assistant')}
                 </h3>
                 <p className="text-base text-slate-600 leading-relaxed font-medium">
-                  احصل على إجابات فورية عن أسئلتك الصحية عند تسجيل حسابك
+                  {t('Get instant answers to your health questions when you register')}
                 </p>
               </div>
             </div>
@@ -256,35 +259,35 @@ export default function Landing() {
         </div>
       </main>
 
-      <footer className="bg-muted border-t border-border py-10 px-6 mt-4">
+      <footer className="bg-muted border-t border-border py-10 px-6 mt-4" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="w-full max-w-md mx-auto flex flex-col gap-8">
           <div className="flex flex-col gap-3">
-            <h4 className="text-lg font-bold text-foreground">روابط سريعة</h4>
+            <h4 className="text-lg font-bold text-foreground">{t('Quick Links')}</h4>
             <ul className="flex flex-col gap-2 text-muted-foreground text-base">
               <li>
                 <Link to="/news" className="hover:text-primary transition-colors duration-200">
-                  الأخبار
+                  {t('News')}
                 </Link>
               </li>
               <li>
                 <Link to="/map" className="hover:text-primary transition-colors duration-200">
-                  الخريطة
+                  {t('Map')}
                 </Link>
               </li>
               <li>
                 <Link to="/profile" className="hover:text-primary transition-colors duration-200">
-                  حسابي
+                  {t('My Account')}
                 </Link>
               </li>
             </ul>
           </div>
           <div className="flex flex-col gap-3">
-            <h4 className="text-lg font-bold text-foreground">معلومات التواصل</h4>
+            <h4 className="text-lg font-bold text-foreground">{t('Contact Info')}</h4>
             <div className="flex items-center gap-2 text-muted-foreground">
               <span className="material-symbols-outlined text-primary text-xl">
                 phone_in_talk
               </span>
-              <span dir="ltr">+٩٦٧ ١٢٣ ٤٥٦</span>
+              <span dir="ltr">+967 123 456</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <span className="material-symbols-outlined text-primary text-xl">mail</span>
@@ -292,7 +295,7 @@ export default function Landing() {
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            <h4 className="text-lg font-bold text-foreground">تابعنا</h4>
+            <h4 className="text-lg font-bold text-foreground">{t('Follow Us')}</h4>
             <div className="flex gap-4">
               <a
                 className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-200 shadow-sm"
@@ -330,7 +333,7 @@ export default function Landing() {
           </div>
         </div>
         <div className="border-t border-border mt-8 pt-6 text-center">
-          <p className="text-muted-foreground text-sm">© ٢٠٢٤ راصد. جميع الحقوق محفوظة</p>
+          <p className="text-muted-foreground text-sm">{t('© 2024 Rasid. All rights reserved')}</p>
         </div>
       </footer>
     </div>

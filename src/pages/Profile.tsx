@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import BottomNav from '../components/BottomNav';
 
 export default function Profile() {
+  const { t, i18n } = useTranslation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
@@ -26,7 +28,7 @@ export default function Profile() {
           const storedUser = JSON.parse(storedUserStr);
           if (storedUser) {
             setIsLoggedIn(true);
-            setUserName(storedUser.full_name || storedUser.name || 'مستخدم راصد');
+            setUserName(storedUser.full_name || storedUser.name || t('Rasid User'));
             setUserId(storedUser.user_id);
             setProfilePicture(storedUser.profile_picture || null);
 
@@ -72,7 +74,7 @@ export default function Profile() {
   return (
     <div className="bg-background-light text-text-main antialiased selection:bg-primary selection:text-white h-screen flex flex-col overflow-hidden">
       <header className="sticky top-0 z-40 bg-background-light/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between shadow-sm border-b border-gray-100 max-w-md mx-auto w-full">
-        <div className="flex items-center gap-2 order-1">
+        <div className={`flex items-center gap-2 ${i18n.language === 'ar' ? 'order-1' : 'order-2 flex-row-reverse'}`}>
           <div className="w-10 h-10 bg-[#eefcfc] rounded-xl flex items-center justify-center text-primary border border-primary/20">
             <span
               className="material-symbols-outlined text-[24px]"
@@ -81,10 +83,10 @@ export default function Profile() {
               shield
             </span>
           </div>
-          <span className="text-xl font-bold text-text-main">راصد</span>
+          <span className="text-xl font-bold text-text-main font-almarai">{t('Rasid')}</span>
         </div>
-        <div className="flex items-center gap-3 order-2">
-          <h1 className="text-lg font-bold text-text-main">الملف الشخصي</h1>
+        <div className={`flex items-center gap-3 ${i18n.language === 'ar' ? 'order-2' : 'order-1'}`}>
+          <h1 className="text-lg font-bold text-text-main font-almarai">{t('Profile')}</h1>
         </div>
       </header>
 
@@ -110,10 +112,10 @@ export default function Profile() {
                   <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
                     <span className="material-symbols-outlined">assignment_turned_in</span>
                   </div>
-                  <span className="font-bold text-text-main">إجمالي البلاغات</span>
+                  <span className="font-bold text-text-main">{t('Total Reports')}</span>
                 </div>
                 <span className="text-2xl font-bold font-almarai text-primary">
-                  {reportCount.toLocaleString('ar-EG')}
+                  {typeof reportCount === 'number' ? reportCount.toLocaleString(i18n.language === 'ar' ? 'ar-EG' : 'en-US') : reportCount}
                 </span>
               </div>
             </div>
@@ -121,67 +123,81 @@ export default function Profile() {
             <div className="px-4 space-y-3">
               <Link to="/new-report" className="w-full bg-[#56BCA4] hover:bg-primary-dark text-white p-4 rounded-2xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] font-almarai font-bold mb-5">
                 <span className="material-symbols-outlined">add_circle</span>
-                تقديم بلاغ جديد
+                {t('Submit New Report')}
               </Link>
 
-              <Link to="/my-reports" className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all">
+              <Link to="/my-reports" className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">article</span>
-                  <span className="font-medium text-text-main font-almarai">بلاغاتي</span>
+                  <span className="font-medium text-text-main font-almarai">{t('My Reports')}</span>
                 </div>
-                <span className="material-symbols-outlined text-gray-300 text-[20px] rotate-180 group-hover:text-primary transition-colors">chevron_right</span>
+                <span className={`material-symbols-outlined text-gray-300 text-[20px] group-hover:text-primary transition-colors ${i18n.language === 'ar' ? 'rotate-180' : ''}`}>chevron_right</span>
               </Link>
 
-              <Link to="/personal-info" className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all">
+              <Link to="/personal-info" className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">person_pin</span>
-                  <span className="font-medium text-text-main font-almarai">معلومات شخصية</span>
+                  <span className="font-medium text-text-main font-almarai">{t('Personal Information')}</span>
                 </div>
-                <span className="material-symbols-outlined text-gray-300 text-[20px] rotate-180 group-hover:text-primary transition-colors">chevron_right</span>
+                <span className={`material-symbols-outlined text-gray-300 text-[20px] group-hover:text-primary transition-colors ${i18n.language === 'ar' ? 'rotate-180' : ''}`}>chevron_right</span>
               </Link>
 
-              <Link to="/notifications" className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all">
+              <Link to="/notifications" className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">notifications</span>
-                  <span className="font-medium text-text-main font-almarai">التنبيهات</span>
+                  <span className="font-medium text-text-main font-almarai">{t('Notifications')}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-gray-300 text-[20px] rotate-180 group-hover:text-primary transition-colors">chevron_right</span>
+                  <span className={`material-symbols-outlined text-gray-300 text-[20px] group-hover:text-primary transition-colors ${i18n.language === 'ar' ? 'rotate-180' : ''}`}>chevron_right</span>
                 </div>
               </Link>
 
-              <Link to="/journey" className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all">
+              <Link to="/journey" className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">info</span>
-                  <span className="font-medium text-text-main font-almarai">رحلتك مع راصد</span>
+                  <span className="font-medium text-text-main font-almarai">{t('Your Journey with Rasid')}</span>
                 </div>
-                <span className="material-symbols-outlined text-gray-300 text-[20px] rotate-180 group-hover:text-primary transition-colors">chevron_right</span>
+                <span className={`material-symbols-outlined text-gray-300 text-[20px] group-hover:text-primary transition-colors ${i18n.language === 'ar' ? 'rotate-180' : ''}`}>chevron_right</span>
               </Link>
 
-              <Link to="/contact" className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all">
+              <Link to="/contact" className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">support_agent</span>
-                  <span className="font-medium text-text-main font-almarai">اتصل بنا</span>
+                  <span className="font-medium text-text-main font-almarai">{t('Contact Us')}</span>
                 </div>
-                <span className="material-symbols-outlined text-gray-300 text-[20px] rotate-180 group-hover:text-primary transition-colors">chevron_right</span>
+                <span className={`material-symbols-outlined text-gray-300 text-[20px] group-hover:text-primary transition-colors ${i18n.language === 'ar' ? 'rotate-180' : ''}`}>chevron_right</span>
               </Link>
 
               <button 
                 onClick={toggleDarkMode} 
-                className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all"
+                className={`w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all ${i18n.language === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}
                 dir="ltr"
               >
                 <div className={`w-12 h-6 rounded-full relative transition-colors ${isDarkMode ? 'bg-primary' : 'bg-gray-200'}`}>
-                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all ${isDarkMode ? 'right-0.5' : 'right-[26px]'}`}></div>
+                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all ${isDarkMode ? 'right-0.5' : 'left-0.5'}`}></div>
                 </div>
-                <div className="flex items-center gap-3" dir="rtl">
+                <div className={`flex items-center gap-3 ${i18n.language === 'ar' ? '' : 'flex-row-reverse'}`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                   <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">
                     {isDarkMode ? 'light_mode' : 'dark_mode'}
                   </span>
                   <span className="font-medium text-text-main font-almarai">
-                    {isDarkMode ? 'الوضع الفاتح' : 'الوضع الداكن'}
+                    {isDarkMode ? t('Light Mode') : t('Dark Mode')}
                   </span>
                 </div>
+              </button>
+
+              <button 
+                onClick={() => i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar')} 
+                className={`w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all ${i18n.language === 'ar' ? '' : 'flex-row-reverse'}`}
+                dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">language</span>
+                  <span className="font-medium text-text-main font-almarai">
+                    {i18n.language === 'ar' ? 'English' : 'العربية'}
+                  </span>
+                </div>
+                <span className={`material-symbols-outlined text-gray-300 text-[20px] group-hover:text-primary transition-colors ${i18n.language === 'ar' ? 'rotate-180' : ''}`}>swap_horiz</span>
               </button>
             </div>
 
@@ -191,13 +207,13 @@ export default function Profile() {
                 className="w-full bg-gray-100 hover:bg-gray-200 text-text-muted p-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] font-almarai font-bold border border-gray-200"
               >
                 <span className="material-symbols-outlined">logout</span>
-                تسجيل الخروج
+                {t('Logout')}
               </button>
             </div>
           </div>
         ) : (
           // Guest Profile
-          <div className="w-full max-w-sm px-6 flex flex-col items-center text-center">
+          <div className="w-full max-w-sm px-6 flex flex-col items-center text-center" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
             <div className="mb-6 relative w-64 h-56 flex items-center justify-center">
               <div className="absolute inset-0 bg-gradient-to-tr from-blue-50 to-green-50 rounded-full opacity-60 blur-2xl"></div>
               <img
@@ -208,7 +224,7 @@ export default function Profile() {
               />
             </div>
             <h2 className="text-2xl font-extrabold font-almarai text-text-main mb-6 leading-tight">
-              انضم إلى راصد الآن
+              {t('Join Rasid Now')}
             </h2>
 
             <div className="w-full space-y-5 mb-8">
@@ -216,12 +232,12 @@ export default function Profile() {
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mt-1">
                   <span className="material-symbols-outlined text-[20px]">notifications_active</span>
                 </div>
-                <div className="flex flex-col text-right">
+                <div className="flex flex-col text-start">
                   <h3 className="font-bold font-almarai text-text-main text-base">
-                    تنبيهات فورية
+                    {t('Instant Alerts')}
                   </h3>
-                  <p className="text-sm text-text-muted mt-0.5 leading-relaxed">
-                    كن أول من يعلم بالأوبئة في منطقتك.
+                  <p className={`text-sm text-text-muted mt-0.5 leading-relaxed ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+                    {t('Be the first to know about epidemics in your area.')}
                   </p>
                 </div>
               </div>
@@ -230,12 +246,12 @@ export default function Profile() {
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 mt-1">
                   <span className="material-symbols-outlined text-[20px]">record_voice_over</span>
                 </div>
-                <div className="flex flex-col text-right">
+                <div className="flex flex-col text-start">
                   <h3 className="font-bold font-almarai text-text-main text-base">
-                    بلاغات دقيقة
+                    {t('Accurate Reporting')}
                   </h3>
-                  <p className="text-sm text-text-muted mt-0.5 leading-relaxed">
-                    ساهم في حماية مجتمعك من خلال بلاغاتك الرسمية.
+                  <p className={`text-sm text-text-muted mt-0.5 leading-relaxed ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+                    {t('Contribute to protecting your community through official reports.')}
                   </p>
                 </div>
               </div>
@@ -244,12 +260,12 @@ export default function Profile() {
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mt-1">
                   <span className="material-symbols-outlined text-[20px]">health_and_safety</span>
                 </div>
-                <div className="flex flex-col text-right">
+                <div className="flex flex-col text-start">
                   <h3 className="font-bold font-almarai text-text-main text-base">
-                    إرشادات مخصصة
+                    {t('Customized Guidelines')}
                   </h3>
-                  <p className="text-sm text-text-muted mt-0.5 leading-relaxed">
-                    احصل على نصائح وقائية مبنية على حالتك وموقعك.
+                  <p className={`text-sm text-text-muted mt-0.5 leading-relaxed ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+                    {t('Get preventive tips based on your condition and location.')}
                   </p>
                 </div>
               </div>
@@ -260,33 +276,47 @@ export default function Profile() {
                 to="/signup"
                 className="w-full bg-[#57BCA5] hover:bg-primary-dark text-white py-4 px-6 rounded-2xl shadow-lg shadow-primary/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98] font-almarai font-bold text-lg"
               >
-                إنشاء حساب جديد
+                {t('Create New Account')}
               </Link>
               <Link
                 to="/login"
                 className="w-full bg-white border-2 border-[#57BCA5] text-[#57BCA5] hover:bg-primary/5 py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] font-almarai font-bold text-lg"
               >
-                تسجيل الدخول
+                {t('Login')}
               </Link>
             </div>
 
             <div className="mb-6 w-full">
               <button 
                 onClick={toggleDarkMode} 
-                className="w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all"
+                className={`w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all ${i18n.language === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}
                 dir="ltr"
               >
                 <div className={`w-12 h-6 rounded-full relative transition-colors ${isDarkMode ? 'bg-primary' : 'bg-gray-200'}`}>
-                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all ${isDarkMode ? 'right-0.5' : 'right-[26px]'}`}></div>
+                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all ${isDarkMode ? 'right-0.5' : 'left-0.5'}`}></div>
                 </div>
-                <div className="flex items-center gap-3" dir="rtl">
+                <div className={`flex items-center gap-3 ${i18n.language === 'ar' ? '' : 'flex-row-reverse'}`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                   <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">
                     {isDarkMode ? 'light_mode' : 'dark_mode'}
                   </span>
                   <span className="font-medium text-text-main font-almarai">
-                    {isDarkMode ? 'الوضع الفاتح' : 'الوضع الداكن'}
+                    {isDarkMode ? t('Light Mode') : t('Dark Mode')}
                   </span>
                 </div>
+              </button>
+
+              <button 
+                onClick={() => i18n.changeLanguage(i18n.language === 'ar' ? 'en' : 'ar')} 
+                className={`w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between group active:scale-[0.99] transition-all mt-3 ${i18n.language === 'ar' ? '' : 'flex-row-reverse'}`}
+                dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">language</span>
+                  <span className="font-medium text-text-main font-almarai">
+                    {i18n.language === 'ar' ? 'English' : 'العربية'}
+                  </span>
+                </div>
+                <span className={`material-symbols-outlined text-gray-300 text-[20px] group-hover:text-primary transition-colors ${i18n.language === 'ar' ? 'rotate-180' : ''}`}>swap_horiz</span>
               </button>
             </div>
 
@@ -295,7 +325,7 @@ export default function Profile() {
                 to="/contact"
                 className="text-sm text-text-muted hover:text-primary transition-colors font-medium border-b border-transparent hover:border-primary/50 pb-0.5"
               >
-                تحتاج مساعدة؟ اتصل بنا
+                {t('Need Help? Contact Us')}
               </Link>
             </div>
           </div>

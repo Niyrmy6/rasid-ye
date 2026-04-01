@@ -1,20 +1,22 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import BottomNav from '../components/BottomNav';
 
 export default function ReportSuccess() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   return (
     <div className="bg-background-light text-text-main antialiased selection:bg-primary selection:text-white h-screen flex flex-col overflow-hidden">
       <header className="sticky top-0 z-40 bg-background-light/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between shadow-sm border-b border-gray-100 max-w-md mx-auto w-full">
-        <div className="flex items-center gap-2 order-1">
+        <div className={`flex items-center gap-2 ${i18n.language === 'ar' ? '' : 'order-1'}`}>
           <div className="w-10 h-10 bg-[#eefcfc] rounded-xl flex items-center justify-center text-primary">
             <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 0" }}>shield</span>
           </div>
-          <span className="text-xl font-bold text-text-main font-almarai">راصد</span>
+          <span className="text-xl font-bold text-text-main font-almarai">{t('Rasid')}</span>
         </div>
-        <div className="flex items-center gap-2 order-2">
-          <h1 className="text-lg font-bold text-text-main font-almarai">نجاح الإرسال</h1>
+        <div className={`flex items-center gap-2 ${i18n.language === 'ar' ? '' : 'order-2'}`}>
+          <h1 className="text-lg font-bold text-text-main font-almarai">{t('Submission Success')}</h1>
         </div>
       </header>
 
@@ -34,14 +36,14 @@ export default function ReportSuccess() {
           </div>
 
           <div className="space-y-3">
-            <h2 className="text-2xl font-bold font-almarai text-gray-900">تم إرسال البلاغ بنجاح!</h2>
+            <h2 className="text-2xl font-bold font-almarai text-gray-900">{t('Report submitted successfully!')}</h2>
             <p className="text-gray-500 leading-relaxed max-w-xs mx-auto text-base">
-              شكراً لمساهمتك في حماية مجتمعك. تم استلام بلاغك وهو الآن قيد المراجعة. يمكنك تتبع حالة البلاغ من قسم بلاغاتي.
+              {t('Thank you for contributing to protecting your community. Your report has been received and is now under review. You can track the report status from My Reports section.')}
             </p>
           </div>
 
           <div className="bg-white w-full rounded-2xl p-4 border border-dashed border-gray-300 shadow-sm flex flex-col items-center justify-center gap-1 mt-4">
-            <span className="text-xs text-text-muted font-bold tracking-wide uppercase">رقم المرجع</span>
+            <span className="text-xs text-text-muted font-bold tracking-wide uppercase">{t('Reference Number')}</span>
             <span className="text-3xl font-bold text-primary font-almarai tracking-wider">#٨٤٣٥</span>
           </div>
 
@@ -50,13 +52,13 @@ export default function ReportSuccess() {
               onClick={() => navigate('/report-details')}
               className="w-full bg-primary hover:bg-primary-dark text-white p-4 rounded-2xl shadow-lg shadow-primary/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98] font-almarai font-bold text-lg"
             >
-              <span>تتبع حالة البلاغ</span>
+              <span>{t('Track Report Status')}</span>
             </button>
             <button 
               onClick={() => navigate('/news')}
               className="w-full bg-transparent border-2 border-primary text-primary hover:bg-green-50 p-4 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] font-almarai font-bold text-lg"
             >
-              <span>العودة للرئيسية</span>
+              <span>{t('Back to Home')}</span>
             </button>
           </div>
         </div>

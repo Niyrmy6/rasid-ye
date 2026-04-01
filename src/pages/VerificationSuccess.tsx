@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function VerificationSuccess() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const handleStart = () => {
@@ -14,7 +16,7 @@ export default function VerificationSuccess() {
           <div className="bg-primary/10 p-2 rounded-xl text-primary">
             <span className="material-symbols-outlined text-2xl">shield</span>
           </div>
-          <h2 className="text-foreground text-lg font-bold tracking-tight">راصد</h2>
+          <h2 className="text-foreground text-lg font-bold tracking-tight">{t('Rasid')}</h2>
         </div>
         <div className="relative">
           <button
@@ -54,10 +56,10 @@ export default function VerificationSuccess() {
 
         <div className="text-center mb-12">
           <h1 className="text-foreground text-3xl font-extrabold tracking-tight mb-4">
-            تم التحقق بنجاح!
+            {t('Verification Successful!')}
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed font-medium px-4">
-            لقد تم تأمين حسابك بنجاح. يمكنك الآن البدء في استخدام كافة مميزات المنصة.
+            {t('Your account has been secured successfully. You can now start using all platform features.')}
           </p>
         </div>
 
@@ -68,7 +70,7 @@ export default function VerificationSuccess() {
               onClick={handleStart}
               className="relative w-full bg-primary hover:bg-primary-dark text-white text-xl font-bold py-5 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-3"
             >
-              ابدأ الآن
+              {t('Start Now')}
               <span className="material-symbols-outlined text-2xl">check</span>
             </button>
           </div>

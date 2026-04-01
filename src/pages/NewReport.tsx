@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import BottomNav from "../components/BottomNav";
 import { supabase } from "../lib/supabase";
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
@@ -92,6 +93,7 @@ interface Disease {
 }
 
 export default function NewReport() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [patientName, setPatientName] = useState("");
   const [selectedDisease, setSelectedDisease] = useState<number | "unknown">("unknown");
@@ -138,22 +140,22 @@ export default function NewReport() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        (err) => alert("تعذر الحصول على الموقع: " + err.message)
+        (err) => alert(t("Unable to get location: ") + err.message)
       );
     } else {
-      alert("ميزة الموقع غير مدعومة في متصفحك");
+      alert(t("Location feature is not supported in your browser"));
     }
   };
 
   const handleSubmit = async () => {
     if (!patientName || selectedSymptoms.length === 0) {
-      setError("الرجاء إدخال اسم المريض واختيار عرض واحد على الأقل.");
+      setError(t("Please enter patient name and select at least one symptom."));
       return;
     }
 
     const userStr = localStorage.getItem("user");
     if (!userStr) {
-      setError("يجب تسجيل الدخول لتقديم بلاغ.");
+      setError(t("You must log in to submit a report."));
       return;
     }
     const user = JSON.parse(userStr);
@@ -204,7 +206,7 @@ export default function NewReport() {
       navigate("/report-success");
     } catch (err: any) {
       console.error(err);
-      setError("حدث خطأ أثناء إرسال البلاغ: " + (err.message || ""));
+      setError(t("Error submitting report: ") + (err.message || ""));
     } finally {
       setLoading(false);
     }
@@ -220,12 +222,12 @@ export default function NewReport() {
             </span>
           </div>
           <span className="text-xl font-bold text-text-main dark:text-slate-100 font-almarai">
-            راصد
+            {t('Rasid')}
           </span>
         </div>
         <div className="flex items-center gap-2 order-2">
           <h1 className="text-lg font-bold text-text-main dark:text-slate-100 font-almarai">
-            إنشاء بلاغ جديد
+            {t('Create New Report')}
           </h1>
           <button
             onClick={() => navigate(-1)}
@@ -242,15 +244,16 @@ export default function NewReport() {
         <div className="p-4 space-y-6">
           <div className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
             <label className="block text-sm font-bold text-text-muted mb-2 font-almarai">
-              اسم المريض
+              {t('Patient Name')}
             </label>
             <div className="relative">
               <input
                 className="w-full pl-4 pr-10 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-right placeholder-gray-400"
-                placeholder="أدخل اسم المريض بالكامل"
+                placeholder={t("Enter patient's full name")}
                 type="text"
                 value={patientName}
                 onChange={(e) => setPatientName(e.target.value)}
+                dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
               />
               <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
                 person
@@ -261,7 +264,7 @@ export default function NewReport() {
           <div className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
             <div className="flex justify-between items-center mb-3">
               <label className="text-sm font-bold text-text-muted font-almarai">
-                تحديد الموقع
+                {t('Set Location')}
               </label>
               <button 
                 onClick={handleGetLocation}
@@ -270,12 +273,12 @@ export default function NewReport() {
                 <span className="material-symbols-outlined text-[16px]">
                   my_location
                 </span>
-                استخدام موقعي الحالي
+                {t('Use Current Location')}
               </button>
             </div>
             {location ? (
               <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl text-green-700 dark:text-green-400 text-sm font-bold text-center border border-green-200 dark:border-green-800 mb-3">
-                تم تحديد الموقع بنجاح ✓ 
+                {t('Location set successfully')} ✓ 
                 <br/>
                 <span className="text-xs font-normal">({location.lat.toFixed(4)}, {location.lng.toFixed(4)})</span>
               </div>
@@ -299,9 +302,9 @@ export default function NewReport() {
 
           <div className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 space-y-3">
             <label className="block text-sm font-bold text-text-muted mb-1 font-almarai">
-              اختر المرض
+              {t('Select Disease')}
             </label>
-            <div className="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-1 scrollbar-hide">
+            <div className={`grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto ${i18n.language === 'ar' ? 'pr-1' : 'pl-1'} scrollbar-hide`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
               <label className="cursor-pointer block group">
                 <input
                   className="hidden"
@@ -312,10 +315,10 @@ export default function NewReport() {
                 />
                 <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-white/5 transition-all group-hover:bg-gray-100 dark:group-hover:bg-white/10 group-has-[:checked]:!bg-primary group-has-[:checked]:!border-primary">
                   <h4 className="font-bold text-primary group-has-[:checked]:!text-white mb-1 font-almarai text-base transition-colors">
-                    لا أعرف (الاعتماد على الأعراض)
+                    {t("I don't know (Rely on symptoms)")}
                   </h4>
                   <p className="text-xs text-gray-500 dark:text-gray-400 group-has-[:checked]:!text-white/90 leading-relaxed transition-colors">
-                    سيقوم النظام باقتراح وتصنيف المرض تلقائياً بناءً على الأعراض التي تختارها في الخطوة التالية.
+                    {t('The system will auto-classify based on selected symptoms.')}
                   </p>
                 </div>
               </label>
@@ -331,7 +334,7 @@ export default function NewReport() {
                   />
                   <div className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-white/5 transition-all group-hover:bg-gray-100 dark:group-hover:bg-white/10 group-has-[:checked]:!bg-primary group-has-[:checked]:!border-primary">
                     <h4 className="font-bold text-primary group-has-[:checked]:!text-white mb-1 font-almarai text-base transition-colors">
-                      {disease.ar_name || disease.disease_name}
+                      {i18n.language === 'ar' ? (disease.ar_name || disease.disease_name) : disease.disease_name}
                     </h4>
                     {disease.description && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 group-has-[:checked]:!text-white/90 leading-relaxed transition-colors">
@@ -346,9 +349,9 @@ export default function NewReport() {
 
           <div className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
             <label className="block text-sm font-bold text-text-muted mb-3 font-almarai">
-              الأعراض (اختر ما ينطبق)
+              {t('Symptoms (Select all that apply)')}
             </label>
-            <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto scrollbar-hide pr-1">
+            <div className={`flex flex-wrap gap-2 max-h-[300px] overflow-y-auto scrollbar-hide ${i18n.language === 'ar' ? 'pr-1' : 'pl-1'}`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
               {[
                 "حمى",
                 "سعال",
@@ -409,7 +412,7 @@ export default function NewReport() {
                   />
                   <div className="flex items-center gap-2 px-3 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-300 transition-all group-hover:bg-gray-100 dark:group-hover:bg-white/10 select-none group-has-[:checked]:!bg-primary group-has-[:checked]:!text-white group-has-[:checked]:!border-primary">
                     <span className="text-sm font-medium font-almarai">
-                      {symptom}
+                      {t(symptom)}
                     </span>
                   </div>
                 </label>
@@ -417,19 +420,19 @@ export default function NewReport() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+        <div className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
             <label className="block text-sm font-bold text-text-muted mb-3 font-almarai">
-              بيانات إضافية
+              {t('Additional Information')}
             </label>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-2 gap-4 mb-4" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">العمر</label>
+                <label className="text-xs text-gray-500 mb-1 block">{t('Age')}</label>
                 <div className="relative">
                   <input
                     type="number"
                     min="0"
                     max="120"
-                    placeholder="العمر"
+                    placeholder={t('Age')}
                     value={age}
                     onChange={(e) => setAge(e.target.value)} 
                     className="w-full pl-4 pr-10 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm text-right"
@@ -441,7 +444,7 @@ export default function NewReport() {
               </div>
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">
-                  الجنس
+                  {t('Gender')}
                 </label>
                 <div className="flex bg-gray-50 dark:bg-white/5 rounded-xl p-1 border border-gray-200 dark:border-gray-700">
                   <button
@@ -452,7 +455,7 @@ export default function NewReport() {
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
-                    ذكر
+                    {t('Male')}
                   </button>
                   <button
                     onClick={() => setGender("female")}
@@ -462,15 +465,15 @@ export default function NewReport() {
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
-                    أنثى
+                    {t('Female')}
                   </button>
                 </div>
               </div>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-4" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">
-                  تاريخ الإصابة
+                  {t('Date of Onset')}
                 </label>
                 <div className="relative">
                   <input
@@ -486,7 +489,7 @@ export default function NewReport() {
               </div>
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">
-                  رقم هاتف آخر
+                  {t('Phone Number')}
                 </label>
                 <div className="relative">
                   <input
@@ -504,13 +507,13 @@ export default function NewReport() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+          <div className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
             <label className="block text-sm font-bold text-text-muted mb-2 font-almarai">
-              ملاحظات إضافية
+              {t('Additional Notes')}
             </label>
             <textarea
               className="w-full p-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none resize-none placeholder-gray-400"
-              placeholder="هل هناك تفاصيل أخرى تود إضافتها؟"
+              placeholder={t("Any other details you would like to add?")}
               rows={4}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -522,10 +525,10 @@ export default function NewReport() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full bg-[#56BCA4] hover:bg-primary-dark text-white p-4 rounded-2xl shadow-lg shadow-primary/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98] font-almarai font-bold text-lg mt-4 disabled:opacity-70 disabled:pointer-events-none"
+              className={`w-full bg-[#56BCA4] hover:bg-primary-dark text-white p-4 rounded-2xl shadow-lg shadow-primary/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98] font-almarai font-bold text-lg mt-4 disabled:opacity-70 disabled:pointer-events-none flex-row${i18n.language === 'ar' ? '' : '-reverse'}`}
             >
               <span className="material-symbols-outlined">send</span>
-              {loading ? "جاري الإرسال..." : "إرسال البلاغ"}
+              {loading ? t("Submitting...") : t("Submit Report")}
             </button>
           </div>
         </div>
@@ -543,23 +546,23 @@ export default function NewReport() {
               </span>
             </div>
             <h2 className="text-2xl font-extrabold text-foreground dark:text-white mb-3 tracking-tight">
-              تسجيل الدخول إلزامي
+              {t("Login Required")}
             </h2>
             <p className="text-muted-foreground dark:text-gray-400 mb-8 leading-relaxed font-medium">
-              عذراً، يجب عليك تسجيل الدخول بحسابك أولاً حتى تتمكن من المساهمة وتقديم بلاغ صحي جديد.
+              {t("Sorry, you must log in to your account first in order to contribute and submit a new health report.")}
             </p>
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => navigate("/login")}
                 className="w-full bg-primary hover:bg-primary-dark text-white text-lg font-bold py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-primary/30 active:scale-[0.98]"
               >
-                تسجيل الدخول الآن
+                {t("Login Now")}
               </button>
               <button
                 onClick={() => navigate("/")}
                 className="w-full bg-muted hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-muted-foreground dark:text-gray-300 font-bold py-4 rounded-2xl transition-all duration-300 active:scale-[0.98]"
               >
-                العودة للرئيسية
+                {t("Back to Home")}
               </button>
             </div>
           </div>
