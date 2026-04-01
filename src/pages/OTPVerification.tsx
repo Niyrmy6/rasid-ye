@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 
 export default function OTPVerification() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const { phone, fullname, password, newPassword, expectedOtp, isPasswordReset } = location.state || {}; // From SignUp or ForgotPassword page
 
   const [otp, setOtp] = useState(['', '', '', '', '', '']); // 6 digits
@@ -54,13 +56,13 @@ export default function OTPVerification() {
   const handleConfirm = async () => {
     const enteredOtp = otp.join('');
     if (enteredOtp.length < 6) {
-      setError('يرجى إدخال الرمز المكون من 6 أرقام');
+      setError(t('otp.enter6Digits'));
       return;
     }
     
     // In a real app, do secure verification via backend... but for demo matching locally:
     if (enteredOtp !== expectedOtpState) {
-      setError('رمز التحقق غير صحيح، حاول مرة أخرى');
+      setError(t('otp.invalidOtp'));
       return;
     }
 
@@ -76,7 +78,7 @@ export default function OTPVerification() {
           .eq('phone', phone);
         
         if (updateError) {
-          setError('حدث خطأ أثناء تحديث كلمة المرور.');
+          setError(t('otp.errorUpdatingPassword'));
         } else {
           // Password reset success -> go back to login with success message ideally, or just redirect
           navigate('/login'); 
@@ -91,7 +93,7 @@ export default function OTPVerification() {
 
         if (insertError) {
           console.error('Insert user error:', insertError);
-          setError('حدث خطأ أثناء إنشاء الحساب، قد يكون رقم الهاتف مستخدماً بالفعل.');
+          setError(t('otp.errorCreatingAccount'));
         } else {
           localStorage.setItem('user', JSON.stringify(data));
           navigate('/verification-success');
@@ -99,7 +101,7 @@ export default function OTPVerification() {
       }
     } catch (err) {
       console.error(err);
-      setError('فشل الاتصال بالخادم، يرجى المحاولة لاحقاً');
+      setError(t('otp.serverConnectionFailed'));
     } finally {
       setLoading(false);
     }
@@ -117,14 +119,14 @@ export default function OTPVerification() {
       });
 
       if (funcError || !data?.success) {
-        setError(data?.error || data?.details || 'حدث خطأ أثناء إعادة الإرسال.');
+        setError(data?.error || data?.details || t('otp.errorResending'));
       } else {
         setExpectedOtpState(data.otp);
         setTimer(45); // Reset timer
         // Optionally show success message
       }
     } catch (err) {
-      setError('فشل الاتصال بالخادم، يرجى المحاولة لاحقاً');
+      setError(t('otp.serverConnectionFailed'));
     } finally {
       setResending(false);
     }
@@ -137,7 +139,7 @@ export default function OTPVerification() {
           <div className="bg-primary/10 p-2 rounded-xl text-primary">
             <span className="material-symbols-outlined text-2xl">shield</span>
           </div>
-          <h2 className="text-foreground text-lg font-bold tracking-tight">راصد</h2>
+          <h2 className="text-foreground text-lg font-bold tracking-tight">{t('Rasid')}</h2>
         </div>
         <div className="relative">
           <button
@@ -168,9 +170,9 @@ export default function OTPVerification() {
         </div>
 
         <div className="text-center mb-8">
-          <h1 className="text-foreground text-3xl font-extrabold tracking-tight mb-3">رمز التحقق</h1>
+          <h1 className="text-foreground text-3xl font-extrabold tracking-tight mb-3">{t('otp.title')}</h1>
           <p className="text-muted-foreground text-lg leading-relaxed font-medium">
-            تم إرسال رمز التحقق إلى رقم هاتفك
+            {t('otp.subtitle')}
             <br />
             <span className="text-foreground font-bold mt-1 block" dir="ltr">
               {phone || ''}
@@ -197,13 +199,13 @@ export default function OTPVerification() {
 
         <div className="flex flex-col gap-4 mb-8 w-full mt-auto pb-8">
           <div className="text-center text-sm font-semibold text-muted-foreground mb-2">
-            لم يصلك الرمز؟{' '}
+            {t('otp.didNotReceive')}{' '}
             <button 
               onClick={handleResend}
               disabled={timer > 0 || resending}
               className={`font-bold transition-colors ${timer > 0 || resending ? 'text-muted-foreground cursor-not-allowed' : 'text-primary hover:text-primary-dark'}`}
             >
-              {resending ? 'جاري الإرسال...' : 'إعادة الإرسال'}
+              {resending ? t('chat.loading') : t('otp.resend')}
             </button>{' '}
             {timer > 0 && <span className="text-muted-foreground font-normal">(00:{timer.toString().padStart(2, '0')})</span>}
           </div>
@@ -214,7 +216,7 @@ export default function OTPVerification() {
               disabled={loading}
               className="relative w-full bg-primary hover:bg-primary-dark text-white text-xl font-bold py-5 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-70 disabled:pointer-events-none"
             >
-              {loading ? 'جاري التحقق...' : 'تأكيد'}
+              {loading ? t('forgot.updating') : t('otp.confirmBtn')}
               <span className="material-symbols-outlined text-2xl">check_circle</span>
             </button>
           </div>

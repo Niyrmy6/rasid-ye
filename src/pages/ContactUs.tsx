@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import BottomNav from "../components/BottomNav";
 
 export default function ContactUs() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="bg-background-light text-text-main antialiased selection:bg-primary selection:text-white h-screen flex flex-col overflow-hidden">
@@ -17,12 +19,12 @@ export default function ContactUs() {
             </span>
           </div>
           <span className="text-xl font-bold text-text-main font-almarai">
-            راصد
+            {t("Rasid")}
           </span>
         </div>
         <div className="flex items-center gap-3 order-2">
           <h1 className="text-lg font-bold text-text-main font-almarai">
-            اتصل بنا
+            {t("contact.title")}
           </h1>
           <button
             onClick={() => navigate(-1)}
@@ -54,7 +56,7 @@ export default function ContactUs() {
             </div>
           </div>
           <p className="text-text-muted max-w-xs leading-relaxed font-medium">
-            يسعدنا تواصلكم معنا. نحن هنا لمساعدتكم في أي استفسار.
+            {t("contact.subtitle")}
           </p>
         </div>
 
@@ -70,7 +72,7 @@ export default function ContactUs() {
             </div>
             <div className="flex flex-col items-start text-right flex-1">
               <span className="text-xs text-text-muted mb-1">
-                اتصل بنا مباشرة
+                {t("contact.callDirectly")}
               </span>
               <span
                 className="text-lg font-bold font-almarai text-text-main"
@@ -95,7 +97,7 @@ export default function ContactUs() {
             </div>
             <div className="flex flex-col items-start text-right flex-1">
               <span className="text-xs text-text-muted mb-1">
-                ارسل لنا بريداً إلكترونياً
+                {t("contact.sendEmail")}
               </span>
               <span
                 className="text-base font-bold font-almarai text-text-main font-sans"
@@ -124,10 +126,10 @@ export default function ContactUs() {
             </div>
             <div className="flex flex-col items-start text-right flex-1">
               <span className="text-xs text-text-muted mb-1">
-                تواصل عبر واتساب
+                {t("contact.whatsappText")}
               </span>
               <span className="text-base font-bold font-almarai text-text-main">
-                راصد واتساب
+                {t("contact.whatsappTitle")}
               </span>
             </div>
             <span className="material-symbols-outlined text-gray-300 text-[20px] rotate-180 group-hover:text-primary transition-colors">

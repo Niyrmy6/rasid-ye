@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [phone, setPhone] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -14,15 +16,15 @@ export default function ForgotPassword() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone || !newPassword || !confirmPassword) {
-      setError('يرجى تعبئة جميع الحقول المطلوبة');
+      setError(t('forgot.fillRequired'));
       return;
     }
     if (newPassword !== confirmPassword) {
-      setError('كلمات المرور غير متطابقة');
+      setError(t('forgot.passwordsNotMatch'));
       return;
     }
     if (newPassword.length < 6) {
-      setError('يجب أن تتكون كلمة المرور من 6 أحرف أو أرقام على الأقل');
+      setError(t('forgot.passwordLength'));
       return;
     }
 
@@ -40,7 +42,7 @@ export default function ForgotPassword() {
         .maybeSingle();
 
       if (fetchError || !user) {
-        setError('رقم الهاتف غير مسجل في النظام');
+        setError(t('forgot.phoneNotRegistered'));
         setLoading(false);
         return;
       }
@@ -51,7 +53,7 @@ export default function ForgotPassword() {
 
       if (funcError || !data?.success) {
         console.error('Error sending OTP:', funcError || data?.error);
-        setError('حدث خطأ أثناء إرسال رمز التحقق، يرجى المحاولة لاحقاً');
+        setError(t('forgot.errorSendingOtp'));
         setLoading(false);
         return;
       }
@@ -67,7 +69,7 @@ export default function ForgotPassword() {
       });
 
     } catch (err) {
-      setError('حدث خطأ في الاتصال بالخادم');
+      setError(t('forgot.serverError'));
       setLoading(false);
     }
   };
@@ -98,9 +100,9 @@ export default function ForgotPassword() {
               lock_reset
             </span>
           </div>
-          <h1 className="text-foreground text-3xl font-extrabold tracking-tight">نسيت كلمة المرور؟</h1>
+          <h1 className="text-foreground text-3xl font-extrabold tracking-tight">{t('forgot.title')}</h1>
           <p className="text-muted-foreground mt-2 text-sm font-medium leading-relaxed">
-            أدخل رقم هاتفك لتغيير كلمة المرور الخاصة بك. ستتمكن من تسجيل الدخول بكلمة المرور الجديدة فوراً.
+            {t('forgot.subtitle')}
           </p>
         </div>
 
@@ -133,14 +135,14 @@ export default function ForgotPassword() {
 
             <div className="space-y-2">
               <label className="text-foreground font-bold text-sm mr-1 block" htmlFor="newPassword">
-                كلمة المرور الجديدة
+                {t('forgot.newPasswordLabel')}
               </label>
               <div className="relative">
                 <input
                   className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 pr-12 pl-12 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
                   dir="rtl"
                   id="newPassword"
-                  placeholder="ستة أحرف أو أكثر"
+                  placeholder={t('forgot.newPasswordPlaceholder')}
                   type={showPassword ? 'text' : 'password'}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
@@ -162,14 +164,14 @@ export default function ForgotPassword() {
 
             <div className="space-y-2">
               <label className="text-foreground font-bold text-sm mr-1 block" htmlFor="confirmPassword">
-                تأكيد كلمة المرور الجديدة
+                {t('forgot.confirmPasswordLabel')}
               </label>
               <div className="relative">
                 <input
                   className="w-full bg-input-bg border border-transparent text-foreground text-right font-medium py-4 pr-12 pl-12 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground"
                   dir="rtl"
                   id="confirmPassword"
-                  placeholder="أعد كتابة كلمة المرور"
+                  placeholder={t('forgot.confirmPasswordPlaceholder')}
                   type={showPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -196,7 +198,7 @@ export default function ForgotPassword() {
                 type="submit"
                 disabled={loading}
               >
-                {loading ? 'جاري التحقق...' : 'تحديث كلمة المرور'}
+                {loading ? t('forgot.updating') : t('forgot.updateBtn')}
               </button>
             </div>
           </form>

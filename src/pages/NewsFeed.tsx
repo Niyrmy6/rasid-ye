@@ -46,7 +46,10 @@ export default function NewsFeed() {
         }
 
         // Fetch Global News via RSS to JSON API
-        const rssUrl = encodeURIComponent("https://news.google.com/rss/search?q=الأمراض+الصحة&hl=ar&gl=AE&ceid=AE:ar");
+        const rssQuery = i18n.language === 'ar' 
+          ? "https://news.google.com/rss/search?q=الأمراض+الصحة&hl=ar&gl=AE&ceid=AE:ar"
+          : "https://news.google.com/rss/search?q=health+disease+outbreak&hl=en-US&gl=US&ceid=US:en";
+        const rssUrl = encodeURIComponent(rssQuery);
         const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`);
         const rssData = await res.json();
         
@@ -62,7 +65,7 @@ export default function NewsFeed() {
     };
 
     fetchNews();
-  }, []);
+  }, [i18n.language]);
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-text-main dark:text-slate-100 antialiased selection:bg-primary selection:text-white pb-32 min-h-screen">
@@ -162,7 +165,7 @@ export default function NewsFeed() {
                 </div>
               ) : localNews.length > 0 ? (
                 localNews.map((news) => (
-                  <article key={news.item_id} className={`relative flex bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 h-32 ${i18n.language === 'ar' ? 'flex-row' : 'flex-row-reverse'}`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                  <Link to={`/news/${news.item_id}`} key={news.item_id} className={`relative flex bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 h-32 ${i18n.language === 'ar' ? 'flex-row' : 'flex-row-reverse'}`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                     <div className="w-32 shrink-0 relative overflow-hidden">
                       <div
                         className="absolute inset-0 bg-cover bg-center"
@@ -191,7 +194,7 @@ export default function NewsFeed() {
                         </button>
                       </div>
                     </div>
-                  </article>
+                  </Link>
                 ))
               ) : (
                 <p className="text-sm text-gray-500 text-center py-4">{t('No local news currently.')}</p>

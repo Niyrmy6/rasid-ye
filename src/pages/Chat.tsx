@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import BottomNav from '../components/BottomNav';
 import { supabase } from '../lib/supabase';
 
@@ -9,11 +10,12 @@ type Message = {
 };
 
 export default function Chat() {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       role: 'assistant',
-      content: 'أهلاً بك! أنا مساعدك الصحي الذكي الخاص ببرنامج "راصد". يمكنك سؤالي عن قواعد البيانات، الأعراض، الأمراض، وحالات البلاغات ضمن النظام.'
+      content: t('chat.welcomeMessage')
     }
   ]);
   const [inputVal, setInputVal] = useState("");
@@ -39,11 +41,11 @@ export default function Chat() {
         throw error;
       }
 
-      const botReply = data?.reply || "عذراً، لم أتمكن من العثور على إجابة محددة الآن.";
+      const botReply = data?.reply || t('chat.botNoAnswer');
       setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: botReply }]);
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: "عذراً، حدث خطأ أثناء الاتصال بالخادم." }]);
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: t('chat.serverError') }]);
     } finally {
       setIsLoading(false);
     }
@@ -71,10 +73,10 @@ export default function Chat() {
   };
 
   const quickQuestions = [
-    "ما هي أعراض الكوليرا؟",
-    "ما هي الجداول المتاحة في قاعدة البيانات؟",
-    "أحدث البلاغات",
-    "احصائيات الأمراض"
+    t('chat.quickQuestions.q1'),
+    t('chat.quickQuestions.q2'),
+    t('chat.quickQuestions.q3'),
+    t('chat.quickQuestions.q4')
   ];
 
   const handleQuickQuestion = (q: string) => {
@@ -88,9 +90,9 @@ export default function Chat() {
           <div className="w-10 h-10 bg-[#eefcfc] dark:bg-primary/10 rounded-xl flex items-center justify-center text-primary">
             <span className="material-symbols-outlined text-[24px]">shield</span>
           </div>
-          <span className="text-xl font-bold text-text-main dark:text-slate-100">راصد</span>
+          <span className="text-xl font-bold text-text-main dark:text-slate-100">{t('Rasid')}</span>
         </div>
-        <h1 className="text-lg font-bold text-text-main dark:text-slate-100">المساعد الذكي</h1>
+        <h1 className="text-lg font-bold text-text-main dark:text-slate-100">{t('chat.smartAssistant')}</h1>
       </header>
 
       <main className="flex-1 overflow-y-auto px-4 py-4 space-y-6 pb-48 max-w-md mx-auto w-full hide-scrollbar">
@@ -143,7 +145,7 @@ export default function Chat() {
             </button>
             <input
               className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-text-main dark:text-white placeholder-gray-400 min-w-0"
-              placeholder="اكتب رسالتك هنا..."
+              placeholder={t('chat.typeMessage')}
               type="text"
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
@@ -155,7 +157,7 @@ export default function Chat() {
               disabled={isLoading}
               className="flex-shrink-0 bg-primary hover:bg-primary-dark text-white px-6 py-2.5 rounded-full text-sm font-bold transition-colors shadow-md flex items-center gap-1 disabled:opacity-50"
             >
-              <span>{isLoading ? 'جاري...' : 'إرسال'}</span>
+              <span>{isLoading ? t('chat.loading') : t('chat.send')}</span>
               {!isLoading && <span className="material-symbols-outlined text-[18px] rotate-180">send</span>}
             </button>
           </div>
