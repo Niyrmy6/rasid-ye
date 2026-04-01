@@ -284,6 +284,13 @@ export default function Profile() {
               >
                 {t('Login')}
               </Link>
+              <Link
+                to="/"
+                className="w-full bg-gray-50 dark:bg-surface-dark border border-gray-200 dark:border-white/10 text-text-muted dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-white/5 py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] font-almarai font-bold text-lg"
+              >
+                <span className="material-symbols-outlined">home</span>
+                {i18n.language === 'ar' ? 'العودة للصفحة الرئيسية' : 'Return to Home Page'}
+              </Link>
             </div>
 
             <div className="mb-6 w-full">
