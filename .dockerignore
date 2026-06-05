@@ -1,0 +1,17 @@
+node_modules
+dist
+.git
+.cursor
+.qodo
+.vscode
+*.log
+.env
+.env.*
+!.env.example
+coverage
+backups
+supabase/.temp
+supabase/.branches
+supabase/snippets
+README.md
+docs

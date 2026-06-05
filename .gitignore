@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output
+build/
+dist/
+coverage/
+
+# Environment variables (secrets!)
+.env*
+!.env.example
+
+# === SUPABASE SENSITIVE FILES ===
+# Supabase local temp data (contains project-ref, pooler-url, etc.)
+supabase/.temp/
+# Supabase local branches
+supabase/.branches/
+
+# === DATABASE BACKUPS (contain real data!) ===
+backups/
+
+# === LOG & TEMP FILES ===
+*.log
+build.log
+
+# === IDE & EDITOR ===
+.DS_Store
+.cursor/
+.qodo/
+.vscode/
+*.swp
+*.swo
+
+# === OS FILES ===
+Thumbs.db
+desktop.ini

@@ -1,0 +1,15 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+        VITE_BUILD_ID: ${VITE_BUILD_ID:-local}
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "8080:80"
+    restart: unless-stopped
