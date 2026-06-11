@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -37,7 +37,9 @@ type Governorate = Pick<GovernorateRow, 'governorate_id' | 'governorate_name' | 
 /** Imperatively pans the Leaflet map when governorate filter changes (react-leaflet has no declarative center prop on MapContainer). */
 function ChangeView({ center, zoom }: { center: [number, number], zoom: number }) {
   const map = useMap();
-  map.setView(center, zoom);
+  useEffect(() => {
+    map.setView(center, zoom);
+  }, [map, center, zoom]);
   return null;
 }
 
@@ -69,15 +71,22 @@ export default function Map() {
 
 
 
-  const getLocalizedDisease = (name: string) => {
+  const getLocalizedDisease = (name: string | null | undefined) => {
+    if (!name) return t('Undetermined Case');
     const row = diseases.find((d) => d.disease_name.toLowerCase() === name.toLowerCase());
     return pickLocalizedName(name, row?.ar_name, i18n.language);
   };
 
-  const getLocalizedGov = (name: string) => {
+  const getLocalizedGov = (name: string | null | undefined) => {
+    if (!name) return '—';
     const row = governorates.find((g) => g.governorate_name.toLowerCase() === name.toLowerCase());
     return pickLocalizedName(name, row?.ar_name, i18n.language);
   };
+
+  const mappableReports = useMemo(
+    () => reports.filter((r) => Number.isFinite(r.lat) && Number.isFinite(r.lng)),
+    [reports],
+  );
 
 
 
@@ -154,7 +163,7 @@ export default function Map() {
 
 
   // RPC returns English `disease_name` / `governorate_name`; filters compare against metadata rows by id → name.
-  const filteredReports = reports.filter(r => {
+  const filteredReports = mappableReports.filter(r => {
     const diseaseMatch = selectedDisease === "all" || diseases.find(d => d.disease_id.toString() === selectedDisease)?.disease_name === r.disease_name;
     const govMatch = selectedGovernorate === "all" || governorates.find(g => g.governorate_id.toString() === selectedGovernorate)?.governorate_name === r.governorate_name;
     return diseaseMatch && govMatch;
@@ -176,7 +185,7 @@ export default function Map() {
       setMapZoom(6);
     } else {
       // Pan to first confirmed report in governorate — not a true centroid, keeps logic simple
-      const govReports = reports.filter(r => governorates.find(g => g.governorate_id.toString() === val)?.governorate_name === r.governorate_name);
+      const govReports = mappableReports.filter(r => governorates.find(g => g.governorate_id.toString() === val)?.governorate_name === r.governorate_name);
       if (govReports.length > 0) {
         setMapCenter([govReports[0].lat, govReports[0].lng]);
         setMapZoom(10);

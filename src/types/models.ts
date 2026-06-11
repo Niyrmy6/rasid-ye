@@ -40,8 +40,8 @@ export type NotificationReportRow = Pick<ReportRow, 'report_id' | 'tracking_numb
 /** Shape returned by `get_confirmed_reports` RPC for the epidemic map */
 export type ConfirmedReport = {
   report_id: number;
-  disease_name: string;
-  governorate_name: string;
+  disease_name: string | null;
+  governorate_name: string | null;
   report_date: string;
   lat: number;
   lng: number;
