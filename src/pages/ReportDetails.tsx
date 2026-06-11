@@ -185,7 +185,7 @@ export default function ReportDetails() {
             <span className="material-symbols-outlined text-[24px]">{statusInfo.icon}</span>
           </div>
           <div className={`${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
-            <h2 className="text-sm font-medium text-gray-500 mb-1">{t('Report Status')}</h2>
+            <h2 className="text-sm font-medium text-text-muted mb-1">{t('Report Status')}</h2>
             <p className="text-lg font-bold text-gray-900">{statusInfo.label}</p>
           </div>
         </div>
@@ -198,10 +198,10 @@ export default function ReportDetails() {
                   ? `${t('Suspected')} ${localizedDisease(report.disease?.disease_name, report.disease?.ar_name)}`
                   : localizedDisease(report.disease?.disease_name, report.disease?.ar_name)}
               </h3>
-              <span className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-md font-medium">#{report.tracking_number}</span>
+              <span className="inline-block bg-gray-100 dark:bg-gray-800/40 text-text-muted text-xs px-2 py-1 rounded-md font-medium">#{report.tracking_number}</span>
             </div>
           </div>
-          <div className="h-px bg-gray-100"></div>
+          <div className="h-px bg-gray-100 dark:bg-gray-800"></div>
           <div className="grid grid-cols-1 gap-4">
             <div className="flex items-start gap-3">
               <span className="material-symbols-outlined text-text-muted mt-0.5 text-[20px]">calendar_today</span>
@@ -287,7 +287,7 @@ export default function ReportDetails() {
 
               if (isPast) {
                 circleContent = (
-                  <div className="relative z-10 w-6 h-6 rounded-full bg-[#56BCA4] flex items-center justify-center text-white ring-4 ring-white">
+                  <div className="relative z-10 w-6 h-6 rounded-full bg-[#56BCA4] flex items-center justify-center text-white ring-4 ring-card">
                     <span className="material-symbols-outlined text-[14px] font-bold">check</span>
                   </div>
                 );
@@ -295,21 +295,21 @@ export default function ReportDetails() {
               } else if (isCurrent) {
                 if (isRejected) {
                   circleContent = (
-                    <div className="relative z-10 w-6 h-6 rounded-full bg-red-100 border border-red-200 flex items-center justify-center ring-4 ring-white">
+                    <div className="relative z-10 w-6 h-6 rounded-full bg-red-100 dark:bg-red-950/40 border border-red-200 dark:border-red-900/30 flex items-center justify-center ring-4 ring-card">
                       <div className="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
                     </div>
                   );
                 } else {
                   circleContent = (
-                    <div className="relative z-10 w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center ring-4 ring-white">
+                    <div className="relative z-10 w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-950/40 flex items-center justify-center ring-4 ring-card">
                       <div className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-pulse"></div>
                     </div>
                   );
                 }
-                lineClass = 'bg-gray-200';
+                lineClass = 'bg-gray-200 dark:bg-gray-800';
               } else {
                 circleContent = (
-                  <div className="relative z-10 w-6 h-6 rounded-full bg-gray-50 border-2 border-gray-200 ring-4 ring-white"></div>
+                  <div className="relative z-10 w-6 h-6 rounded-full bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 ring-4 ring-card"></div>
                 );
               }
 
@@ -336,7 +336,7 @@ export default function ReportDetails() {
                     {(isPast || isCurrent) && <p className="text-xs text-text-muted mt-1">{activeDesc}</p>}
                   </div>
                   {historyDateStr && (
-                    <div className="text-[10px] text-gray-400 mt-1" dir="ltr">
+                    <div className="text-[10px] text-text-muted mt-1" dir="ltr">
                       {historyDateStr}
                     </div>
                   )}

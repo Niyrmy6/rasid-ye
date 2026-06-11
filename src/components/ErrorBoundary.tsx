@@ -58,7 +58,7 @@ class ErrorBoundary extends React.Component<Props, State> {
               <h1 className="text-2xl font-bold text-text-main font-almarai">
                 {i18n.t('errorBoundary.title')}
               </h1>
-              <p className="text-text-muted dark:text-gray-400">
+              <p className="text-text-muted">
                 {i18n.t('errorBoundary.description')}
               </p>
             </div>

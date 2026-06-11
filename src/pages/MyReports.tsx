@@ -72,7 +72,7 @@ export default function MyReports() {
               <span className="material-symbols-outlined text-[20px]">search</span>
             </div>
             <input 
-              className={`block w-full py-2.5 bg-white border-none ring-1 ring-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary shadow-sm text-text-main placeholder-gray-400 transition-shadow ${i18n.language === 'ar' ? 'pr-10 pl-10 text-right' : 'pl-10 pr-10 text-left'}`}
+              className={`block w-full py-2.5 bg-card border-none ring-1 ring-border rounded-xl text-sm focus:ring-2 focus:ring-primary shadow-sm text-text-main placeholder-gray-400 transition-shadow ${i18n.language === 'ar' ? 'pr-10 pl-10 text-right' : 'pl-10 pr-10 text-left'}`}
               placeholder={t('Search reports or filter status...')} 
               type="text"
               value={searchQuery}
@@ -82,30 +82,30 @@ export default function MyReports() {
             <div className={`absolute inset-y-0 ${i18n.language === 'ar' ? 'left-0 pl-2' : 'right-0 pr-2'} flex items-center`}>
               <button 
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-center text-gray-400 hover:text-primary"
+                className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center justify-center text-gray-400 hover:text-primary"
               >
                 <span className="material-symbols-outlined text-[20px]">tune</span>
               </button>
             </div>
             {isFilterOpen && (
-              <div className={`absolute top-full ${i18n.language === 'ar' ? 'left-0' : 'right-0'} mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black/5 overflow-hidden z-40`}>
+              <div className={`absolute top-full ${i18n.language === 'ar' ? 'left-0' : 'right-0'} mt-2 w-48 bg-card rounded-xl shadow-lg ring-1 ring-black/5 dark:ring-white/5 overflow-hidden z-40`}>
                 <div className="p-1">
-                  <button onClick={() => { setStatusFilter('all'); setIsFilterOpen(false); }} className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                  <button onClick={() => { setStatusFilter('all'); setIsFilterOpen(false); }} className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                     {t('All')}
                   </button>
-                  <button onClick={() => { setStatusFilter('under_review'); setIsFilterOpen(false); }} className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                  <button onClick={() => { setStatusFilter('under_review'); setIsFilterOpen(false); }} className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                     <span className="w-2 h-2 rounded-full bg-orange-500"></span>
                     {t('Under Review')}
                   </button>
-                  <button onClick={() => { setStatusFilter('received'); setIsFilterOpen(false); }} className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                  <button onClick={() => { setStatusFilter('received'); setIsFilterOpen(false); }} className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                     <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                     {t('Received')}
                   </button>
-                  <button onClick={() => { setStatusFilter('verified'); setIsFilterOpen(false); }} className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                  <button onClick={() => { setStatusFilter('verified'); setIsFilterOpen(false); }} className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                     <span className="w-2 h-2 rounded-full bg-green-500"></span>
                     {t('Report Completed')}
                   </button>
-                  <button onClick={() => { setStatusFilter('rejected'); setIsFilterOpen(false); }} className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} px-3 py-2 text-sm rounded-lg hover:bg-gray-50 flex items-center gap-2`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+                  <button onClick={() => { setStatusFilter('rejected'); setIsFilterOpen(false); }} className={`w-full ${i18n.language === 'ar' ? 'text-right' : 'text-left'} px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 flex items-center gap-2`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                     <span className="w-2 h-2 rounded-full bg-red-500"></span>
                     {t('Rejected')}
                   </button>
@@ -133,9 +133,9 @@ export default function MyReports() {
               });
               
               return (
-                <div key={report.report_id} className="bg-white p-5 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-gray-100 transition-transform active:scale-[0.99] cursor-pointer" onClick={() => navigate(`/report-details/${report.report_id}`)}>
+                <div key={report.report_id} className="bg-card p-5 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-border transition-transform active:scale-[0.99] cursor-pointer" onClick={() => navigate(`/report-details/${report.report_id}`)}>
                   <div className={`flex justify-between items-start mb-2 ${i18n.language === 'ar' ? 'flex-row' : 'flex-row-reverse'}`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-                    <h3 className={`font-bold text-base text-gray-900 font-almarai ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+                    <h3 className={`font-bold text-base text-text-main font-almarai ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
                       {report.disease?.disease_name && report.disease?.disease_name !== 'unknown'
                         ? `${t('Suspected')} ${localizedDisease(report.disease?.disease_name, report.disease?.ar_name)}`
                         : localizedDisease(report.disease?.disease_name, report.disease?.ar_name)}
@@ -147,11 +147,11 @@ export default function MyReports() {
                   
                   <div className={`flex justify-between items-end mt-4 ${i18n.language === 'ar' ? 'flex-row' : 'flex-row-reverse'}`} dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
                     <div className="space-y-2">
-                      <div className={`flex items-center text-xs text-gray-500 ${i18n.language === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
+                      <div className={`flex items-center text-xs text-text-muted ${i18n.language === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
                         <span className={`material-symbols-outlined text-[16px] ${i18n.language === 'ar' ? 'ml-1.5' : 'mr-1.5'}`}>calendar_today</span>
                         <span dir="ltr">{reportDate}</span>
                       </div>
-                      <div className={`text-xs text-gray-400 font-mono tracking-wider ${i18n.language === 'ar' ? 'text-right pr-6' : 'text-left pl-6'}`}>
+                      <div className={`text-xs text-text-muted font-mono tracking-wider ${i18n.language === 'ar' ? 'text-right pr-6' : 'text-left pl-6'}`}>
                         #{report.tracking_number}
                       </div>
                     </div>

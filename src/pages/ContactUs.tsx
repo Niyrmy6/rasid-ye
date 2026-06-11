@@ -13,8 +13,8 @@ export default function ContactUs() {
       <main className={MAIN_CLASS}>
         <div className="px-6 py-8 flex flex-col items-center text-center">
           <div className="mb-6 relative w-32 h-32">
-            <div className="absolute inset-0 bg-blue-50 rounded-full blur-2xl opacity-60"></div>
-            <div className="relative w-full h-full bg-white rounded-full shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden">
+            <div className="absolute inset-0 bg-blue-50 dark:bg-blue-950/20 rounded-full blur-2xl opacity-60"></div>
+            <div className="relative w-full h-full bg-card rounded-full shadow-sm border border-border flex items-center justify-center overflow-hidden">
               <span 
                 className="material-symbols-outlined text-primary/80" 
                 style={{ fontSize: '80px', fontVariationSettings: "'wght' 300" }}
@@ -22,8 +22,8 @@ export default function ContactUs() {
                 support_agent
               </span>
             </div>
-            <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-status-orange rounded-full flex items-center justify-center border-4 border-white">
-              <span className="material-symbols-outlined text-status-orange-text text-[24px]">
+            <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center border-4 border-white dark:border-background-dark">
+              <span className="material-symbols-outlined text-white text-[24px]">
                 mail
               </span>
             </div>
@@ -35,10 +35,10 @@ export default function ContactUs() {
 
         <div className="px-4 mb-8 grid grid-cols-1 gap-3">
           <a
-            className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 transition-all active:scale-[0.99] group"
+            className="bg-card p-4 rounded-2xl shadow-sm border border-border flex items-center gap-4 transition-all active:scale-[0.99] group"
             href="tel:800123456"
           >
-            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-blue-500 dark:text-blue-400 shrink-0">
               <span className="material-symbols-outlined text-[24px]">
                 call
               </span>
@@ -60,10 +60,10 @@ export default function ContactUs() {
           </a>
 
           <a
-            className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 transition-all active:scale-[0.99] group"
+            className="bg-card p-4 rounded-2xl shadow-sm border border-border flex items-center gap-4 transition-all active:scale-[0.99] group"
             href="mailto:support@rasidna.ye"
           >
-            <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-500 shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-950/40 flex items-center justify-center text-purple-500 dark:text-purple-400 shrink-0">
               <span className="material-symbols-outlined text-[24px]">
                 mail
               </span>
@@ -85,10 +85,10 @@ export default function ContactUs() {
           </a>
 
           <a
-            className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 transition-all active:scale-[0.99] group"
+            className="bg-card p-4 rounded-2xl shadow-sm border border-border flex items-center gap-4 transition-all active:scale-[0.99] group"
             href="#"
           >
-            <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600 shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-green-50 dark:bg-green-950/40 flex items-center justify-center text-green-600 dark:text-green-400 shrink-0">
               <svg
                 className="w-6 h-6 fill-current"
                 viewBox="0 0 24 24"

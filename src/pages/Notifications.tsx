@@ -62,7 +62,7 @@ const NotificationCard: FC<{
 
       onClick={() => notif.report_id && onNavigate(notif.report_id)}
 
-      className={`bg-white p-4 rounded-2xl shadow-sm border border-gray-100 relative group active:scale-[0.99] transition-all cursor-pointer ${dimmed ? 'opacity-80' : ''}`}
+      className={`bg-card p-4 rounded-2xl shadow-sm border border-border relative group active:scale-[0.99] transition-all cursor-pointer ${dimmed ? 'opacity-80' : ''}`}
 
     >
 
@@ -78,7 +78,7 @@ const NotificationCard: FC<{
 
           <h3 className="font-bold font-almarai text-text-main text-base leading-snug mb-1">{notif.title}</h3>
 
-          <p className="text-sm text-gray-600 mb-2">{notif.message}</p>
+          <p className="text-sm text-text-muted mb-2">{notif.message}</p>
 
           <p className="text-xs text-text-muted" dir="ltr" style={{ textAlign: language === 'ar' ? 'right' : 'left' }}>
 

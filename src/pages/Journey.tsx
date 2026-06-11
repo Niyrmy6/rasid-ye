@@ -11,10 +11,10 @@ export default function Journey() {
     <PageShell withBottomNav>
       <PageHeader title={t("Your Journey with Rasid")} showBack />
 
-      <main className={`${MAIN_CLASS} bg-white`}>
+      <main className={MAIN_CLASS}>
         <div className="px-6 py-8 relative">
           <div
-            className={`absolute top-16 bottom-32 w-1 bg-gradient-to-b from-[#57bca5] via-[#a7f3d0] to-[#eefcfc] rounded-full z-0 opacity-40 ${i18n.language === "ar" ? "right-[3.65rem]" : "left-[3.65rem]"}`}
+            className={`absolute top-16 bottom-32 w-1 bg-gradient-to-b from-[#57bca5] via-[#a7f3d0] to-[#eefcfc] dark:from-[#57bca5]/20 dark:via-[#a7f3d0]/10 dark:to-[#eefcfc]/5 rounded-full z-0 opacity-40 ${i18n.language === "ar" ? "right-[3.65rem]" : "left-[3.65rem]"}`}
           ></div>
 
           <div className="space-y-12 relative z-10">
@@ -23,15 +23,15 @@ export default function Journey() {
               dir={i18n.language === "ar" ? "rtl" : "ltr"}
             >
               <div className="relative shrink-0">
-                <div className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shadow-[0_8px_16px_-6px_rgba(59,130,246,0.3)] border border-blue-200 transform transition-transform group-hover:scale-105 duration-300">
+                <div className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/30 flex items-center justify-center shadow-[0_8px_16px_-6px_rgba(59,130,246,0.3)] border border-blue-200 dark:border-blue-900/40 transform transition-transform group-hover:scale-105 duration-300">
                   <div className="relative">
-                    <span className="material-symbols-outlined text-[40px] text-blue-600 drop-shadow-sm">
+                    <span className="material-symbols-outlined text-[40px] text-blue-600 dark:text-blue-400 drop-shadow-sm">
                       campaign
                     </span>
                   </div>
                 </div>
                 <div
-                  className={`absolute -bottom-3 bg-white rounded-xl p-1.5 shadow-md border border-gray-100 ${i18n.language === "ar" ? "-right-3 rotate-12" : "-left-3 -rotate-12"}`}
+                  className={`absolute -bottom-3 bg-card rounded-xl p-1.5 shadow-md border border-border ${i18n.language === "ar" ? "-right-3 rotate-12" : "-left-3 -rotate-12"}`}
                 >
                   <span className="material-symbols-outlined text-[20px] text-primary">
                     smartphone
@@ -42,7 +42,7 @@ export default function Journey() {
                 <div
                   className={`flex items-center gap-2 mb-1 ${i18n.language === "ar" ? "" : "flex-row-reverse"}`}
                 >
-                  <span className="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                  <span className="bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 text-[10px] px-2 py-0.5 rounded-full font-bold">
                     1
                   </span>
                   <h3 className="font-bold text-lg font-almarai text-text-main">
@@ -62,16 +62,16 @@ export default function Journey() {
               dir={i18n.language === "ar" ? "rtl" : "ltr"}
             >
               <div className="relative shrink-0">
-                <div className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-orange-50 to-amber-100 flex items-center justify-center shadow-[0_8px_16px_-6px_rgba(245,158,11,0.3)] border border-orange-200 transform transition-transform group-hover:scale-105 duration-300">
+                <div className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-950/20 dark:to-amber-950/30 flex items-center justify-center shadow-[0_8px_16px_-6px_rgba(245,158,11,0.3)] border border-orange-200 dark:border-orange-900/40 transform transition-transform group-hover:scale-105 duration-300">
                   <div className="relative flex items-center justify-center">
                     <span className="absolute w-full h-full rounded-full border-2 border-orange-300/30 animate-ping"></span>
-                    <span className="material-symbols-outlined text-[40px] text-orange-500 drop-shadow-sm">
+                    <span className="material-symbols-outlined text-[40px] text-orange-500 dark:text-orange-400 drop-shadow-sm">
                       notifications_active
                     </span>
                   </div>
                 </div>
                 <div
-                  className={`absolute -bottom-3 bg-white rounded-xl p-1.5 shadow-md border border-gray-100 ${i18n.language === "ar" ? "-right-3 -rotate-6" : "-left-3 rotate-6"}`}
+                  className={`absolute -bottom-3 bg-card rounded-xl p-1.5 shadow-md border border-border ${i18n.language === "ar" ? "-right-3 -rotate-6" : "-left-3 rotate-6"}`}
                 >
                   <span className="material-symbols-outlined text-[20px] text-orange-400">
                     sentiment_satisfied
@@ -82,7 +82,7 @@ export default function Journey() {
                 <div
                   className={`flex items-center gap-2 mb-1 ${i18n.language === "ar" ? "" : "flex-row-reverse"}`}
                 >
-                  <span className="bg-orange-100 text-orange-700 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                  <span className="bg-orange-100 dark:bg-orange-950/50 text-orange-700 dark:text-orange-300 text-[10px] px-2 py-0.5 rounded-full font-bold">
                     2
                   </span>
                   <h3 className="font-bold text-lg font-almarai text-text-main">
@@ -102,7 +102,7 @@ export default function Journey() {
               dir={i18n.language === "ar" ? "rtl" : "ltr"}
             >
               <div className="relative shrink-0">
-                <div className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-purple-50 to-fuchsia-100 flex items-center justify-center shadow-[0_8px_16px_-6px_rgba(168,85,247,0.3)] border border-purple-200 transform transition-transform group-hover:scale-105 duration-300">
+                <div className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-purple-50 to-fuchsia-100 dark:from-purple-950/20 dark:to-fuchsia-950/30 flex items-center justify-center shadow-[0_8px_16px_-6px_rgba(168,85,247,0.3)] border border-purple-200 dark:border-purple-900/40 transform transition-transform group-hover:scale-105 duration-300">
                   <div className="relative w-12 h-12 flex items-center justify-center">
                     <svg
                       className="absolute inset-0 w-full h-full text-purple-300/50"
@@ -115,14 +115,14 @@ export default function Journey() {
                       ></path>
                     </svg>
                     <span
-                      className={`material-symbols-outlined text-[36px] text-purple-600 relative z-10 drop-shadow-md -translate-y-1 ${i18n.language === "ar" ? "translate-x-1" : "-translate-x-1"}`}
+                      className={`material-symbols-outlined text-[36px] text-purple-600 dark:text-purple-400 relative z-10 drop-shadow-md -translate-y-1 ${i18n.language === "ar" ? "translate-x-1" : "-translate-x-1"}`}
                     >
                       search
                     </span>
                   </div>
                 </div>
                 <div
-                  className={`absolute -bottom-3 bg-white rounded-xl p-1.5 shadow-md border border-gray-100 ${i18n.language === "ar" ? "-right-3 rotate-6" : "-left-3 -rotate-6"}`}
+                  className={`absolute -bottom-3 bg-card rounded-xl p-1.5 shadow-md border border-border ${i18n.language === "ar" ? "-right-3 rotate-6" : "-left-3 -rotate-6"}`}
                 >
                   <span className="material-symbols-outlined text-[20px] text-purple-400">
                     explore
@@ -133,7 +133,7 @@ export default function Journey() {
                 <div
                   className={`flex items-center gap-2 mb-1 ${i18n.language === "ar" ? "" : "flex-row-reverse"}`}
                 >
-                  <span className="bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                  <span className="bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 text-[10px] px-2 py-0.5 rounded-full font-bold">
                     3
                   </span>
                   <h3 className="font-bold text-lg font-almarai text-text-main">
@@ -151,24 +151,24 @@ export default function Journey() {
               dir={i18n.language === "ar" ? "rtl" : "ltr"}
             >
               <div className="relative shrink-0">
-                <div className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center shadow-[0_8px_16px_-6px_rgba(16,185,129,0.3)] border border-green-200 transform transition-transform group-hover:scale-105 duration-300">
+                <div className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950/20 dark:to-emerald-950/30 flex items-center justify-center shadow-[0_8px_16px_-6px_rgba(16,185,129,0.3)] border border-green-200 dark:border-green-900/40 transform transition-transform group-hover:scale-105 duration-300">
                   <div className="relative flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[48px] text-green-200 absolute top-[-6px]">
+                    <span className="material-symbols-outlined text-[48px] text-green-200 dark:text-green-800 absolute top-[-6px]">
                       verified_user
                     </span>
                     <div
                       className={`flex items-center justify-center gap-[-4px] pt-2 z-10 ${i18n.language === "ar" ? "" : "flex-row-reverse"}`}
                     >
-                      <span className="material-symbols-outlined text-[20px] text-green-600">
+                      <span className="material-symbols-outlined text-[20px] text-green-600 dark:text-green-400">
                         face
                       </span>
                       <span
-                        className={`material-symbols-outlined text-[20px] text-green-600 ${i18n.language === "ar" ? "-ml-1" : "-mr-1"}`}
+                        className={`material-symbols-outlined text-[20px] text-green-600 dark:text-green-400 ${i18n.language === "ar" ? "-ml-1" : "-mr-1"}`}
                       >
                         face_3
                       </span>
                       <span
-                        className={`material-symbols-outlined text-[20px] text-green-600 ${i18n.language === "ar" ? "-ml-1" : "-mr-1"}`}
+                        className={`material-symbols-outlined text-[20px] text-green-600 dark:text-green-400 ${i18n.language === "ar" ? "-ml-1" : "-mr-1"}`}
                       >
                         face_6
                       </span>
@@ -176,7 +176,7 @@ export default function Journey() {
                   </div>
                 </div>
                 <div
-                  className={`absolute -bottom-3 bg-white rounded-xl p-1.5 shadow-md border border-gray-100 ${i18n.language === "ar" ? "-right-3 -rotate-3" : "-left-3 rotate-3"}`}
+                  className={`absolute -bottom-3 bg-card rounded-xl p-1.5 shadow-md border border-border ${i18n.language === "ar" ? "-right-3 -rotate-3" : "-left-3 rotate-3"}`}
                 >
                   <span className="material-symbols-outlined text-[20px] text-green-500">
                     health_and_safety
@@ -187,7 +187,7 @@ export default function Journey() {
                 <div
                   className={`flex items-center gap-2 mb-1 ${i18n.language === "ar" ? "" : "flex-row-reverse"}`}
                 >
-                  <span className="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                  <span className="bg-green-100 dark:bg-green-950/50 text-green-700 dark:text-green-300 text-[10px] px-2 py-0.5 rounded-full font-bold">
                     4
                   </span>
                   <h3 className="font-bold text-lg font-almarai text-text-main">

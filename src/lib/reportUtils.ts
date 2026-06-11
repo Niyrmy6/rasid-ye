@@ -47,24 +47,24 @@ export function getReportStatusDetail(status: string, t: TFunction) {
   const key = normalizeReportStatus(status);
   const styles = {
     verified: {
-      bg: 'bg-green-100', text: 'text-green-700', label: t('Completed'), icon: 'check_circle',
-      color: 'bg-green-500', bannerBg: 'bg-green-50', bannerBorder: 'border-green-200',
-      iconText: 'text-green-600', timelineLine: 'bg-green-300', key: 'verified' as const,
+      bg: 'bg-green-100 dark:bg-green-950/40', text: 'text-green-700 dark:text-green-300', label: t('Completed'), icon: 'check_circle',
+      color: 'bg-green-500', bannerBg: 'bg-green-50 dark:bg-green-950/20', bannerBorder: 'border-green-200 dark:border-green-900/40',
+      iconText: 'text-green-600 dark:text-green-400', timelineLine: 'bg-green-300 dark:bg-green-800', key: 'verified' as const,
     },
     under_review: {
-      bg: 'bg-orange-100', text: 'text-orange-700', label: t('Under Review'), icon: 'pending_actions',
-      color: 'bg-orange-500', bannerBg: 'bg-orange-50', bannerBorder: 'border-orange-200',
-      iconText: 'text-orange-600', timelineLine: 'bg-orange-300', key: 'under_review' as const,
+      bg: 'bg-orange-100 dark:bg-orange-950/40', text: 'text-orange-700 dark:text-orange-300', label: t('Under Review'), icon: 'pending_actions',
+      color: 'bg-orange-500', bannerBg: 'bg-orange-50 dark:bg-orange-950/20', bannerBorder: 'border-orange-200 dark:border-orange-900/40',
+      iconText: 'text-orange-600 dark:text-orange-400', timelineLine: 'bg-orange-300 dark:bg-orange-800', key: 'under_review' as const,
     },
     rejected: {
-      bg: 'bg-red-100', text: 'text-red-700', label: t('Rejected'), icon: 'cancel',
-      color: 'bg-red-500', bannerBg: 'bg-red-50', bannerBorder: 'border-red-200',
-      iconText: 'text-red-600', timelineLine: 'bg-red-300', key: 'rejected' as const,
+      bg: 'bg-red-100 dark:bg-red-950/40', text: 'text-red-700 dark:text-red-300', label: t('Rejected'), icon: 'cancel',
+      color: 'bg-red-500', bannerBg: 'bg-red-50 dark:bg-red-950/20', bannerBorder: 'border-red-200 dark:border-red-900/40',
+      iconText: 'text-red-600 dark:text-red-400', timelineLine: 'bg-red-300 dark:bg-red-800', key: 'rejected' as const,
     },
     received: {
-      bg: 'bg-blue-100', text: 'text-blue-700', label: t('Received'), icon: 'inbox',
-      color: 'bg-blue-500', bannerBg: 'bg-blue-50', bannerBorder: 'border-blue-200',
-      iconText: 'text-blue-600', timelineLine: 'bg-blue-300', key: 'received' as const,
+      bg: 'bg-blue-100 dark:bg-blue-950/40', text: 'text-blue-700 dark:text-blue-300', label: t('Received'), icon: 'inbox',
+      color: 'bg-blue-500', bannerBg: 'bg-blue-50 dark:bg-blue-950/20', bannerBorder: 'border-blue-200 dark:border-blue-900/40',
+      iconText: 'text-blue-600 dark:text-blue-400', timelineLine: 'bg-blue-300 dark:bg-blue-800', key: 'received' as const,
     },
   };
   return styles[key];
@@ -73,10 +73,10 @@ export function getReportStatusDetail(status: string, t: TFunction) {
 export function getStatusIconInfo(status?: string) {
   const key = normalizeReportStatus(status || '');
   const icons = {
-    verified: { bg: 'bg-green-100', text: 'text-green-600', icon: 'check_circle' },
-    under_review: { bg: 'bg-orange-100', text: 'text-orange-600', icon: 'sync_alt' },
-    rejected: { bg: 'bg-red-100', text: 'text-red-600', icon: 'cancel' },
-    received: { bg: 'bg-blue-100', text: 'text-blue-600', icon: 'info' },
+    verified: { bg: 'bg-green-100 dark:bg-green-950/40', text: 'text-green-600 dark:text-green-400', icon: 'check_circle' },
+    under_review: { bg: 'bg-orange-100 dark:bg-orange-950/40', text: 'text-orange-600 dark:text-orange-400', icon: 'sync_alt' },
+    rejected: { bg: 'bg-red-100 dark:bg-red-950/40', text: 'text-red-600 dark:text-red-400', icon: 'cancel' },
+    received: { bg: 'bg-blue-100 dark:bg-blue-950/40', text: 'text-blue-600 dark:text-blue-400', icon: 'info' },
   };
   return icons[key];
 }
