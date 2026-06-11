@@ -27,6 +27,8 @@ serve(async (req: Request) => {
   let langfuse: Langfuse | null = null;
 
   try {
+    console.log('=== Starting chat-rag-bot function');
+
     langfuse = new Langfuse({
       publicKey: Deno.env.get('LANGFUSE_PUBLIC_KEY'),
       secretKey: Deno.env.get('LANGFUSE_SECRET_KEY'),
@@ -35,6 +37,7 @@ serve(async (req: Request) => {
     });
 
     const { userQuestion, lang = 'ar' } = await req.json();
+    console.log('Request body parsed:', { userQuestion, lang });
 
     const trace = langfuse.trace({
       name: 'chat_general_query',
@@ -44,6 +47,8 @@ serve(async (req: Request) => {
 
     const groqApiKey = Deno.env.get('GROQ_API_KEY');
     const serperApiKey = Deno.env.get('SERPER_API_KEY');
+    
+    console.log('Env keys check:', { hasGroq: !!groqApiKey, hasSerper: !!serperApiKey });
 
     if (!groqApiKey) {
       throw new Error('GROQ_API_KEY is not set in Edge Function Secrets');
@@ -52,6 +57,7 @@ serve(async (req: Request) => {
     let searchContext = '';
     if (serperApiKey) {
       try {
+        console.log('Calling Serper search...');
         const searchResponse = await fetch('https://google.serper.dev/search', {
           method: 'POST',
           headers: {
@@ -65,7 +71,9 @@ serve(async (req: Request) => {
             num: 5,
           }),
         });
+        console.log('Serper response status:', searchResponse.status);
         const searchData = await searchResponse.json();
+        console.log('Serper data:', JSON.stringify(searchData, null, 2));
         if (searchData.organic?.length > 0) {
           searchContext =
             '\n--- Real-time Web Search Results (use these to enrich your answer with up-to-date information) ---\n';
@@ -79,10 +87,13 @@ serve(async (req: Request) => {
       }
     }
 
+    console.log('Final searchContext:', searchContext);
+
     const userPromptMessage = `Target Language for your response: ${lang === 'ar' ? 'ARABIC (العربية)' : 'ENGLISH'}
 User question: ${userQuestion}
 
 ${searchContext}`;
+    console.log('User prompt built');
 
     const payload = {
       model: 'llama-3.1-8b-instant',
@@ -95,6 +106,7 @@ ${searchContext}`;
       presence_penalty: 0.8,
       frequency_penalty: 0.8,
     };
+    console.log('Groq payload ready');
 
     const generation = trace.generation({
       name: 'groq_chat_completion',
@@ -102,7 +114,7 @@ ${searchContext}`;
       modelParameters: { temperature: payload.temperature },
       prompt: payload.messages,
     });
-
+    console.log('Calling Groq API...');
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -111,18 +123,23 @@ ${searchContext}`;
       },
       body: JSON.stringify(payload),
     });
-
+    console.log('Groq response status:', groqRes.status);
     const groqData = await groqRes.json();
+    console.log('Groq data:', JSON.stringify(groqData, null, 2));
+
     const botReply =
       groqData.choices?.[0]?.message?.content ?? 'عذراً، لم أتمكن من العثور على إجابة محددة الآن.';
+    console.log('Final botReply:', botReply);
 
     generation.end({ completion: botReply });
     trace.update({ output: botReply });
     await langfuse.flushAsync();
+    console.log('=== Returning response');
 
     return jsonResponse({ reply: botReply });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Internal server error';
+    console.error('=== Error in chat-rag-bot:', error);
     if (langfuse) {
       langfuse.trace({ name: 'chat_bot_error', level: 'ERROR', statusMessage: message });
       await langfuse.flushAsync();

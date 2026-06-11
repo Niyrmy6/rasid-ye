@@ -172,3 +172,16 @@ body {
   box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(1px);
 }
+
+/* Hide native webkit date picker icon but stretch it to cover the entire input area */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}

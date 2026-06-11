@@ -49,7 +49,8 @@ if (dsn) {
       'localhost',
       /^https:\/\/rasidna\.vercel\.app/,
       /^https:\/\/.*\.vercel\.app/,
-      /^https:\/\/.*\.supabase\.co/,
+      // Exclude Supabase Edge Functions (like chat-rag-bot) from Sentry trace headers
+      /^https:\/\/.*\.supabase\.co\/(?!functions\/v1\/rest\/.*chat-rag-bot)/,
     ],
 
     replaysSessionSampleRate: import.meta.env.PROD ? 0.1 : 1.0,
