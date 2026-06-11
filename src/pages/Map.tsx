@@ -345,9 +345,11 @@ export default function Map() {
                     <div className="text-xs text-gray-600">{getLocalizedGov(report.governorate_name)}</div>
 
                     <div className="text-[10px] text-gray-400 mt-1">
-
-                      {formatAppDate(report.report_date, i18n.language, {})}
-
+                      {formatAppDate(report.report_date, i18n.language, {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
                     </div>
 
                   </div>

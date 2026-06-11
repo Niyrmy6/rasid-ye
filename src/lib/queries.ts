@@ -3,8 +3,8 @@
  * Keeps select shapes and post-processing (e.g. history sort order) in one place
  * so pages stay thin and consistent with `types/models`.
  */
-import { supabase } from './supabase';
-import { formatSymptomName } from './localization';
+import { supabase } from "./supabase";
+import { formatSymptomName } from "./localization";
 import type {
   ConfirmedReport,
   DiseaseListItem,
@@ -15,7 +15,7 @@ import type {
   ReportHistoryEntry,
   ReportListItem,
   SymptomListItem,
-} from '../types/models';
+} from "../types/models";
 
 /** Nested select for list views — latest status comes from `report_history`. */
 const REPORT_LIST_SELECT = `
@@ -45,18 +45,24 @@ const NOTIFICATION_SELECT = `
 /**
  * Sorts history newest-first for cards that show current status at a glance.
  */
-export function sortReportHistoryDesc(history: ReportHistoryEntry[]): ReportHistoryEntry[] {
+export function sortReportHistoryDesc(
+  history: ReportHistoryEntry[],
+): ReportHistoryEntry[] {
   return [...history].sort(
-    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   );
 }
 
 /**
  * Sorts history oldest-first for timelines that read chronologically top-to-bottom.
  */
-export function sortReportHistoryAsc(history: ReportHistoryEntry[]): ReportHistoryEntry[] {
+export function sortReportHistoryAsc(
+  history: ReportHistoryEntry[],
+): ReportHistoryEntry[] {
   return [...history].sort(
-    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+    (a, b) =>
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
   );
 }
 
@@ -66,10 +72,10 @@ export function sortReportHistoryAsc(history: ReportHistoryEntry[]): ReportHisto
  */
 export async function fetchUserReports(userId: number) {
   return supabase
-    .from('report')
+    .from("report")
     .select(REPORT_LIST_SELECT)
-    .eq('user_id', userId)
-    .order('report_date', { ascending: false })
+    .eq("user_id", userId)
+    .order("report_date", { ascending: false })
     .then(({ data, error }) => ({
       error,
       data: (data ?? []).map((rep) => ({
@@ -84,16 +90,20 @@ export async function fetchUserReports(userId: number) {
  * @returns Single report with ascending history for the details timeline
  */
 export async function fetchReportDetails(reportId: string | number) {
-  const id = typeof reportId === 'string' ? Number.parseInt(reportId, 10) : reportId;
+  const id =
+    typeof reportId === "string" ? Number.parseInt(reportId, 10) : reportId;
   return supabase
-    .from('report')
+    .from("report")
     .select(REPORT_DETAILS_SELECT)
-    .eq('report_id', id)
+    .eq("report_id", id)
     .single()
     .then(({ data, error }) => ({
       error,
       data: data
-        ? ({ ...data, report_history: sortReportHistoryAsc(data.report_history ?? []) } as ReportDetailsItem)
+        ? ({
+            ...data,
+            report_history: sortReportHistoryAsc(data.report_history ?? []),
+          } as ReportDetailsItem)
         : null,
     }));
 }
@@ -101,9 +111,9 @@ export async function fetchReportDetails(reportId: string | number) {
 /** @param userId - Used on profile stats */
 export async function fetchUserReportCount(userId: number) {
   return supabase
-    .from('report')
-    .select('*', { count: 'exact', head: true })
-    .eq('user_id', userId);
+    .from("report")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId);
 }
 
 /**
@@ -111,9 +121,9 @@ export async function fetchUserReportCount(userId: number) {
  */
 export async function fetchUserNotifications(userId: number) {
   return supabase
-    .from('report')
+    .from("report")
     .select(NOTIFICATION_SELECT)
-    .eq('user_id', userId)
+    .eq("user_id", userId)
     .then(({ data, error }) => ({
       error,
       data: (data ?? []) as NotificationReportRow[],
@@ -123,18 +133,18 @@ export async function fetchUserNotifications(userId: number) {
 /** @param reportId - Post-submit redirect */
 export async function fetchTrackingNumber(reportId: number) {
   return supabase
-    .from('report')
-    .select('tracking_number')
-    .eq('report_id', reportId)
+    .from("report")
+    .select("tracking_number")
+    .eq("report_id", reportId)
     .single();
 }
 
 export async function fetchLatestUserReport(userId: number) {
   return supabase
-    .from('report')
-    .select('report_id, tracking_number')
-    .eq('user_id', userId)
-    .order('report_id', { ascending: false })
+    .from("report")
+    .select("report_id, tracking_number")
+    .eq("user_id", userId)
+    .order("report_id", { ascending: false })
     .limit(1)
     .single();
 }
@@ -142,8 +152,8 @@ export async function fetchLatestUserReport(userId: number) {
 /** Reference data for disease picker (bilingual columns from DB). */
 export async function fetchDiseases() {
   return supabase
-    .from('disease')
-    .select('disease_id, disease_name, ar_name, description')
+    .from("disease")
+    .select("disease_id, disease_name, ar_name, description")
     .then(({ data, error }) => ({
       error,
       data: (data ?? []) as DiseaseListItem[],
@@ -155,14 +165,14 @@ export async function fetchDiseases() {
  */
 export async function fetchSymptoms() {
   return supabase
-    .from('symptom')
-    .select('symptom_id, symptom_name, ar_name')
-    .order('symptom_id', { ascending: true })
+    .from("symptom")
+    .select("symptom_id, symptom_name, ar_name")
+    .order("symptom_id", { ascending: true })
     .then(({ data, error }) => ({
       error,
       data: (data ?? []).map((s) => ({
         ...s,
-        symptom_name: s.symptom_name ? formatSymptomName(s.symptom_name) : '',
+        symptom_name: s.symptom_name ? formatSymptomName(s.symptom_name) : "",
       })) as SymptomListItem[],
     }));
 }
@@ -173,14 +183,23 @@ export async function fetchSymptoms() {
  */
 export async function fetchMapMetadata() {
   const [diseasesResult, governoratesResult] = await Promise.all([
-    supabase.from('disease').select('disease_id, disease_name, ar_name'),
-    supabase.from('governorate').select('governorate_id, governorate_name, ar_name').neq('governorate_name', 'Unknown'),
+    supabase.from("disease").select("disease_id, disease_name, ar_name"),
+    supabase
+      .from("governorate")
+      .select("governorate_id, governorate_name, ar_name")
+      .neq("governorate_name", "Unknown"),
   ]);
   return {
     diseasesError: diseasesResult.error,
     governoratesError: governoratesResult.error,
-    diseases: (diseasesResult.data ?? []) as Pick<DiseaseListItem, 'disease_id' | 'disease_name' | 'ar_name'>[],
-    governorates: (governoratesResult.data ?? []) as Pick<GovernorateRow, 'governorate_id' | 'governorate_name' | 'ar_name'>[],
+    diseases: (diseasesResult.data ?? []) as Pick<
+      DiseaseListItem,
+      "disease_id" | "disease_name" | "ar_name"
+    >[],
+    governorates: (governoratesResult.data ?? []) as Pick<
+      GovernorateRow,
+      "governorate_id" | "governorate_name" | "ar_name"
+    >[],
   };
 }
 
@@ -188,7 +207,7 @@ export async function fetchMapMetadata() {
  * Confirmed outbreak points — backed by DB RPC `get_confirmed_reports` (lat/lng per report).
  */
 export async function fetchConfirmedReports() {
-  return supabase.rpc('get_confirmed_reports').then(({ data, error }) => ({
+  return supabase.rpc("get_confirmed_reports").then(({ data, error }) => ({
     error,
     data: (data ?? []) as ConfirmedReport[],
   }));
@@ -197,9 +216,9 @@ export async function fetchConfirmedReports() {
 /** @param limit - Home/news carousel size */
 export async function fetchLocalNews(limit = 5) {
   return supabase
-    .from('news')
-    .select('*')
-    .order('publish_date', { ascending: false })
+    .from("news")
+    .select("*")
+    .order("publish_date", { ascending: false })
     .limit(limit)
     .then(({ data, error }) => ({
       error,
@@ -208,7 +227,7 @@ export async function fetchLocalNews(limit = 5) {
 }
 
 export async function fetchNewsById(itemId: number) {
-  return supabase.from('news').select('*').eq('item_id', itemId).single();
+  return supabase.from("news").select("*").eq("item_id", itemId).single();
 }
 
 export type SubmitReportPayload = {
@@ -229,7 +248,7 @@ export type SubmitReportPayload = {
  */
 export async function submitReport(payload: SubmitReportPayload) {
   return supabase
-    .from('report')
+    .from("report")
     .insert([
       {
         ...payload,
@@ -245,7 +264,29 @@ export async function submitReport(payload: SubmitReportPayload) {
  * @param reportId - Parent report from `submitReport`
  * @param symptomIds - Many-to-many via `symptom_report` junction table
  */
-export async function submitReportSymptoms(reportId: number, symptomIds: number[]) {
-  const rows = symptomIds.map((symptom_id) => ({ report_id: reportId, symptom_id }));
-  return supabase.from('symptom_report').insert(rows);
+export async function fetchExistingReports(
+  patientName: string,
+  diseaseId: number | null,
+) {
+  let query = supabase
+    .from("report")
+    .select("report_id")
+    .eq("patient_name", patientName);
+
+  if (diseaseId) {
+    query = query.eq("disease_id", diseaseId);
+  }
+
+  return query;
+}
+
+export async function submitReportSymptoms(
+  reportId: number,
+  symptomIds: number[],
+) {
+  const rows = symptomIds.map((symptom_id) => ({
+    report_id: reportId,
+    symptom_id,
+  }));
+  return supabase.from("symptom_report").insert(rows);
 }
