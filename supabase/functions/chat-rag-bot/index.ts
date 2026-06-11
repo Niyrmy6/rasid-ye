@@ -29,17 +29,25 @@ serve(async (req: Request) => {
   try {
     console.log('=== Starting chat-rag-bot function');
 
-    langfuse = new Langfuse({
-      publicKey: Deno.env.get('LANGFUSE_PUBLIC_KEY'),
-      secretKey: Deno.env.get('LANGFUSE_SECRET_KEY'),
-      baseUrl: 'https://cloud.langfuse.com',
-      flushAt: 1,
-    });
+    const lfPublic = Deno.env.get('LANGFUSE_PUBLIC_KEY');
+    const lfSecret = Deno.env.get('LANGFUSE_SECRET_KEY');
+    if (lfPublic && lfSecret) {
+      try {
+        langfuse = new Langfuse({
+          publicKey: lfPublic,
+          secretKey: lfSecret,
+          baseUrl: 'https://cloud.langfuse.com',
+          flushAt: 1,
+        });
+      } catch (err) {
+        console.error('Langfuse init failed:', err);
+      }
+    }
 
     const { userQuestion, lang = 'ar' } = await req.json();
     console.log('Request body parsed:', { userQuestion, lang });
 
-    const trace = langfuse.trace({
+    const trace = langfuse?.trace({
       name: 'chat_general_query',
       input: userQuestion,
       metadata: { source: 'Rasidna App' },
@@ -108,7 +116,7 @@ ${searchContext}`;
     };
     console.log('Groq payload ready');
 
-    const generation = trace.generation({
+    const generation = trace?.generation({
       name: 'groq_chat_completion',
       model: payload.model,
       modelParameters: { temperature: payload.temperature },
@@ -131,9 +139,11 @@ ${searchContext}`;
       groqData.choices?.[0]?.message?.content ?? 'عذراً، لم أتمكن من العثور على إجابة محددة الآن.';
     console.log('Final botReply:', botReply);
 
-    generation.end({ completion: botReply });
-    trace.update({ output: botReply });
-    await langfuse.flushAsync();
+    generation?.end({ completion: botReply });
+    trace?.update({ output: botReply });
+    if (langfuse) {
+      await langfuse.flushAsync();
+    }
     console.log('=== Returning response');
 
     return jsonResponse({ reply: botReply });

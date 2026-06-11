@@ -347,7 +347,7 @@ export default function Map() {
                     <div className="text-[10px] text-gray-400 mt-1">
                       {formatAppDate(report.report_date, i18n.language, {
                         year: 'numeric',
-                        month: 'short',
+                        month: 'numeric',
                         day: 'numeric',
                       })}
                     </div>
