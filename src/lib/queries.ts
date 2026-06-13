@@ -264,16 +264,25 @@ export async function submitReport(payload: SubmitReportPayload) {
  * @param reportId - Parent report from `submitReport`
  * @param symptomIds - Many-to-many via `symptom_report` junction table
  */
+/** Number of days within which a same-patient + same-disease report is considered a duplicate. */
+const DUPLICATE_WINDOW_DAYS = 14;
+
 export async function fetchExistingReports(
   patientName: string,
   diseaseId: number | null,
 ) {
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - DUPLICATE_WINDOW_DAYS);
+
   let query = supabase
     .from("report")
     .select("report_id")
-    .eq("patient_name", patientName);
+    .eq("patient_name", patientName)
+    .gte("report_date", cutoffDate.toISOString());
 
-  if (diseaseId) {
+  if (diseaseId === null) {
+    query = query.is("disease_id", null);
+  } else {
     query = query.eq("disease_id", diseaseId);
   }
 
