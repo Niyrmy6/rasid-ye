@@ -22,6 +22,7 @@ export type Database = {
           description: string | null
           disease_id: number
           disease_name: string
+          E_description: string | null
           threshold: number
           user_id: number | null
         }
@@ -30,6 +31,7 @@ export type Database = {
           description?: string | null
           disease_id?: number
           disease_name: string
+          E_description?: string | null
           threshold?: number
           user_id?: number | null
         }
@@ -38,6 +40,7 @@ export type Database = {
           description?: string | null
           disease_id?: number
           disease_name?: string
+          E_description?: string | null
           threshold?: number
           user_id?: number | null
         }
@@ -158,18 +161,21 @@ export type Database = {
         Row: {
           created_at: string
           disease_id: number
+          is_read: boolean | null
           message: string
           notification_id: number
         }
         Insert: {
           created_at?: string
           disease_id: number
+          is_read?: boolean | null
           message: string
           notification_id?: number
         }
         Update: {
           created_at?: string
           disease_id?: number
+          is_read?: boolean | null
           message?: string
           notification_id?: number
         }
@@ -281,7 +287,6 @@ export type Database = {
       report_history: {
         Row: {
           created_at: string
-          disease_id: number | null
           id: number
           report_id: number
           report_status: Database["public"]["Enums"]["report_status_type"]
@@ -289,7 +294,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          disease_id?: number | null
           id?: number
           report_id: number
           report_status?: Database["public"]["Enums"]["report_status_type"]
@@ -297,7 +301,6 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          disease_id?: number | null
           id?: number
           report_id?: number
           report_status?: Database["public"]["Enums"]["report_status_type"]

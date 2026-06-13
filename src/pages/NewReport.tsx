@@ -376,24 +376,51 @@ export default function NewReport() {
               بيانات إضافية
             </label>
 
-            {/* Gender */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-text-muted mb-2 font-almarai">
-                الجنس
-              </label>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setGender("female")}
-                  className={`flex-1 py-2 rounded-xl border ${gender === "female" ? "bg-primary text-white border-primary" : "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-gray-700 text-text-muted dark:text-gray-800"} transition-all`}
-                >
-                  أنثى
-                </button>
-                <button
-                  onClick={() => setGender("male")}
-                  className={`flex-1 py-2 rounded-xl border ${gender === "male" ? "bg-primary text-white border-primary" : "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-gray-700 text-text-muted dark:text-gray-800"} transition-all`}
-                >
-                  ذكر
-                </button>
+            {/* Age and Gender side by side */}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              {/* Age */}
+              <div>
+                <label className="block text-sm font-medium text-text-muted mb-2 font-almarai">
+                  العمر
+                </label>
+                <div className="relative">
+                  <input
+                    className="w-full pl-4 pr-10 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-right placeholder-gray-400 dark:placeholder-gray-700 font-almarai"
+                    placeholder="اختر العمر"
+                    type="number"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                    dir={i18n.language === "ar" ? "rtl" : "ltr"}
+                    min="0"
+                    max="120"
+                  />
+                  <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-700">
+                    cake
+                  </span>
+                </div>
+              </div>
+
+              {/* Gender */}
+              <div>
+                <label className="block text-sm font-medium text-text-muted mb-2 font-almarai">
+                  الجنس
+                </label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setGender("female")}
+                    className={`flex-1 py-3 rounded-xl border text-sm font-bold font-almarai ${gender === "female" ? "bg-primary text-white border-primary" : "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-gray-700 text-text-muted dark:text-gray-800"} transition-all`}
+                  >
+                    أنثى
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGender("male")}
+                    className={`flex-1 py-3 rounded-xl border text-sm font-bold font-almarai ${gender === "male" ? "bg-primary text-white border-primary" : "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-gray-700 text-text-muted dark:text-gray-800"} transition-all`}
+                  >
+                    ذكر
+                  </button>
+                </div>
               </div>
             </div>
 
