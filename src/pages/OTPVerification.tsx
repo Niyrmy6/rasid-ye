@@ -41,6 +41,13 @@ export default function OTPVerification() {
     }
   }, [phone, navigate]);
 
+  // Dismiss all toasts (like the mock WhatsApp notification) when leaving this page
+  useEffect(() => {
+    return () => {
+      toast.dismiss();
+    };
+  }, []);
+
   const handleChange = (index: number, value: string) => {
     if (!/^[0-9]*$/.test(value)) return;
     
