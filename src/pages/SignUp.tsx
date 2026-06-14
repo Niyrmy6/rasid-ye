@@ -17,37 +17,50 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ fullname?: string; phone?: string; password?: string }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setFieldErrors({});
 
-    if (!fullname.trim() || !phone.trim() || !password) {
-      setError(t('Please fill all fields'));
-      return;
+    const newFieldErrors: { fullname?: string; phone?: string; password?: string } = {}
+
+    // 1. Validate Full Name
+    if (!fullname.trim()) {
+      newFieldErrors.fullname = t('Please fill all fields');
+    } else if (fullname.trim().length < 2) {
+      newFieldErrors.fullname = t('signup.nameMinLength');
+    } else {
+      const nameParts = fullname.trim().split(/\s+/);
+      if (nameParts.length < 4) {
+        newFieldErrors.fullname = t('signup.nameQuadrupleRequired');
+      }
     }
 
-    if (fullname.trim().length < 2) {
-      setError(t('signup.nameMinLength'));
-      return;
+    // 2. Validate Phone
+    if (!phone.trim()) {
+      newFieldErrors.phone = t('Please fill all fields');
+    } else {
+      const phoneValidation = validateYemenPhone(phone, t);
+      if (!phoneValidation.valid) {
+        newFieldErrors.phone = phoneValidation.errorMsg;
+      }
     }
 
-    const nameParts = fullname.trim().split(/\s+/);
-    if (nameParts.length < 4) {
-      setError(t('signup.nameQuadrupleRequired'));
+    // 3. Validate Password
+    if (!password) {
+      newFieldErrors.password = t('Please fill all fields');
+    } else if (password.length < 6) {
+      newFieldErrors.password = t('signup.passwordMinLength');
+    }
+
+    if (Object.keys(newFieldErrors).length > 0) {
+      setFieldErrors(newFieldErrors);
       return;
     }
 
     const phoneValidation = validateYemenPhone(phone, t);
-    if (!phoneValidation.valid) {
-      setError(phoneValidation.errorMsg);
-      return;
-    }
-
-    if (password.length < 6) {
-      setError(t('signup.passwordMinLength'));
-      return;
-    }
     
     setLoading(true);
 
@@ -203,12 +216,20 @@ export default function SignUp() {
                 placeholder={t('Full Name')}
                 type="text"
                 value={fullname}
-                onChange={(e) => setFullname(e.target.value)}
+                onChange={(e) => {
+                  setFullname(e.target.value);
+                  if (fieldErrors.fullname) {
+                    setFieldErrors(prev => ({ ...prev, fullname: undefined }));
+                  }
+                }}
               />
               <div className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none ${i18n.language === 'ar' ? 'right-4' : 'left-4'}`}>
                 <span className="material-symbols-outlined">person</span>
               </div>
             </div>
+            {fieldErrors.fullname && (
+              <p className="text-red-500 text-xs font-bold mt-1 px-1">{fieldErrors.fullname}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -230,9 +251,11 @@ export default function SignUp() {
                   maxLength={9}
                   value={phone}
                   onChange={(e) => {
-                    // السماح فقط بالأرقام
                     const val = e.target.value.replace(/[^\d]/g, '');
                     setPhone(val);
+                    if (fieldErrors.phone) {
+                      setFieldErrors(prev => ({ ...prev, phone: undefined }));
+                    }
                   }}
                   style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
                 />
@@ -240,6 +263,9 @@ export default function SignUp() {
                   <span className="material-symbols-outlined">smartphone</span>
                 </div>
               </div>
+              {fieldErrors.phone && (
+                <p className="text-red-500 text-xs font-bold mt-1 px-1">{fieldErrors.phone}</p>
+              )}
           </div>
 
           <div className="space-y-2">
@@ -254,7 +280,12 @@ export default function SignUp() {
                 placeholder="••••••••"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (fieldErrors.password) {
+                    setFieldErrors(prev => ({ ...prev, password: undefined }));
+                  }
+                }}
               />
               <div className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none ${i18n.language === 'ar' ? 'right-4' : 'left-4'}`}>
                 <span className="material-symbols-outlined">lock</span>
@@ -268,9 +299,13 @@ export default function SignUp() {
                 </span>
               </div>
             </div>
-            <p className={`text-xs text-muted-foreground ${i18n.language === 'ar' ? 'mr-1' : 'ml-1'}`}>
-              {t('signup.passwordHint')}
-            </p>
+            {fieldErrors.password ? (
+              <p className="text-red-500 text-xs font-bold mt-1 px-1">{fieldErrors.password}</p>
+            ) : (
+              <p className={`text-xs text-muted-foreground ${i18n.language === 'ar' ? 'mr-1' : 'ml-1'}`}>
+                {t('signup.passwordHint')}
+              </p>
+            )}
           </div>
 
           <div className="pt-4">
