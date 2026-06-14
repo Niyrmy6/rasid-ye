@@ -7,15 +7,17 @@ import { Resend } from 'npm:resend@3.2.0';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { renderReportStatusEmail } from './template.tsx';
 
-type ReportStatus = 'under_review' | 'resolved' | 'rejected';
+type ReportStatus = 'received' | 'under_review' | 'resolved' | 'rejected';
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 function mapReportStatus(raw: unknown): ReportStatus {
   const dbStatus = String(raw ?? '').toLowerCase();
-  if (dbStatus === 'resolved' || dbStatus === 'completed') return 'resolved';
+  if (dbStatus === 'new') return 'received';
+  if (dbStatus === 'resolved' || dbStatus === 'completed' || dbStatus === 'verified') return 'resolved';
   if (dbStatus === 'rejected') return 'rejected';
-  return 'under_review';
+  if (dbStatus === 'pending') return 'under_review';
+  return 'received';
 }
 
 Deno.serve(async (req) => {

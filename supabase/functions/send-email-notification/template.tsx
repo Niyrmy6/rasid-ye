@@ -5,17 +5,23 @@
 
 export interface ReportStatusEmailProps {
   reportNumber: string;
-  status: 'under_review' | 'resolved' | 'rejected';
+  status: 'received' | 'under_review' | 'resolved' | 'rejected';
   reporterName?: string;
   reportUrl: string;
 }
 
 const statusConfig = {
+  received: {
+    label: 'تم استلام البلاغ',
+    color: '#3B82F6',
+    icon: '📩',
+    message: 'تم استلام بلاغك بنجاح وسيتم مراجعته من قبل الفريق الصحي المختص في أقرب وقت.',
+  },
   under_review: {
     label: 'قيد المراجعة',
     color: '#F59E0B',
     icon: '⏳',
-    message: 'تم استلام البلاغ وهو حالياً قيد المراجعة.',
+    message: 'بلاغك حالياً قيد المراجعة من قبل الفريق الصحي المختص.',
   },
   resolved: {
     label: 'تم حل البلاغ',

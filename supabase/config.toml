@@ -398,3 +398,8 @@ entrypoint = "./functions/chat-rag-bot/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/send-email-notification/index.ts"
+
+[functions.fetch-global-news]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/fetch-global-news/index.ts"

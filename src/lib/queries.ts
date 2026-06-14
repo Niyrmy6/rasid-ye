@@ -8,6 +8,7 @@ import { formatSymptomName } from "./localization";
 import type {
   ConfirmedReport,
   DiseaseListItem,
+  GlobalNewsItem,
   GovernorateRow,
   NewsRow,
   NotificationReportRow,
@@ -211,6 +212,27 @@ export async function fetchConfirmedReports() {
     error,
     data: (data ?? []) as ConfirmedReport[],
   }));
+}
+
+/**
+ * Global health headlines from Google News RSS — fetched server-side via Edge Function
+ * (not stored in DB; local news uses `fetchLocalNews`).
+ */
+export async function fetchGlobalNews(language: string) {
+  const lang = language === "en" ? "en" : "ar";
+  const { data, error } = await supabase.functions.invoke("fetch-global-news", {
+    body: { lang },
+  });
+
+  if (error) {
+    return { error, data: [] as GlobalNewsItem[] };
+  }
+
+  const payload = data as { items?: GlobalNewsItem[]; error?: string } | null;
+  return {
+    error: payload?.error ? new Error(payload.error) : null,
+    data: payload?.items ?? [],
+  };
 }
 
 /** @param limit - Home/news carousel size */

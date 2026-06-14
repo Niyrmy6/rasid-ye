@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import PageShell from "../components/PageShell";
 import PageHeader from "../components/PageHeader";
-import { fetchLocalNews } from "../lib/queries";
+import { fetchGlobalNews, fetchLocalNews } from "../lib/queries";
 import { useErrorHandler } from "../hooks/useErrorHandler";
 import { toast } from "sonner";
 import type { NewsRow, GlobalNewsItem } from "../types/models";
@@ -59,106 +59,11 @@ export default function NewsFeed() {
           setLocalNews(localData || []);
         }
 
-        // External RSS - language-specific Google News queries
-        const rssQuery = i18n.language === 'ar'
-          ? "https://news.google.com/rss/search?q=الأمراض+الصحة&hl=ar&gl=AE&ceid=AE:ar"
-          : "https://news.google.com/rss/search?q=health+disease+outbreak&hl=en-US&gl=US&ceid=US:en";
-        
-        let fetchedGlobalNews: GlobalNewsItem[] = [];
-        
-        // 1. Try feed2json.org (Very fast RSS-to-JSON converter, supports CORS, returns full feed)
-        try {
-          const res = await fetch(`https://feed2json.org/convert?url=${encodeURIComponent(rssQuery)}`);
-          if (res.ok) {
-            const feedData = await res.json();
-            if (feedData.items && feedData.items.length > 0) {
-              fetchedGlobalNews = feedData.items.map((item: any) => ({
-                title: item.title || "",
-                link: item.url || "",
-                pubDate: item.date_published || "",
-                description: item.summary || item.content_text || "",
-                thumbnail: ""
-              }));
-            }
-          }
-        } catch (e) {
-          console.warn("feed2json.org failed, trying corsproxy.io", e);
+        const { data: globalData, error: globalError } = await fetchGlobalNews(i18n.language);
+        if (globalError) {
+          handleError(globalError, { context: 'Global news fetch', silent: true });
         }
-
-        // 2. Try corsproxy.io (Very fast Cloudflare-based proxy)
-        if (fetchedGlobalNews.length === 0) {
-          try {
-            const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(rssQuery)}`);
-            if (res.ok) {
-              const xmlText = await res.text();
-              const parser = new DOMParser();
-              const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-              const items = Array.from(xmlDoc.querySelectorAll("item")).map((item) => {
-                let desc = item.querySelector("description")?.textContent || "";
-                desc = desc.replace(/<[^>]*>/g, ""); // Clean HTML
-                return {
-                  title: item.querySelector("title")?.textContent || "",
-                  link: item.querySelector("link")?.textContent || "",
-                  pubDate: item.querySelector("pubDate")?.textContent || "",
-                  description: desc,
-                  thumbnail: ""
-                };
-              });
-              if (items.length > 0) {
-                fetchedGlobalNews = items;
-              }
-            }
-          } catch (e) {
-            console.warn("corsproxy.io failed, trying fallback", e);
-          }
-        }
-
-        // 3. Fallback to allorigins.win if primary proxy returned empty
-        if (fetchedGlobalNews.length === 0) {
-          try {
-            const rssUrl = encodeURIComponent(rssQuery);
-            const res = await fetch(`https://api.allorigins.win/raw?url=${rssUrl}`);
-            if (res.ok) {
-              const xmlText = await res.text();
-              const parser = new DOMParser();
-              const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-              const items = Array.from(xmlDoc.querySelectorAll("item")).map((item) => {
-                let desc = item.querySelector("description")?.textContent || "";
-                desc = desc.replace(/<[^>]*>/g, ""); // Clean HTML
-                return {
-                  title: item.querySelector("title")?.textContent || "",
-                  link: item.querySelector("link")?.textContent || "",
-                  pubDate: item.querySelector("pubDate")?.textContent || "",
-                  description: desc,
-                  thumbnail: ""
-                };
-              });
-              if (items.length > 0) {
-                fetchedGlobalNews = items;
-              }
-            }
-          } catch (e) {
-            console.warn("allorigins fallback failed", e);
-          }
-        }
-
-        // 4. Last resort fallback to rss2json (limited to 10 items)
-        if (fetchedGlobalNews.length === 0) {
-          try {
-            const rssUrl = encodeURIComponent(rssQuery);
-            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`);
-            if (res.ok) {
-              const rssData = await res.json();
-              if (rssData.status === 'ok') {
-                fetchedGlobalNews = rssData.items || [];
-              }
-            }
-          } catch (e) {
-            console.error("Last resort rss2json failed", e);
-          }
-        }
-
-        setGlobalNews(fetchedGlobalNews);
+        setGlobalNews(globalData);
       } catch (err) {
         handleError(err, { context: 'News Feed Catch' });
       } finally {
