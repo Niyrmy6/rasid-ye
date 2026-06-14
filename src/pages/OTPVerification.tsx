@@ -14,7 +14,7 @@ export default function OTPVerification() {
   const { t } = useTranslation();
   const { handleError } = useErrorHandler();
   // Router state carries flow context — no query params so OTP cannot be deep-linked without prior step
-  const { phone, fullname, password, newPassword, expectedOtp, isPasswordReset } = location.state || {};
+  const { phone, fullname, password, email, newPassword, expectedOtp, isPasswordReset, isPhoneChange } = location.state || {};
 
   const [otp, setOtp] = useState(['', '', '', '', '', '']); // 6 digits
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -34,12 +34,12 @@ export default function OTPVerification() {
     return () => clearInterval(interval);
   }, [timer]);
 
-  // Direct /verify-otp visits have no phone in state — send back to registration entry
+  // Direct /verify-otp visits have no phone in state — send back to registration entry or profile editor
   useEffect(() => {
     if (!phone) {
-      navigate('/signup');
+      navigate(isPhoneChange ? '/personal-info' : '/signup');
     }
-  }, [phone, navigate]);
+  }, [phone, navigate, isPhoneChange]);
 
   // Dismiss all toasts (like the mock WhatsApp notification) when leaving this page
   useEffect(() => {
@@ -102,6 +102,31 @@ export default function OTPVerification() {
         } else {
           toast.dismiss();
           navigate('/login');
+        }
+      } else if (isPhoneChange) {
+        // Retrieve stored user id to identify target row
+        const storedUser = getStoredUser();
+        if (!storedUser) {
+          setError(t("Error: No user found"));
+          setLoading(false);
+          return;
+        }
+
+        const { data, error: updateError } = await supabase
+          .from('user')
+          .update({ full_name: fullname, phone, password, email: email || null })
+          .eq('user_id', storedUser.user_id)
+          .select()
+          .single();
+
+        if (updateError) {
+          handleError(updateError, { context: 'OTP Phone Change Update', silent: true });
+          setError(t('forgot.serverError'));
+        } else {
+          setStoredUser(data);
+          toast.dismiss();
+          toast.success(t('Saved Successfully'));
+          navigate('/personal-info');
         }
       } else {
         // role_id 3 = citizen reporter — matches Login gate (staff roles blocked in app)

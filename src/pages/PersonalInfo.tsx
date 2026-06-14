@@ -6,6 +6,8 @@ import PageHeader from '../components/PageHeader';
 import { supabase } from '../lib/supabase';
 import { useErrorHandler } from '../hooks/useErrorHandler';
 import { getStoredUser, setStoredUser } from '../lib/session';
+import { validateYemenPhone } from '../lib/phoneValidation';
+import { notificationService } from '../lib/notifications';
 
 export default function PersonalInfo() {
   const { t, i18n } = useTranslation();
@@ -16,6 +18,7 @@ export default function PersonalInfo() {
 
   const [fullname, setFullname] = useState('');
   const [phone, setPhone] = useState('');
+  const [originalPhone, setOriginalPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
@@ -28,14 +31,63 @@ export default function PersonalInfo() {
 
   useEffect(() => {
     const storedUser = getStoredUser();
-    if (storedUser) {
-      if (storedUser.full_name) setFullname(storedUser.full_name);
-      if (storedUser.phone) setPhone(storedUser.phone);
-      if (storedUser.password) setPassword(storedUser.password);
-      if (storedUser.email) setEmail(storedUser.email);
-      setUserId(storedUser.user_id);
-      if (storedUser.profile_picture) setProfilePicture(storedUser.profile_picture);
+    if (!storedUser) return;
+
+    const stripPrefix = (ph: string) => {
+      if (!ph) return '';
+      let display = ph;
+      if (display.startsWith('+967')) {
+        display = display.substring(4);
+      } else if (display.startsWith('967')) {
+        display = display.substring(3);
+      }
+      return display;
+    };
+
+    // Load initial values from localStorage
+    if (storedUser.full_name) setFullname(storedUser.full_name);
+    if (storedUser.phone) {
+      const display = stripPrefix(storedUser.phone);
+      setPhone(display);
+      setOriginalPhone(storedUser.phone); // Full phone is stored in DB
     }
+    if (storedUser.password) setPassword(storedUser.password);
+    if (storedUser.email) setEmail(storedUser.email);
+    setUserId(storedUser.user_id);
+    if (storedUser.profile_picture) setProfilePicture(storedUser.profile_picture);
+
+    // Fetch latest from database to support database updates reflection
+    const fetchUserData = async () => {
+      try {
+        const { data, error: fetchErr } = await supabase
+          .from('user')
+          .select('*')
+          .eq('user_id', storedUser.user_id)
+          .single();
+
+        if (fetchErr) {
+          console.error("Error fetching database profile updates", fetchErr);
+          return;
+        }
+
+        if (data) {
+          setStoredUser(data);
+          if (data.full_name) setFullname(data.full_name);
+          if (data.phone) {
+            const display = stripPrefix(data.phone);
+            setPhone(display);
+            setOriginalPhone(data.phone);
+          }
+          if (data.password) setPassword(data.password);
+          if (data.email) setEmail(data.email || '');
+          if (data.profile_picture) setProfilePicture(data.profile_picture);
+        }
+      } catch (err) {
+        console.error("Error in fetchUserData catch block", err);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,29 +170,122 @@ export default function PersonalInfo() {
       return;
     }
 
+    // 1. Validate Full Name
+    if (!fullname.trim()) {
+      setError(t('Please fill all fields'));
+      setLoading(false);
+      return;
+    }
+    if (fullname.trim().length < 2) {
+      setError(t('signup.nameMinLength'));
+      setLoading(false);
+      return;
+    }
+    const nameParts = fullname.trim().split(/\s+/);
+    if (nameParts.length < 4) {
+      setError(t('signup.nameQuadrupleRequired'));
+      setLoading(false);
+      return;
+    }
+
+    // 2. Validate Password
+    if (!password) {
+      setError(t('Please fill all fields'));
+      setLoading(false);
+      return;
+    }
+    if (password.length < 6) {
+      setError(t('signup.passwordMinLength'));
+      setLoading(false);
+      return;
+    }
+
+    // 3. Validate Phone
+    const phoneValidation = validateYemenPhone(phone, t);
+    if (!phoneValidation.valid) {
+      setError(phoneValidation.errorMsg);
+      setLoading(false);
+      return;
+    }
+    const fullPhone = phoneValidation.fullPhone;
+    const phoneChanged = fullPhone !== originalPhone;
+
     try {
-      const { data, error: updateError } = await supabase
-        .from('user')
-        .update({ full_name: fullname, phone, password, email: email || null })
-        .eq('user_id', user.user_id)
-        .select()
-        .single();
+      if (phoneChanged) {
+        // Fail fast before WhatsApp OTP cost if phone already exists
+        const { data: existingUser, error: checkError } = await supabase
+          .from('user')
+          .select('user_id')
+          .eq('phone', fullPhone)
+          .neq('user_id', user.user_id)
+          .maybeSingle();
 
-      if (updateError) {
-        handleError(updateError, { context: 'Profile Info Save' });
-        setLoading(false);
-        return;
-      }
-      
-      // Keep localStorage session in sync so Profile shows new avatar/name without re-login
-      if (data) {
-        setStoredUser(data);
-      }
+        if (checkError) {
+          handleError(checkError, { context: 'Profile Phone Check' });
+          setLoading(false);
+          return;
+        }
 
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 2000);
+        if (existingUser) {
+          setError(t('signup.phoneAlreadyRegistered'));
+          setLoading(false);
+          return;
+        }
+
+        // Send OTP
+        const result = await notificationService.sendOtp(fullPhone);
+
+        if (!result.success) {
+          const detail = result.error || result.details || '';
+          if (detail.includes('Failed to fetch') || detail.includes('NetworkError') || detail.includes('net::ERR') || detail.includes('Network Error')) {
+            setError(t('signup.networkError'));
+          } else if (detail.includes('rate') || detail.includes('limit')) {
+            setError(t('signup.tooManyAttempts'));
+          } else {
+            setError(t('signup.otpSendFailed'));
+          }
+          if (detail) {
+            handleError(new Error(detail), { context: 'Profile OTP function', silent: true });
+          }
+          setLoading(false);
+          return;
+        }
+
+        // Navigate to OTPVerification page with isPhoneChange flow context
+        navigate('/verify-otp', {
+          state: {
+            phone: fullPhone,
+            fullname: fullname.trim(),
+            password,
+            email: email || null,
+            expectedOtp: result.otp,
+            isPhoneChange: true,
+          },
+        });
+      } else {
+        // Update direct profile details since phone number is unchanged
+        const { data, error: updateError } = await supabase
+          .from('user')
+          .update({ full_name: fullname, password, email: email || null })
+          .eq('user_id', user.user_id)
+          .select()
+          .single();
+
+        if (updateError) {
+          handleError(updateError, { context: 'Profile Info Save' });
+          setLoading(false);
+          return;
+        }
+        
+        if (data) {
+          setStoredUser(data);
+        }
+
+        setShowSuccess(true);
+        setTimeout(() => {
+          setShowSuccess(false);
+        }, 2000);
+      }
     } catch (err: any) {
       handleError(err, { context: 'Profile Save Catch' });
     } finally {
@@ -207,18 +352,27 @@ export default function PersonalInfo() {
 
           <div className="relative group">
             <label className={`block text-sm font-medium text-text-muted mb-1.5 ${i18n.language === 'ar' ? 'mr-1' : 'ml-1'}`} htmlFor="phone">{t('Phone Number')}</label>
-            <div className="relative">
+            <div className="relative" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+              <div className={`absolute top-1/2 -translate-y-1/2 font-bold text-gray-500 font-sans flex items-center gap-2 pointer-events-none ${i18n.language === 'ar' ? 'left-4' : 'left-4'}`} dir="ltr">
+                <span>|</span>
+                <span className="text-text-main">+967</span>
+              </div>
               <input 
-                className={`w-full bg-white dark:bg-surface-dark text-text-main rounded-2xl border border-transparent ring-1 ring-gray-200 dark:ring-gray-700 py-3.5 focus:ring-1 focus:ring-[#56BCA4] focus:border-[#56BCA4] outline-none transition-all placeholder:text-gray-400 font-almarai ${i18n.language === 'ar' ? 'text-right pr-12 pl-4' : 'text-left pl-12 pr-4'}`} 
+                className={`w-full bg-white dark:bg-surface-dark text-text-main rounded-2xl border border-transparent ring-1 ring-gray-200 dark:ring-gray-700 py-3.5 focus:ring-1 focus:ring-[#56BCA4] focus:border-[#56BCA4] outline-none transition-all placeholder:text-gray-400 font-almarai ${i18n.language === 'ar' ? 'pr-12 pl-24 text-right' : 'pl-24 pr-12 text-left'}`} 
                 dir="ltr" 
                 id="phone" 
                 type="tel" 
+                inputMode="numeric"
+                maxLength={9}
                 value={phone}
                 disabled={loading}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^\d]/g, '');
+                  setPhone(val);
+                }}
                 style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
               />
-              <div className={`absolute inset-y-0 ${i18n.language === 'ar' ? 'right-0 pr-3.5' : 'left-0 pl-3.5'} flex items-center pointer-events-none`}>
+              <div className={`absolute top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none ${i18n.language === 'ar' ? 'right-4' : 'left-4 pl-42'}`} style={i18n.language !== 'ar' ? { left: 'auto', right: '1rem' } : {}}>
                 <span className="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">phone</span>
               </div>
             </div>
