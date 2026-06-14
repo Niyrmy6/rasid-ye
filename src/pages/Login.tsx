@@ -54,8 +54,8 @@ export default function Login() {
         handleError(supaError, { context: 'Login Subquery', silent: true });
         setError(t('login.serverError'));
         return;
-      } 
-      
+      }
+
       if (!data) {
         setError(t('Incorrect phone number or password'));
       } else {
@@ -107,7 +107,7 @@ export default function Login() {
 
             <div className="relative flex flex-col items-center">
               <div className="w-28 h-28 bg-pastel-purple rounded-full flex items-center justify-center relative border-4 border-white shadow-soft z-20">
-                <span className="material-symbols-outlined text-accent-purple" style={{ fontSize: '5.5rem' }}>
+                <span className="material-symbols-outlined text-accent-purple" style={{ fontSize: '4.5rem' }}>
                   face_3
                 </span>
                 <div className="absolute -right-3 top-1/2 -translate-y-1/2 bg-accent-yellow p-1.5 rounded-full text-white shadow-sm transform -rotate-12 border-2 border-white">
@@ -129,30 +129,30 @@ export default function Login() {
             <label className={`text-foreground font-bold text-sm block ${i18n.language === 'ar' ? 'mr-1 text-right' : 'ml-1 text-left'}`} htmlFor="phone">
               {t('Phone Number')}
             </label>
-              <div className="relative" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
-                <div className={`absolute top-1/2 -translate-y-1/2 font-bold text-gray-500 font-sans flex items-center gap-2 pointer-events-none ${i18n.language === 'ar' ? 'left-4' : 'left-4'}`} dir="ltr">
-                  <span>|</span>
-                  <span className="text-foreground">+967</span>
-                </div>
-                <input
-                  className={`w-full bg-input-bg border border-transparent text-foreground font-medium py-4 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground ${i18n.language === 'ar' ? 'pr-12 pl-24 text-right' : 'pl-24 pr-12 text-left'}`}
-                  dir="ltr"
-                  id="phone"
-                  placeholder="7xxxxxxxx"
-                  type="tel"
-                  inputMode="numeric"
-                  maxLength={9}
-                  value={phone}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/[^\d]/g, '');
-                    setPhone(val);
-                  }}
-                  style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
-                />
-                <div className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none ${i18n.language === 'ar' ? 'right-4' : 'left-4 pl-42'}`} style={i18n.language !== 'ar' ? { left: 'auto', right: '1rem' } : {}}>
-                  <span className="material-symbols-outlined">smartphone</span>
-                </div>
+            <div className="relative" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
+              <div className={`absolute top-1/2 -translate-y-1/2 font-bold text-gray-500 font-sans flex items-center gap-2 pointer-events-none ${i18n.language === 'ar' ? 'left-4' : 'left-4'}`} dir="ltr">
+                <span>|</span>
+                <span className="text-foreground">+967</span>
               </div>
+              <input
+                className={`w-full bg-input-bg border border-transparent text-foreground font-medium py-4 rounded-2xl outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-input transition-all placeholder:text-muted-foreground ${i18n.language === 'ar' ? 'pr-12 pl-24 text-right' : 'pl-24 pr-12 text-left'}`}
+                dir="ltr"
+                id="phone"
+                placeholder="7xxxxxxxx"
+                type="tel"
+                inputMode="numeric"
+                maxLength={9}
+                value={phone}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^\d]/g, '');
+                  setPhone(val);
+                }}
+                style={{ textAlign: i18n.language === 'ar' ? 'right' : 'left' }}
+              />
+              <div className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none ${i18n.language === 'ar' ? 'right-4' : 'left-4 pl-42'}`} style={i18n.language !== 'ar' ? { left: 'auto', right: '1rem' } : {}}>
+                <span className="material-symbols-outlined">smartphone</span>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -172,7 +172,7 @@ export default function Login() {
               <div className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none ${i18n.language === 'ar' ? 'right-4' : 'left-4'}`}>
                 <span className="material-symbols-outlined">lock</span>
               </div>
-              <div 
+              <div
                 className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground cursor-pointer hover:text-primary transition-colors z-10 ${i18n.language === 'ar' ? 'left-4' : 'right-4'}`}
                 onClick={() => setShowPassword(!showPassword)}
               >
