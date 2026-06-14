@@ -107,7 +107,7 @@ export default function Login() {
 
             <div className="relative flex flex-col items-center">
               <div className="w-28 h-28 bg-pastel-purple rounded-full flex items-center justify-center relative border-4 border-white shadow-soft z-20">
-                <span className="material-symbols-outlined text-[6rem] text-accent-purple">
+                <span className="material-symbols-outlined text-accent-purple" style={{ fontSize: '5.5rem' }}>
                   face_3
                 </span>
                 <div className="absolute -right-3 top-1/2 -translate-y-1/2 bg-accent-yellow p-1.5 rounded-full text-white shadow-sm transform -rotate-12 border-2 border-white">
