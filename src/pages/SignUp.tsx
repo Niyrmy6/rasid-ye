@@ -32,6 +32,12 @@ export default function SignUp() {
       return;
     }
 
+    const nameParts = fullname.trim().split(/\s+/);
+    if (nameParts.length < 4) {
+      setError(t('signup.nameQuadrupleRequired'));
+      return;
+    }
+
     const phoneValidation = validateYemenPhone(phone, t);
     if (!phoneValidation.valid) {
       setError(phoneValidation.errorMsg);

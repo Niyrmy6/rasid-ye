@@ -239,6 +239,7 @@ const resources = {
       "signup.tooManyAttempts": "طلبات كثيرة جداً. يرجى الانتظار قليلاً ثم المحاولة مجدداً",
       "signup.unexpectedError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى",
       "signup.nameMinLength": "الاسم يجب أن يتكون من حرفين على الأقل",
+      "signup.nameQuadrupleRequired": "الرجاء إدخال الاسم رباعي (أربعة أسماء على الأقل)",
       "signup.passwordHint": "يجب أن تتكون من 6 خانات على الأقل",
       "login.serverError": "حدث خطأ في الاتصال بالخادم. حاول مجدداً",
 
@@ -547,6 +548,7 @@ const resources = {
       "signup.tooManyAttempts": "Too many requests. Please wait a moment and try again",
       "signup.unexpectedError": "An unexpected error occurred. Please try again",
       "signup.nameMinLength": "Name must be at least 2 characters",
+      "signup.nameQuadrupleRequired": "Please enter a quadruple name (at least four names)",
       "signup.passwordHint": "Must be at least 6 characters",
       "login.serverError": "Server connection error. Please try again",
 
