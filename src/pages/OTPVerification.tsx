@@ -121,7 +121,7 @@ export default function OTPVerification() {
 
         if (updateError) {
           handleError(updateError, { context: 'OTP Phone Change Update', silent: true });
-          setError(t('forgot.serverError'));
+          setError(updateError.message || t('forgot.serverError'));
         } else {
           setStoredUser(data);
           toast.dismiss();
@@ -143,7 +143,7 @@ export default function OTPVerification() {
           if (errCode === '23505' || errMsg.includes('duplicate') || errMsg.includes('unique')) {
             setError(t('signup.phoneAlreadyRegistered'));
           } else {
-            setError(t('otp.errorCreatingAccount'));
+            setError(insertError.message || t('otp.errorCreatingAccount'));
           }
           handleError(insertError, { context: 'OTP Sign Up Insert', silent: true });
         } else {
@@ -152,12 +152,12 @@ export default function OTPVerification() {
           navigate('/verification-success');
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       // Show form-level message for fetch failures; useErrorHandler stays silent to avoid double toast
       if (err instanceof TypeError && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError'))) {
         setError(t('signup.networkError'));
       } else {
-        setError(t('otp.serverConnectionFailed'));
+        setError(err?.message || t('otp.serverConnectionFailed'));
       }
       handleError(err, { context: 'OTP handleConfirm Catch', silent: true });
     } finally {
