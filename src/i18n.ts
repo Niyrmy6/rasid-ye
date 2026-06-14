@@ -75,6 +75,10 @@ const resources = {
       "Unable to get location: ": "تعذر الحصول على الموقع: ",
       "Location feature is not supported in your browser": "ميزة الموقع غير مدعومة في متصفحك",
       "Create New Report": "إنشاء بلاغ جديد",
+      "newReport.patientNameRequired": "الرجاء إدخال اسم المريض",
+      "newReport.patientNameQuadruple": "يجب أن يكون اسم المريض رباعي الأجزاء (الاسم الأول، الأب، الجد، العائلة)",
+      "newReport.locationRequired": "الرجاء تحديد الموقع على الخريطة أو استخدام الموقع الحالي",
+      "newReport.symptomsRequired": "الرجاء اختيار عرض واحد على الأقل",
 
       // MyReports.tsx
       "Verified": "اكتمال البلاغ",
@@ -384,6 +388,10 @@ const resources = {
       "Unable to get location: ": "Unable to get location: ",
       "Location feature is not supported in your browser": "Location feature is not supported in your browser",
       "Create New Report": "Create New Report",
+      "newReport.patientNameRequired": "Please enter patient name",
+      "newReport.patientNameQuadruple": "Patient name must be quadruple (at least 4 names)",
+      "newReport.locationRequired": "Please set a location on the map or use your current location",
+      "newReport.symptomsRequired": "Please select at least one symptom",
 
       // MyReports.tsx
       "Verified": "Report Completed",

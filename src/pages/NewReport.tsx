@@ -68,6 +68,7 @@ export default function NewReport() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
@@ -119,19 +120,36 @@ export default function NewReport() {
   };
 
   const handleSubmit = async () => {
-    // Validation 1: Patient name must be 4 parts
-    const nameParts = patientName.trim().split(/\s+/);
-    if (nameParts.length < 4) {
-      setError(
-        "يجب أن يكون اسم المريض رباعي الأجزاء (الاسم الأول، الأب، الجد، العائلة)",
-      );
+    const newErrors: Record<string, string> = {};
+
+    // 1. Patient Name Validation
+    if (!patientName.trim()) {
+      newErrors.patientName = t("newReport.patientNameRequired");
+    } else {
+      const nameParts = patientName.trim().split(/\s+/);
+      if (nameParts.length < 4) {
+        newErrors.patientName = t("newReport.patientNameQuadruple");
+      }
+    }
+
+    // 2. Location Validation
+    if (!location) {
+      newErrors.location = t("newReport.locationRequired");
+    }
+
+    // 3. Symptoms Validation
+    if (selectedSymptoms.length === 0) {
+      newErrors.symptoms = t("newReport.symptomsRequired");
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setError(null);
       return;
     }
 
-    if (!patientName || selectedSymptoms.length === 0) {
-      setError("الرجاء إدخال اسم المريض واختيار عرض واحد على الأقل.");
-      return;
-    }
+    // Clear validation errors
+    setErrors({});
 
     // Validation 2: Check for duplicate reports
     const disease_id = selectedDisease === "unknown" ? null : selectedDisease;
@@ -225,6 +243,11 @@ export default function NewReport() {
                 person
               </span>
             </div>
+            {errors.patientName && (
+              <p className="text-red-500 text-xs font-bold mt-2 font-almarai text-right">
+                {errors.patientName}
+              </p>
+            )}
           </div>
 
           <div className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
@@ -268,6 +291,11 @@ export default function NewReport() {
                 {location && <Marker position={[location.lat, location.lng]} />}
               </MapContainer>
             </div>
+            {errors.location && (
+              <p className="text-red-500 text-xs font-bold mt-2 font-almarai text-right">
+                {errors.location}
+              </p>
+            )}
           </div>
 
           {/* ... UI for Symptoms and Diseases ... */}
@@ -371,6 +399,11 @@ export default function NewReport() {
                 );
               })}
             </div>
+            {errors.symptoms && (
+              <p className="text-red-500 text-xs font-bold mt-2 font-almarai text-right">
+                {errors.symptoms}
+              </p>
+            )}
           </div>
 
           {/* New Patient Info Section */}
