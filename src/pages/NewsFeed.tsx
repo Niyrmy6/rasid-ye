@@ -10,6 +10,47 @@ import type { NewsRow, GlobalNewsItem } from "../types/models";
 import { getNewsTypeLabel, getNewsTypeBadgeColor, matchesNewsTypeFilter } from "../lib/newsUtils";
 import { formatAppDate } from "../lib/localeUtils";
 
+function cleanTitle(title: string): string {
+  // Remove source suffix e.g., " - ..." or " | ..."
+  let cleaned = title.replace(/\s+[-|]\s+.*$/, "");
+  // Remove non-word characters
+  cleaned = cleaned.replace(/[^\p{L}\p{N}\s]/gu, "");
+  // Normalize Arabic letters (e.g., أ, إ, آ -> ا; ة -> ه)
+  cleaned = cleaned
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+  return cleaned;
+}
+
+function areTitlesSimilar(t1: string, t2: string): boolean {
+  const c1 = cleanTitle(t1);
+  const c2 = cleanTitle(t2);
+
+  if (c1 === c2) return true;
+  if (c1.includes(c2) && c2.length > 10) return true;
+  if (c2.includes(c1) && c1.length > 10) return true;
+
+  const words1 = new Set(c1.split(" ").filter((w) => w.length > 2));
+  const words2 = new Set(c2.split(" ").filter((w) => w.length > 2));
+
+  if (words1.size === 0 || words2.size === 0) return false;
+
+  let intersectionCount = 0;
+  for (const w of words1) {
+    if (words2.has(w)) {
+      intersectionCount++;
+    }
+  }
+
+  const minSize = Math.min(words1.size, words2.size);
+  const overlapRatio = intersectionCount / minSize;
+
+  return overlapRatio > 0.65;
+}
+
 export default function NewsFeed() {
   const { t, i18n } = useTranslation();
   const { handleError } = useErrorHandler();
@@ -64,7 +105,11 @@ export default function NewsFeed() {
           handleError(globalError, { context: 'Global news fetch', silent: true });
         }
         const uniqueGlobalData = (globalData || []).reduce<GlobalNewsItem[]>((acc, current) => {
-          const isDuplicate = acc.some(item => item.title === current.title || item.link === current.link);
+          const isDuplicate = acc.some(item => 
+            item.title === current.title || 
+            item.link === current.link || 
+            areTitlesSimilar(item.title, current.title)
+          );
           if (!isDuplicate) {
             acc.push(current);
           }
