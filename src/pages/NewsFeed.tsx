@@ -63,7 +63,14 @@ export default function NewsFeed() {
         if (globalError) {
           handleError(globalError, { context: 'Global news fetch', silent: true });
         }
-        setGlobalNews(globalData);
+        const uniqueGlobalData = (globalData || []).reduce<GlobalNewsItem[]>((acc, current) => {
+          const isDuplicate = acc.some(item => item.title === current.title || item.link === current.link);
+          if (!isDuplicate) {
+            acc.push(current);
+          }
+          return acc;
+        }, []);
+        setGlobalNews(uniqueGlobalData);
       } catch (err) {
         handleError(err, { context: 'News Feed Catch' });
       } finally {

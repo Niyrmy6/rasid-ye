@@ -17,11 +17,14 @@ export default function PersonalInfo() {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const [fullname, setFullname] = useState('');
+  const [originalFullname, setOriginalFullname] = useState('');
   const [phone, setPhone] = useState('');
   const [originalPhone, setOriginalPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [originalPassword, setOriginalPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
+  const [originalEmail, setOriginalEmail] = useState('');
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,14 +48,23 @@ export default function PersonalInfo() {
     };
 
     // Load initial values from localStorage
-    if (storedUser.full_name) setFullname(storedUser.full_name);
+    if (storedUser.full_name) {
+      setFullname(storedUser.full_name);
+      setOriginalFullname(storedUser.full_name);
+    }
     if (storedUser.phone) {
       const display = stripPrefix(storedUser.phone);
       setPhone(display);
-      setOriginalPhone(storedUser.phone); // Full phone is stored in DB
+      setOriginalPhone(storedUser.phone);
     }
-    if (storedUser.password) setPassword(storedUser.password);
-    if (storedUser.email) setEmail(storedUser.email);
+    if (storedUser.password) {
+      setPassword(storedUser.password);
+      setOriginalPassword(storedUser.password);
+    }
+    if (storedUser.email) {
+      setEmail(storedUser.email);
+      setOriginalEmail(storedUser.email);
+    }
     setUserId(storedUser.user_id);
     if (storedUser.profile_picture) setProfilePicture(storedUser.profile_picture);
 
@@ -72,14 +84,21 @@ export default function PersonalInfo() {
 
         if (data) {
           setStoredUser(data);
-          if (data.full_name) setFullname(data.full_name);
+          if (data.full_name) {
+            setFullname(data.full_name);
+            setOriginalFullname(data.full_name);
+          }
           if (data.phone) {
             const display = stripPrefix(data.phone);
             setPhone(display);
             setOriginalPhone(data.phone);
           }
-          if (data.password) setPassword(data.password);
-          if (data.email) setEmail(data.email || '');
+          if (data.password) {
+            setPassword(data.password);
+            setOriginalPassword(data.password);
+          }
+          setEmail(data.email || '');
+          setOriginalEmail(data.email || '');
           if (data.profile_picture) setProfilePicture(data.profile_picture);
         }
       } catch (err) {
@@ -155,6 +174,18 @@ export default function PersonalInfo() {
   };
 
   const handleSaveClick = () => {
+    // Check if anything actually changed
+    const phoneFullCurrent = phone ? `+967${phone}` : '';
+    const hasChanges =
+      fullname !== originalFullname ||
+      phoneFullCurrent !== originalPhone ||
+      password !== originalPassword ||
+      (email || '') !== (originalEmail || '');
+
+    if (!hasChanges) {
+      // Nothing changed — don't show confirmation dialog
+      return;
+    }
     setShowConfirm(true);
   };
 
