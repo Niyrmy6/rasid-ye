@@ -59,7 +59,7 @@ export default function NewReport() {
   const [symptoms, setSymptoms] = useState<SymptomListItem[]>([]);
   const [selectedSymptoms, setSelectedSymptoms] = useState<number[]>([]);
   const [age, setAge] = useState("");
-  const [gender, setGender] = useState("male");
+  const [gender, setGender] = useState("");
   const [onsetDate, setOnsetDate] = useState("");
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
@@ -140,6 +140,21 @@ export default function NewReport() {
     // 3. Symptoms Validation
     if (selectedSymptoms.length === 0) {
       newErrors.symptoms = t("newReport.symptomsRequired");
+    }
+
+    // 4. Age Validation
+    if (!age.trim()) {
+      newErrors.age = t("newReport.ageRequired");
+    } else {
+      const ageNum = Number(age);
+      if (isNaN(ageNum) || ageNum < 0 || ageNum > 120) {
+        newErrors.age = t("newReport.ageInvalid");
+      }
+    }
+
+    // 5. Gender Validation
+    if (!gender) {
+      newErrors.gender = t("newReport.genderRequired");
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -434,6 +449,11 @@ export default function NewReport() {
                     cake
                   </span>
                 </div>
+                {errors.age && (
+                  <p className="text-red-500 text-xs font-bold mt-2 font-almarai text-right">
+                    {errors.age}
+                  </p>
+                )}
               </div>
 
               {/* Gender */}
@@ -457,6 +477,11 @@ export default function NewReport() {
                     ذكر
                   </button>
                 </div>
+                {errors.gender && (
+                  <p className="text-red-500 text-xs font-bold mt-2 font-almarai text-right">
+                    {errors.gender}
+                  </p>
+                )}
               </div>
             </div>
 

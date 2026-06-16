@@ -172,7 +172,6 @@ export default function NewsFeed() {
                 <div className={`flex items-center gap-2 ${i18n.language === 'ar' ? 'flex-row' : 'flex-row-reverse'}`}>
                   {activeFilter === 'all' && <span className="w-2 h-2 rounded-full bg-gray-500"></span>}
                   {activeFilter === 'urgent' && <span className="w-2 h-2 rounded-full bg-red-500"></span>}
-                  {activeFilter === 'alert' && <span className="w-2 h-2 rounded-full bg-orange-500"></span>}
                   {activeFilter === 'guidelines' && <span className="w-2 h-2 rounded-full bg-blue-500"></span>}
                   {activeFilter === 'event' && <span className="w-2 h-2 rounded-full bg-green-500"></span>}
                   {activeFilter === 'global' && <span className="w-2 h-2 rounded-full bg-purple-500"></span>}
@@ -198,13 +197,6 @@ export default function NewsFeed() {
                     >
                       <span className="w-2 h-2 rounded-full bg-red-500"></span>
                       {t('urgent')}
-                    </button>
-                    <button
-                      onClick={() => { setActiveFilter('alert'); setIsTypeDropdownOpen(false); }}
-                      className={`w-full px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 flex items-center gap-2 ${i18n.language === 'ar' ? 'text-right flex-row' : 'text-left flex-row-reverse'} ${activeFilter === 'alert' ? 'bg-gray-100 dark:bg-gray-800 font-bold' : ''}`}
-                    >
-                      <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-                      {t('alert')}
                     </button>
                     <button
                       onClick={() => { setActiveFilter('guidelines'); setIsTypeDropdownOpen(false); }}

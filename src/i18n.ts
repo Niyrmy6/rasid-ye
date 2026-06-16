@@ -79,6 +79,9 @@ const resources = {
       "newReport.patientNameQuadruple": "يجب أن يكون اسم المريض رباعي الأجزاء (الاسم الأول، الأب، الجد، العائلة)",
       "newReport.locationRequired": "الرجاء تحديد الموقع على الخريطة أو استخدام الموقع الحالي",
       "newReport.symptomsRequired": "الرجاء اختيار عرض واحد على الأقل",
+      "newReport.ageRequired": "الرجاء إدخال العمر",
+      "newReport.ageInvalid": "الرجاء إدخال عمر صحيح بين 0 و 120",
+      "newReport.genderRequired": "الرجاء اختيار الجنس",
 
       // MyReports.tsx
       "Verified": "اكتمال البلاغ",
@@ -392,6 +395,9 @@ const resources = {
       "newReport.patientNameQuadruple": "Patient name must be quadruple (at least 4 names)",
       "newReport.locationRequired": "Please set a location on the map or use your current location",
       "newReport.symptomsRequired": "Please select at least one symptom",
+      "newReport.ageRequired": "Please enter age",
+      "newReport.ageInvalid": "Please enter a valid age between 0 and 120",
+      "newReport.genderRequired": "Please select gender",
 
       // MyReports.tsx
       "Verified": "Report Completed",
