@@ -132,14 +132,14 @@ await supabase.functions.invoke('send-whatsapp-otp', {
 | الاستخدام | الملف / الدالة |
 |-----------|----------------|
 | OTP تسجيل/استعادة كلمة المرور | `send-whatsapp-otp` (سحابي) |
-| تنبيه مسؤول عند عتبة البلاغات | `notify-manager/index.ts` |
-
-`notify-manager` يرسل من `whatsapp:+14155238886` (رقم Sandbox Twilio — غيّره في الإنتاج).
+| تنبيه وبائي جديد | `notify-manager/index.ts` → يحفظ إشعار في جدول `notification` (لم يعد يرسل واتساب) |
 
 | المفتاح | المكان |
 |---------|--------|
-| `TWILIO_ACCOUNT_SID` | Edge Secrets |
-| `TWILIO_AUTH_TOKEN` | Edge Secrets |
+| `TWILIO_ACCOUNT_SID` | Edge Secrets (لـ OTP فقط) |
+| `TWILIO_AUTH_TOKEN` | Edge Secrets (لـ OTP فقط) |
+
+> ملاحظة: الدالة `send-whatsapp` غير مستخدمة في المشروع، يمكن تخطي نشرها.
 
 ---
 

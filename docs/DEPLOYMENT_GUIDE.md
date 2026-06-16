@@ -322,7 +322,8 @@ npm run build
 supabase functions deploy chat-rag-bot
 supabase functions deploy send-email-notification
 supabase functions deploy notify-manager
-# وأيضاً send-whatsapp-otp إن وُجدت على السحابة
+supabase functions deploy send-whatsapp-otp # لـ OTP فقط
+# تخطي send-whatsapp — غير مستخدمة
 ```
 
 إعدادات JWT في `supabase/config.toml`:
@@ -332,6 +333,7 @@ supabase functions deploy notify-manager
 | `chat-rag-bot` | `true` |
 | `notify-manager` | `true` |
 | `send-email-notification` | `false` (Webhook) |
+| `send-whatsapp-otp` | `false` |
 
 ---
 
