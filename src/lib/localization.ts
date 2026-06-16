@@ -13,7 +13,7 @@ export function pickLocalizedName(
   arName: string | null | undefined,
   language: string,
 ): string {
-  if (language === 'ar') {
+  if (language && language.startsWith('ar')) {
     return arName?.trim() || englishName;
   }
   return englishName;

@@ -74,7 +74,7 @@ serve(async (req: Request) => {
           },
           body: JSON.stringify({
             q: userQuestion,
-            hl: lang === 'ar' ? 'ar' : 'en',
+            hl: (lang && lang.startsWith('ar')) ? 'ar' : 'en',
             gl: 'ye',
             num: 5,
           }),
@@ -97,7 +97,7 @@ serve(async (req: Request) => {
 
     console.log('Final searchContext:', searchContext);
 
-    const userPromptMessage = `Target Language for your response: ${lang === 'ar' ? 'ARABIC (العربية)' : 'ENGLISH'}
+    const userPromptMessage = `Target Language for your response: ${(lang && lang.startsWith('ar')) ? 'ARABIC (العربية)' : 'ENGLISH'}
 User question: ${userQuestion}
 
 ${searchContext}`;
