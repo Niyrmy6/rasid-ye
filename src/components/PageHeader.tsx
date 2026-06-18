@@ -17,7 +17,7 @@ export default function PageHeader({
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
-  const brand = brandLabel ?? t('Rasid');
+  const brand = brandLabel ?? t('Rasidna');
 
   const handleBack = () => {
     if (onBack) {
