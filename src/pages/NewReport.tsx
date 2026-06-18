@@ -157,6 +157,18 @@ export default function NewReport() {
       newErrors.gender = t("newReport.genderRequired");
     }
 
+    // 6. Phone Validation (optional but if entered must start with 7 and have exactly 9 digits)
+    if (phone.trim()) {
+      const cleanPhone = phone.trim();
+      if (!/^\d+$/.test(cleanPhone)) {
+        newErrors.phone = t("signup.phoneInvalidChars");
+      } else if (cleanPhone.length !== 9) {
+        newErrors.phone = t("signup.phoneInvalidLength");
+      } else if (!cleanPhone.startsWith("7")) {
+        newErrors.phone = t("signup.phoneInvalidStart");
+      }
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setError(null);
@@ -512,7 +524,7 @@ export default function NewReport() {
               <div className="relative">
                 <input
                   className="w-full pl-4 pr-10 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-right placeholder-gray-400 dark:placeholder-gray-700"
-                  placeholder="05XXXXXXXX"
+                  placeholder="7XXXXXXXX"
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -522,6 +534,27 @@ export default function NewReport() {
                   phone
                 </span>
               </div>
+              {errors.phone && (
+                <p className="text-red-500 text-xs font-bold mt-2 font-almarai text-right">
+                  {errors.phone}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Notes Field */}
+          <div className="bg-white dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+            <label className="block text-sm font-bold text-text-muted mb-3 font-almarai">
+              {t("Additional Notes")}
+            </label>
+            <div className="relative">
+              <textarea
+                className="w-full p-4 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-right placeholder-gray-400 dark:placeholder-gray-700 min-h-[100px] font-almarai"
+                placeholder={t("Any other details you would like to add?")}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                dir={i18n.language === "ar" ? "rtl" : "ltr"}
+              />
             </div>
           </div>
 
