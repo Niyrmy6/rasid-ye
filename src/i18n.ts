@@ -82,6 +82,7 @@ const resources = {
       "newReport.ageRequired": "الرجاء إدخال العمر",
       "newReport.ageInvalid": "الرجاء إدخال عمر صحيح بين 0 و 120",
       "newReport.genderRequired": "الرجاء اختيار الجنس",
+      "newReport.onsetDateInFuture": "تاريخ الإصابة لا يمكن أن يكون في المستقبل",
 
       // MyReports.tsx
       "Verified": "اكتمال البلاغ",
@@ -398,6 +399,7 @@ const resources = {
       "newReport.ageRequired": "Please enter age",
       "newReport.ageInvalid": "Please enter a valid age between 0 and 120",
       "newReport.genderRequired": "Please select gender",
+      "newReport.onsetDateInFuture": "Date of onset cannot be in the future",
 
       // MyReports.tsx
       "Verified": "Report Completed",

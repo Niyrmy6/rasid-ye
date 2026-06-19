@@ -169,6 +169,16 @@ export default function NewReport() {
       }
     }
 
+    // 7. Onset Date Validation (cannot be in the future)
+    if (onsetDate) {
+      const selectedDate = new Date(onsetDate);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+      if (selectedDate > today) {
+        newErrors.onsetDate = t("newReport.onsetDateInFuture");
+      }
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setError(null);
@@ -508,12 +518,18 @@ export default function NewReport() {
                   type="date"
                   value={onsetDate}
                   onChange={(e) => setOnsetDate(e.target.value)}
+                  max={new Date().toISOString().split("T")[0]}
                   dir={i18n.language === "ar" ? "rtl" : "ltr"}
                 />
                 <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-700">
                   calendar_today
                 </span>
               </div>
+              {errors.onsetDate && (
+                <p className="text-red-500 text-xs font-bold mt-2 font-almarai text-right">
+                  {errors.onsetDate}
+                </p>
+              )}
             </div>
 
             {/* Phone */}
