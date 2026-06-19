@@ -16,6 +16,7 @@ import { setupLeafletIcons } from "../lib/leafletSetup";
 import { getStoredUser } from "../lib/session";
 import { toast } from "sonner";
 import type { DiseaseListItem, SymptomListItem } from "../types/models";
+import { validateYemenPhone } from "../lib/phoneValidation";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -215,13 +216,21 @@ export default function NewReport() {
     setLoading(true);
     setError(null);
 
+    let formattedPhone: string | null = null;
+    if (phone.trim()) {
+      const validationResult = validateYemenPhone(phone, t);
+      if (validationResult.valid) {
+        formattedPhone = validationResult.fullPhone;
+      }
+    }
+
     try {
       // Two-step persist: report row first, then junction rows in `symptom_report`
       const { data: reportData, error: reportError } = await submitReport({
         patient_name: patientName,
         age: age ? Number(age) : null,
         gender,
-        phone: phone || null,
+        phone: formattedPhone,
         onset_date: onsetDate ? new Date(onsetDate).toISOString() : null,
         notes: notes || null,
         user_id: user.user_id,
