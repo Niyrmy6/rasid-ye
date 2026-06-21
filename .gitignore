@@ -34,3 +34,7 @@ build.log
 # === OS FILES ===
 Thumbs.db
 desktop.ini
+
+# === SUPABASE LOCAL DATA (contain credentials/real data!) ===
+supabase/seed.sql
+supabase/snippets/
