@@ -55,7 +55,7 @@ serve(async (req: Request) => {
 
     const groqApiKey = Deno.env.get('GROQ_API_KEY');
     const serperApiKey = Deno.env.get('SERPER_API_KEY');
-    
+
     console.log('Env keys check:', { hasGroq: !!groqApiKey, hasSerper: !!serperApiKey });
 
     if (!groqApiKey) {
@@ -104,7 +104,7 @@ ${searchContext}`;
     console.log('User prompt built');
 
     const payload = {
-      model: 'llama-3.1-8b-instant',
+      model: 'openai/gpt-oss-120b',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPromptMessage },
