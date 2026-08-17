@@ -839,11 +839,11 @@ CREATE INDEX "idx_location_geom" ON "public"."report" USING "gist" ("location");
 
 
 
-CREATE OR REPLACE TRIGGER "Email On Report Update" AFTER INSERT OR UPDATE ON "public"."report_history" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://ehbaenczvnphgiuwujoc.supabase.co/functions/v1/send-email-notification', 'POST', '{"Content-type":"application/json","Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoYmFlbmN6dm5waGdpdXd1am9jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDczMTIzNywiZXhwIjoyMDg2MzA3MjM3fQ.KmDDh7DeeetIOY09eAGlB4yxbiZ9j7OZ2qpWPvLOFqc"}', '{}', '5000');
+CREATE OR REPLACE TRIGGER "Email On Report Update" AFTER INSERT OR UPDATE ON "public"."report_history" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://YOUR_SUPABASE_PROJECT_ID.supabase.co/functions/v1/send-email-notification', 'POST', '{"Content-type":"application/json","Authorization":"Bearer YOUR_SERVICE_ROLE_KEY"}', '{}', '5000');
 
 
 
-CREATE OR REPLACE TRIGGER "send_notification_alert" AFTER INSERT ON "public"."notification" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://ehbaenczvnphgiuwujoc.supabase.co/functions/v1/notify-manager', 'POST', '{"Content-type":"application/json","Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVoYmFlbmN6dm5waGdpdXd1am9jIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDczMTIzNywiZXhwIjoyMDg2MzA3MjM3fQ.KmDDh7DeeetIOY09eAGlB4yxbiZ9j7OZ2qpWPvLOFqc"}', '{}', '5000');
+CREATE OR REPLACE TRIGGER "send_notification_alert" AFTER INSERT ON "public"."notification" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://YOUR_SUPABASE_PROJECT_ID.supabase.co/functions/v1/notify-manager', 'POST', '{"Content-type":"application/json","Authorization":"Bearer YOUR_SERVICE_ROLE_KEY"}', '{}', '5000');
 
 
 
