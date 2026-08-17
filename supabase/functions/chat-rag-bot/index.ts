@@ -111,8 +111,6 @@ ${searchContext}`;
       ],
       temperature: 0.3,
       max_tokens: 700,
-      presence_penalty: 0.8,
-      frequency_penalty: 0.8,
     };
     console.log('Groq payload ready');
 
@@ -135,8 +133,10 @@ ${searchContext}`;
     const groqData = await groqRes.json();
     console.log('Groq data:', JSON.stringify(groqData, null, 2));
 
-    if (groqData.error) {
-      console.error('Groq API Error Details:', groqData.error);
+    if (!groqRes.ok || groqData.error) {
+      console.error('Groq API Error Details:', groqData.error || groqData);
+      const groqErrorMsg = groqData.error?.message || `Groq Error status ${groqRes.status}`;
+      return jsonResponse({ reply: `خطأ من Groq API: ${groqErrorMsg}` });
     }
 
     const botReply =
