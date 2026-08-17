@@ -104,7 +104,7 @@ ${searchContext}`;
     console.log('User prompt built');
 
     const payload = {
-      model: 'openai/gpt-oss-120b',
+      model: 'openai/gpt-oss-20b',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: userPromptMessage },
