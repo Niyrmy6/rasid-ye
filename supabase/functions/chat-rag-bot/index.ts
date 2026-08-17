@@ -135,6 +135,10 @@ ${searchContext}`;
     const groqData = await groqRes.json();
     console.log('Groq data:', JSON.stringify(groqData, null, 2));
 
+    if (groqData.error) {
+      console.error('Groq API Error Details:', groqData.error);
+    }
+
     const botReply =
       groqData.choices?.[0]?.message?.content ?? 'عذراً، لم أتمكن من العثور على إجابة محددة الآن.';
     console.log('Final botReply:', botReply);
